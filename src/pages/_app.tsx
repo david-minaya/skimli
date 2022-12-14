@@ -16,7 +16,7 @@ import Head from "next/head";
 import Router from "next/router";
 import nProgress from "nprogress";
 import { Toaster } from "react-hot-toast";
-import { META_DESCRIPTION, META_KEYWORDS } from "~/constants";
+import { META_DESCRIPTION} from "~/constants";
 import { useApollo } from "~/graphqls";
 import "../i18n";
 import { createTheme } from "../theme";
@@ -36,42 +36,10 @@ const WebApp = (props) => {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>Skimli | The Smartest and Fastest Way to Clip Videos</title>
+        <title>Skimli | Webapp</title>
         <meta name="viewport" content="initial-scale=1,width=device-width" />
         <meta name="theme-color" content="#FC4603" />
         <meta name="description" content={META_DESCRIPTION} />
-        <meta name="keywords" content={META_KEYWORDS.join(",")} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@skimlico" />
-        <meta
-          name="twitter:title"
-          content="Skimli | The Smartest and Fastest Way to Clip Videos"
-        />
-        <meta name="twitter:creator" content="@skimlico" />
-        <meta
-          name="twitter:description"
-          content="Skimli uses the power of AI and machine learning to create clips of your most important scenes."
-        />
-        <meta
-          name="twitter:image"
-          content="https://images.ctfassets.net/efokgeev7zew/5YKfqIZAMTGcKVWTSuBwyL/a83f1a499abb9e7d4363221961a8ca66/skimli-logo-card.png"
-        />
-        <meta property="og:url" content="sbx.skimli.co" />
-        <meta property="og:type" content="webapp" />
-        <meta
-          property="og:title"
-          content="Skimli | The Smartest and Fastest Way to Clip Videos"
-        />
-        <meta
-          property="og:description"
-          content="Skimli uses the power of AI and machine learning to create clips of your most important scenes."
-        />
-        <meta
-          property="og:image"
-          content="https://images.ctfassets.net/efokgeev7zew/5YKfqIZAMTGcKVWTSuBwyL/a83f1a499abb9e7d4363221961a8ca66/skimli-logo-card.png"
-        />
-        <meta property="og:site_name" content="Skimli" />
-        <meta property="og:locale" content="en_US" />
       </Head>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <ThemeProvider

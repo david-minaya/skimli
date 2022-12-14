@@ -6,6 +6,9 @@
 
 import gql from "graphql-tag";
 
+// TODO: Remove this query
+// For the webapp, we won't read the footer data from the CMS.
+// What we will be reading is the pricing plans data
 export const GET_FOOTER_LIST = gql`
   {
     footerLinkListCollection {

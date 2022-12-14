@@ -7,7 +7,6 @@
 import { FC, ReactNode } from "react";
 import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
-import { Footer } from "./footer";
 import { MainNavbar } from "./main-navbar";
 
 interface MainLayoutProps {
@@ -26,7 +25,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     <MainLayoutRoot>
       <MainNavbar />
       {children}
-      <Footer />
     </MainLayoutRoot>
   );
 };

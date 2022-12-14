@@ -9,6 +9,10 @@ import Image from "next/image";
 import NextLink from "next/link";
 import type { FC } from "react";
 
+// TODO: This should be a left side app bar that is in a box which doesn't flex grow, position should be sticky
+// Not sure if we need bottom border, etc.
+// This sample is in line with what we need for the left side https://codesandbox.io/s/major-viewer-layout-2-forked-001t9?file=/demo.js
+// Remove these comments once implemented.
 export const MainNavbar: FC = () => {
   return (
     <AppBar

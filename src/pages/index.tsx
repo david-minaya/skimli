@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Skimli</title>
+        <title>Skimli | Webapp</title>
       </Head>
       <main>
         <Container maxWidth="lg">

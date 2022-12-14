@@ -4,6 +4,7 @@
  * Do not distribute outside Skimli LLC.
  */
 
+// TODO: Remove type, not in webapp
 export interface IFooterType {
   title: string;
   linkName: string;
@@ -13,6 +14,7 @@ export interface IFooterType {
   };
 }
 
+// TODO: Remove type, not in webapp
 interface IBrands {
   title: string;
   order: number;
@@ -24,11 +26,13 @@ interface IBrands {
   };
 }
 
+// TODO: Remove type, not in webapp
 export interface IBrandsLogos {
   title: string;
   brands: IBrands[];
 }
 
+// TODO: Remove type, not in webapp
 export interface IPersona {
   title: string;
   order: number;
@@ -43,11 +47,13 @@ export interface IPersona {
   };
 }
 
+// TODO: Remove type, not in webapp
 export interface ICustomerPersona {
   title: string;
   persona: IPersona[];
 }
 
+// TODO: Remove type, not in webapp
 interface IAchievements {
   title: string;
   achievementTitle: string;
@@ -61,6 +67,7 @@ interface IAchievements {
   order: number;
 }
 
+// TODO: Remove type, not in webapp
 export interface IMajorAchievements {
   title: string;
   achievementSectionTitle: string;
@@ -68,6 +75,7 @@ export interface IMajorAchievements {
   achievementList: IAchievements[];
 }
 
+// TODO: Remove type, not in webapp
 export interface ITestimonial {
   sys: {
     id: string;
@@ -92,7 +100,7 @@ export interface ITestimonial {
     url: string;
   };
 }
-
+// TODO: Remove type, not in webapp
 export interface ITestimonialSection {
   title: string;
   sectionTitle: string;
@@ -100,6 +108,7 @@ export interface ITestimonialSection {
   testimonialList: ITestimonial[];
 }
 
+// TODO: Remove type, not in webapp
 export interface IFeature {
   title: string;
   featureTitle: string;
@@ -110,6 +119,7 @@ export interface IFeature {
   };
 }
 
+// TODO: Remove type, not in webapp
 export interface ITopFeatures {
   title: string;
   sectionTitle: string;
@@ -117,6 +127,7 @@ export interface ITopFeatures {
   featureList: IFeature[];
 }
 
+// TODO: Remove type, not in webapp
 interface feature {
   feature: string;
   toolTip?: string;
@@ -139,17 +150,20 @@ export interface ISubscriptionPlan {
   };
 }
 
+// TODO: Remove type, not in webapp
 export interface IAboutUsTeam {
   sectionTitle: string;
   teamPicture: { url: string; title: string };
 }
-
+// TODO: Remove type, not in webapp
 export interface IAboutUsDescription {
   title: string;
   description: {
     json: any;
   };
 }
+
+// TODO: Remove type, not in webapp
 export interface IAboutUsTimelineItem {
   title: string;
   timelineItemTitle: string;
@@ -165,6 +179,7 @@ export interface ILegalDoc {
   termlyUrl: string;
 }
 
+// TODO: Remove type, not in webapp
 export interface IFAQ {
   sys: {
     id: string;
