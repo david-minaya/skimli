@@ -16,11 +16,12 @@ import Head from "next/head";
 import Router from "next/router";
 import nProgress from "nprogress";
 import { Toaster } from "react-hot-toast";
-import { META_DESCRIPTION} from "~/constants";
+import { META_DESCRIPTION } from "~/constants";
 import { useApollo } from "~/graphqls";
 import "../i18n";
 import { createTheme } from "../theme";
 import { createEmotionCache } from "../utils";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 
 Router.events.on("routeChangeStart", nProgress.start);
 Router.events.on("routeChangeError", nProgress.done);
@@ -51,9 +52,11 @@ const WebApp = (props) => {
         >
           <CssBaseline />
           <Toaster position="top-center" />
-          <ApolloProvider client={apolloClient}>
-            <Component {...pageProps} />
-          </ApolloProvider>
+          <UserProvider>
+            <ApolloProvider client={apolloClient}>
+              <Component {...pageProps} />
+            </ApolloProvider>
+          </UserProvider>
         </ThemeProvider>
       </LocalizationProvider>
     </CacheProvider>

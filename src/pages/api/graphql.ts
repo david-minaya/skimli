@@ -4,10 +4,12 @@
  * Do not distribute outside Skimli LLC.
  */
 
+import { useAuth0 } from "@envelop/auth0";
 import { createYoga } from "graphql-yoga";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
-import { schema } from "~/server/schema";
+import { schema, UnAuthorizedError } from "~/server/schema";
+import AppConfig from "../../config";
 
 export const config = {
   api: {
@@ -15,6 +17,7 @@ export const config = {
   },
 };
 
+const GRAPHQL_AUTH0_CONTEXT_FIELD = "auth0";
 export default createYoga<{
   req: NextApiRequest;
   res: NextApiResponse;
@@ -29,8 +32,19 @@ export default createYoga<{
           title: "Skimli Webapp API",
         },
   schema: schema,
-  context: ({ req }) => {
+  plugins: [
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useAuth0({
+      onError: () => {
+        throw UnAuthorizedError;
+      },
+      domain: AppConfig.auth0.auth0Domain,
+      audience: AppConfig.auth0.auth0GraphQLAPIAudience,
+      extendContextField: GRAPHQL_AUTH0_CONTEXT_FIELD,
+    }),
+  ],
+  context: ({ req, res }: { req: NextApiRequest; res: NextApiResponse }) => {
     const ip = requestIp.getClientIp(req);
-    return { ip: ip };
+    return { ip: ip, req, res };
   },
 });
