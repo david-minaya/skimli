@@ -36,4 +36,12 @@ export class Auth0Service {
     });
     return { id: verificationJob.id, status: verificationJob.status };
   }
+
+  async updateNickname(userId: string, nickname: string): Promise<string> {
+    const user = await this.managementAPI.updateUser(
+      { id: userId },
+      { nickname: nickname }
+    );
+    return user.nickname!;
+  }
 }

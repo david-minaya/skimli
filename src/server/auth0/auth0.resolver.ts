@@ -1,6 +1,7 @@
-import { Authorized, Ctx, Mutation, Resolver } from "type-graphql";
+import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 import { Service } from "typedi";
 import type { GraphQLContext } from "../schema";
+import { UpdateNicknameArgs } from "./auth0.args";
 import { Auth0Service } from "./auth0.service";
 import { ResendVerificationEmailResponse } from "./auth0.types";
 
@@ -15,5 +16,14 @@ export class Auth0Resolver {
     @Ctx() ctx: GraphQLContext
   ): Promise<ResendVerificationEmailResponse> {
     return this.auth0Service.resendVerificationEmail(ctx.auth0.sub);
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async updateNickname(
+    @Args() args: UpdateNicknameArgs,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<string> {
+    return this.auth0Service.updateNickname(ctx.auth0.sub, args.nickname);
   }
 }
