@@ -1,5 +1,4 @@
 import type { JobStatus } from "auth0";
-import { IsString } from "class-validator";
 import { Field, GraphQLISODateTime, ObjectType } from "type-graphql";
 
 @ObjectType()
@@ -27,4 +26,16 @@ export class UserLogResponse {
 
   @Field(() => GraphQLISODateTime, { nullable: true })
   date?: Date;
+}
+
+@ObjectType()
+export class ChangePasswordResponse {
+  @Field(() => Boolean)
+  ok: boolean;
+}
+
+@ObjectType()
+export class ResetPasswordResponse {
+  @Field(() => Boolean)
+  ok: boolean;
 }

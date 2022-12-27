@@ -1,17 +1,29 @@
-import { ManagementClient } from "auth0";
+import { AuthenticationClient, ManagementClient } from "auth0";
 import { Service } from "typedi";
 import config from "../../config";
-import { EmailAlreadyVerifiedError } from "./auth0.errors";
+import {
+  EmailAlreadyVerifiedError,
+  PasswordManagedByGoogleError,
+} from "./auth0.errors";
 import {
   ResendVerificationEmailResponse,
   UserLogResponse,
 } from "./auth0.types";
 
+const USERNAME_PASSWORD_CONNECTION = "Username-Password-Authentication";
+
 @Service()
 export class Auth0Service {
+  auth0: AuthenticationClient;
   managementAPI: ManagementClient;
 
   constructor() {
+    this.auth0 = new AuthenticationClient({
+      domain: config.auth0.auth0Domain,
+      clientId: config.auth0.auth0ClientId,
+      clientSecret: config.auth0.auth0ClientSecret,
+    });
+
     this.managementAPI = new ManagementClient({
       domain: config.auth0.auth0Domain,
       clientId: config.auth0.auth0ClientId,
@@ -71,5 +83,28 @@ export class Auth0Service {
       };
     });
     return events;
+  }
+
+  async changePassword(userId: string): Promise<void> {
+    const user = await this.managementAPI.getUser({
+      id: userId,
+    });
+    if (!user.user_id?.startsWith("auth0")) {
+      throw PasswordManagedByGoogleError;
+    }
+
+    await this.auth0.requestChangePasswordEmail({
+      email: user.email!,
+      connection: USERNAME_PASSWORD_CONNECTION,
+      client_id: config.auth0.auth0ClientId,
+    });
+  }
+
+  async resetPassword(email: string): Promise<void> {
+    await this.auth0.requestChangePasswordEmail({
+      email: email,
+      client_id: config.auth0.auth0ClientId,
+      connection: USERNAME_PASSWORD_CONNECTION,
+    });
   }
 }
