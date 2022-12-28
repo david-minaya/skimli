@@ -6,10 +6,16 @@
 
 import type { NextPage } from "next";
 import Head from "next/head";
-import { Container, Typography } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material";
 import { withMainLayout } from "../hocs/with-main-layout";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import NextLink from "next/link";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
+// TODO: replace temporary homepage with proper one
 const Home: NextPage = () => {
+  const { user, isLoading, error } = useUser();
+
   return (
     <>
       <Head>
@@ -17,7 +23,26 @@ const Home: NextPage = () => {
       </Head>
       <main>
         <Container maxWidth="lg">
-          <Typography variant="h1">Web App Starter</Typography>
+          {error && <Typography>{error.message}</Typography>}
+          {isLoading && <Typography>Loading ...</Typography>}
+          {user && (
+            <>
+              <Typography variant="h6">Welcome {user?.email}</Typography>
+              <Typography variant="h6">
+                Email verified: {JSON.stringify(user?.email_verified)}
+              </Typography>
+              <NextLink href={"/api/auth/logout"} passHref>
+                <Button
+                  component="a"
+                  size="medium"
+                  sx={{ ml: 2 }}
+                  variant="contained"
+                >
+                  Logout
+                </Button>
+              </NextLink>
+            </>
+          )}
         </Container>
       </main>
     </>
@@ -25,3 +50,5 @@ const Home: NextPage = () => {
 };
 
 export default withMainLayout(Home);
+
+export const getServerSideProps = withPageAuthRequired();
