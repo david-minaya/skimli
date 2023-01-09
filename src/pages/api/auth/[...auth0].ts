@@ -15,7 +15,7 @@ export default handleAuth({
     },
   }),
   logout: handleLogout({
-    returnTo: "/login",
+    returnTo: AppConfig.auth0.auth0LogoutURL,
   }),
   profile: handleProfile({
     refetch: true,

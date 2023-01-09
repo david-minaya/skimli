@@ -9,6 +9,7 @@ const config = {
     auth0ClientSecret: process.env.AUTH0_CLIENT_SECRET ?? "",
     auth0GraphQLAPIAudience: process.env.AUTH0_AUDIENCE ?? "",
     auth0Domain: process.env.AUTH0_DOMAIN ?? "",
+    auth0LogoutURL: process.env.AUTH0_LOGOUT_URL ?? "",
   },
 };
 
