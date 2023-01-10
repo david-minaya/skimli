@@ -7,6 +7,8 @@ import * as Sentry from "@sentry/nextjs";
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 const SENTRY_ENABLED = process.env.SENTRY_ENABLED || true;
 const SENTRY_DEBUG = !!(process.env.NODE_ENV == "development");
+const SENTRY_TRACING_ORIGIN =
+  process.env.NEXT_PUBLIC_SENTRY_TRACING_ORIGIN || "https://app.dev.skimli.com";
 
 Sentry.init({
   enabled: SENTRY_ENABLED,
@@ -17,4 +19,9 @@ Sentry.init({
   tracesSampleRate: 1.0,
   environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
   debug: SENTRY_DEBUG,
+  integrations: [
+    new Sentry.BrowserTracing({
+      tracingOrigins: [SENTRY_TRACING_ORIGIN, /^\//],
+    }),
+  ],
 });
