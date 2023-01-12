@@ -1,4 +1,4 @@
-import { AuthenticationClient, ManagementClient } from "auth0";
+import { AuthenticationClient, ManagementClient, User } from "auth0";
 import { Service } from "typedi";
 import config from "../../config";
 import {
@@ -25,7 +25,7 @@ export class Auth0Service {
     });
 
     this.managementAPI = new ManagementClient({
-      domain: config.auth0.auth0Domain,
+      domain: config.auth0.auth0ManagementAPIDomain,
       clientId: config.auth0.auth0ClientId,
       clientSecret: config.auth0.auth0ClientSecret,
       tokenProvider: {
@@ -106,5 +106,22 @@ export class Auth0Service {
       client_id: config.auth0.auth0ClientId,
       connection: USERNAME_PASSWORD_CONNECTION,
     });
+  }
+
+  async getUserByID(userId: string): Promise<User> {
+    return this.managementAPI.getUser({
+      id: userId,
+    });
+  }
+
+  async setUserMetadata(userId: string, metadata: object): Promise<void> {
+    const user = await this.managementAPI.getUser({ id: userId });
+    await this.managementAPI.updateUserMetadata(
+      { id: userId },
+      {
+        ...user?.app_metadata,
+        ...metadata,
+      }
+    );
   }
 }

@@ -4,6 +4,7 @@
  * Do not distribute outside Skimli LLC.
  */
 
+import { getSession } from "@auth0/nextjs-auth0";
 import { useAuth0 } from "@envelop/auth0";
 import { createYoga } from "graphql-yoga";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -44,7 +45,8 @@ export default createYoga<{
     }),
   ],
   context: ({ req, res }: { req: NextApiRequest; res: NextApiResponse }) => {
+    const token = req?.headers?.authorization ?? "";
     const ip = requestIp.getClientIp(req);
-    return { ip: ip, req, res };
+    return { ip: ip, req, res, token };
   },
 });

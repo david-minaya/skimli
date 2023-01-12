@@ -10,6 +10,11 @@ const config = {
     auth0GraphQLAPIAudience: process.env.AUTH0_AUDIENCE ?? "",
     auth0Domain: process.env.AUTH0_DOMAIN ?? "",
     auth0LogoutURL: process.env.AUTH0_LOGOUT_URL ?? "",
+    // custom domain cannot be used here we have to use the original one
+    auth0ManagementAPIDomain: process.env.AUTH0_MANAGEMENT_API_DOMAIN ?? "",
+  },
+  api: {
+    accountsAPIURL: process.env.ACCOUNTS_API_URL ?? "",
   },
 };
 
