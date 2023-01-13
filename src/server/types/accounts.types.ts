@@ -27,8 +27,10 @@ export interface CreateUserRequest {
 }
 
 export interface CheckUserExistsParams {
-  email: string;
-  account: UserAccountType;
+  email?: string;
+  account?: UserAccountType;
+  org?: number;
+  idpUser?: string;
 }
 
 export type CheckUserExistsResponse = [User[] | null, AxiosError | null];

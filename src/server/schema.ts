@@ -34,6 +34,7 @@ export interface GraphQLContext {
     exp: number;
     azp: string;
     scope: string;
+    organization_id?: string;
   };
   req: NextApiRequest;
   res: NextApiResponse;

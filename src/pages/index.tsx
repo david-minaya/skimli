@@ -31,7 +31,6 @@ const Home: NextPage = () => {
               <Typography variant="h6">
                 Email verified: {JSON.stringify(user?.email_verified)}
               </Typography>
-              <Typography variant="h6">Organization: {user?.org_id}</Typography>
               <NextLink href={"/api/auth/logout"} passHref>
                 <Button
                   component="a"
