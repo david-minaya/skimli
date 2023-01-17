@@ -51,11 +51,6 @@ export const style = Style({
       padding: '0px'
     }
   },
-  nameInput: {
-    '& .MuiInputBase-input': {
-      textTransform: 'capitalize'
-    }
-  },
   alert: {
     width: '100%'
   },

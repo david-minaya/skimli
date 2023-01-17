@@ -19,7 +19,6 @@ export const style = Style({
     marginRight: '12px'
   },
   name: {
-    textTransform: 'capitalize',
     color: '#333333'
   },
   email: {

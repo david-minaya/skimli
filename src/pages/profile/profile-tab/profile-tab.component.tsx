@@ -73,7 +73,7 @@ export function ProfileTab() {
           <Box>{name.length}/64</Box>
         </Box>
         <InputBase
-          sx={[style.input, style.nameInput as any]} 
+          sx={style.input} 
           value={name}
           onChange={handleNameChange}
           onBlur={handleUpdateName}/>
