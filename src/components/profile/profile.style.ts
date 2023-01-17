@@ -34,11 +34,14 @@ export const style = Style({
     padding: '12px 8px 12px'
   },
   option: {
+    display: 'block',
     padding: '8px',
     color: '#333333',
+    fontSize: '16px',
     borderRadius: '2px',
     marginBottom: '2px',
     cursor: 'default',
+    textDecoration: 'none',
     ':hover': {
       backgroundColor: '#FEDACC'
     }

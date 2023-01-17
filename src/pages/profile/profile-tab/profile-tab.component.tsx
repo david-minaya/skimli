@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, ChangeEvent } from 'react';
 import { Alert, Box, InputBase, Link, Snackbar } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useUpdateName } from '~/graphqls/useUpdateName';
@@ -7,7 +7,7 @@ import { style } from './profile-tab.style';
 
 export function ProfileTab() {
 
-  const { user } = useUser();
+  const { user, checkSession } = useUser();
   const [name, setName] = useState('');
   const [openSuccessToast, setOpenSuccessToast] = useState(false);
   const [openFailToast, setOpenFailToast] = useState(false);
@@ -18,13 +18,22 @@ export function ProfileTab() {
 
   useEffect(() => {
     setName(user?.nickname || '');
-  }, [user])
+  }, [user]);
+
+  async function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.value.length <= 64) {
+      setName(event.target.value)
+    }
+  }
 
   async function handleUpdateName() {
 
+    if (!name || name.trim() === '') return;
+
     try {
 
-      await updateName(name!);
+      await updateName(name);
+      await checkSession();
       setOpenSuccessToast(true);
 
     } catch (err) {
@@ -59,11 +68,14 @@ export function ProfileTab() {
         </Box>
       </Box>
       <Box sx={style.inputContainer}>
-        <Box sx={style.inputTitle}>Name</Box>
+        <Box sx={style.inputTitle}>
+          <Box>Name</Box>
+          <Box>{name.length}/64</Box>
+        </Box>
         <InputBase
           sx={[style.input, style.nameInput as any]} 
           value={name}
-          onChange={event => setName(event.target.value)}
+          onChange={handleNameChange}
           onBlur={handleUpdateName}/>
       </Box>
       <Box sx={style.inputContainer}>

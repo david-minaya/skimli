@@ -20,7 +20,8 @@ export const style = Style({
   },
   logo: {
     width: '40px',
-    height: '40px'
+    height: '40px',
+    cursor: 'pointer'
   },
   option: {
     width: '100%',

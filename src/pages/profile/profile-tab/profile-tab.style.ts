@@ -24,17 +24,20 @@ export const style = Style({
     }
   },
   link: {
-    display: 'inline-block',
+    display: 'block',
     color: 'primary.main',
     fontSize: '14px',
     fontWeight: '500',
     cursor: 'pointer',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    marginTop: '4px'
   },
   inputContainer: {
     margin: '24px 0px'
   },
   inputTitle: {
+    display: 'flex',
+    justifyContent: 'space-between',
     fontSize: '12px'
   },
   input: {

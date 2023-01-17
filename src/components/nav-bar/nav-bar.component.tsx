@@ -15,10 +15,12 @@ export function NavBar() {
   return (
     <Box sx={style.container}>
       <Box sx={style.options}>
-        <Box
-          sx={style.logo} 
-          component='img' 
-          src='logo.svg'/>
+        <Link href='/'>
+          <Box
+            sx={style.logo} 
+            component='img' 
+            src='logo.svg'/>
+        </Link>
         <Link href='/'>
           <Box sx={style.option}>
             <HomeIcon sx={style.optionIcon}/>

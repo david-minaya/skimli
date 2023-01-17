@@ -49,9 +49,10 @@ export function Profile(props: Props) {
         <Link href='/profile'>
           <Box sx={style.option}>My Profile</Box>
         </Link>
-        <Link href={'/api/auth/logout'}>
-          <Box sx={style.option}>Logout</Box>
-        </Link>
+        <Box
+          component='a'
+          href='/api/auth/logout'
+          sx={style.option}>Logout</Box>
       </Box>
     </Popover>
   );
