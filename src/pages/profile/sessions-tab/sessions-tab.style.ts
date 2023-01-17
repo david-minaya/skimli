@@ -47,8 +47,10 @@ export const style = Style({
   },
   loggedOut: {
     color: 'white',
-    fontSize: '14px',
+    fontSize: '10px',
+    textAlign: 'center',
     backgroundColor: '#999999',
+    borderRadius: '12px',
     padding: '2px 4px'
   }
 });
