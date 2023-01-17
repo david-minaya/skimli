@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import { UsersAPI } from "../api/users.api";
+import { AccountsAPI } from "../api/accounts.api";
 import { APIError, AuthInfo } from "../types/base.types";
 import { User } from "./accounts.types";
 import { Auth0Service } from "../auth0/auth0.service";
@@ -9,12 +9,12 @@ import { User as Auth0User, AppMetadata, UserMetadata } from "auth0";
 @Service()
 export class AccountsService {
   constructor(
-    private readonly usersAPI: UsersAPI,
+    private readonly accountsAPI: AccountsAPI,
     private readonly auth0Service: Auth0Service
   ) {}
 
   async getAppUserById(userId: string): Promise<User | null> {
-    const [response, error] = await this.usersAPI.checkUserExists({
+    const [response, error] = await this.accountsAPI.checkUserExists({
       idpUser: userId,
     });
     if (error) {
@@ -32,7 +32,7 @@ export class AccountsService {
     } catch (e) {
       throw new GraphQLError("User not found");
     }
-    const [response, error] = await this.usersAPI.checkUserExists({
+    const [response, error] = await this.accountsAPI.checkUserExists({
       email: profile!.email as string,
       account: "PERSONAL",
     });
@@ -61,7 +61,7 @@ export class AccountsService {
     if (!profile?.email_verified) {
       throw new GraphQLError("Email is not verified");
     }
-    const [response, error] = await this.usersAPI.createUser(
+    const [response, error] = await this.accountsAPI.createUser(
       {
         account: "PERSONAL",
         accountOwner: true,
