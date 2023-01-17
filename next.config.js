@@ -7,6 +7,7 @@ const nextConfig = {
     outputStandalone: true,
   },
   compress: false,
+  pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js', 'api.ts']
 };
 
 const moduleExports = {

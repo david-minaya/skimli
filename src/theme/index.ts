@@ -4,13 +4,9 @@
  * Do not distribute outside Skimli LLC.
  */
 
-import type { Direction, Theme } from "@mui/material";
-import {
-  createTheme as createMuiTheme,
-  responsiveFontSizes,
-} from "@mui/material/styles";
-import { baseThemeOptions } from "./base-theme-options";
-import { lightThemeOptions } from "./light-theme-options";
+import { createTheme as createMuiTheme, responsiveFontSizes } from '@mui/material/styles';
+import { baseThemeOptions } from './base-theme-options';
+import { lightThemeOptions } from './light-theme-options';
 
 interface Neutral {
   100: string;
@@ -24,7 +20,8 @@ interface Neutral {
   900: string;
 }
 
-declare module "@mui/material/styles" {
+declare module '@mui/material/styles' {
+
   interface Palette {
     neutral: Neutral;
   }
@@ -34,20 +31,4 @@ declare module "@mui/material/styles" {
   }
 }
 
-interface ThemeConfig {
-  direction?: Direction;
-  responsiveFontSizes?: boolean;
-  mode: "light" | "dark";
-}
-
-export const createTheme = (config: ThemeConfig): Theme => {
-  let theme = createMuiTheme(baseThemeOptions, lightThemeOptions, {
-    direction: config.direction,
-  });
-
-  if (config.responsiveFontSizes) {
-    theme = responsiveFontSizes(theme);
-  }
-
-  return theme;
-};
+export const theme = responsiveFontSizes(createMuiTheme(baseThemeOptions, lightThemeOptions));
