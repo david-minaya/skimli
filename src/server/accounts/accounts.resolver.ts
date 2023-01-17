@@ -12,7 +12,11 @@ export class AccountsResolver {
   @Authorized()
   @Query(() => User, { nullable: true })
   async checkUserExists(@Ctx() ctx: GraphQLContext): Promise<User | null> {
-    return this.accountsService.checkUserExists(ctx.auth0.sub);
+    const userId = ctx.auth0.sub;
+    if (ctx.auth0?.organization_id) {
+      return this.accountsService.getAppUserById(userId);
+    }
+    return this.accountsService.checkUserExists(userId);
   }
 
   @Authorized()

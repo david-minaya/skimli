@@ -7,13 +7,14 @@ import { validateInput } from "./format-error";
 import { GraphQLError } from "graphql";
 import { ApiResolver } from "./api.resolver";
 import { AccountsResolver } from "./accounts/accounts.resolver";
+import { BillingResolver } from "./billing/billing.resolver";
 
 export const UnAuthorizedError = new GraphQLError(
   "Access denied! You need to be authorized to perform this action!"
 );
 
 export const schema = buildSchemaSync({
-  resolvers: [ApiResolver, Auth0Resolver, AccountsResolver],
+  resolvers: [ApiResolver, Auth0Resolver, AccountsResolver, BillingResolver],
   container: Container,
   validate: validateInput,
   authChecker: ({ context }) => {
@@ -34,6 +35,7 @@ export interface GraphQLContext {
     exp: number;
     azp: string;
     scope: string;
+    organization_id?: string;
   };
   req: NextApiRequest;
   res: NextApiResponse;

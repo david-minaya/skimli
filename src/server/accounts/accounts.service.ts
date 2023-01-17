@@ -1,25 +1,38 @@
 import { Service } from "typedi";
-import { UsersAPI } from "../api/users.api";
+import { AccountsAPI } from "../api/accounts.api";
 import { APIError, AuthInfo } from "../types/base.types";
 import { User } from "./accounts.types";
 import { Auth0Service } from "../auth0/auth0.service";
 import { GraphQLError } from "graphql";
+import { User as Auth0User, AppMetadata, UserMetadata } from "auth0";
 
 @Service()
 export class AccountsService {
   constructor(
-    private readonly usersAPI: UsersAPI,
+    private readonly accountsAPI: AccountsAPI,
     private readonly auth0Service: Auth0Service
   ) {}
 
+  async getAppUserById(userId: string): Promise<User | null> {
+    const [response, error] = await this.accountsAPI.checkUserExists({
+      idpUser: userId,
+    });
+    if (error) {
+      throw new APIError(error);
+    } else if (!response || response.length <= 0) {
+      return null;
+    }
+    return response[0];
+  }
+
   async checkUserExists(userId: string): Promise<User | null> {
-    let profile;
+    let profile: Auth0User<AppMetadata, UserMetadata>;
     try {
       profile = await this.auth0Service.getUserByID(userId);
     } catch (e) {
-      throw new GraphQLError("user does not exists");
+      throw new GraphQLError("User not found");
     }
-    const [response, error] = await this.usersAPI.checkUserExists({
+    const [response, error] = await this.accountsAPI.checkUserExists({
       email: profile!.email as string,
       account: "PERSONAL",
     });
@@ -33,13 +46,22 @@ export class AccountsService {
 
   async createUser(authInfo: AuthInfo): Promise<User> {
     const userId = authInfo.auth0.sub;
-    const user = await this.checkUserExists(userId);
+    let user: User | null;
+    if (authInfo.auth0?.organization_id) {
+      user = await this.getAppUserById(userId);
+    } else {
+      user = await this.checkUserExists(userId);
+    }
+
     if (user) {
       return user;
     }
 
     const profile = await this.auth0Service.getUserByID(userId);
-    const [response, error] = await this.usersAPI.createUser(
+    if (!profile?.email_verified) {
+      throw new GraphQLError("Email is not verified");
+    }
+    const [response, error] = await this.accountsAPI.createUser(
       {
         account: "PERSONAL",
         accountOwner: true,
@@ -53,7 +75,7 @@ export class AccountsService {
       throw new APIError(error);
     }
     await this.auth0Service.setUserMetadata(userId, {
-      organization_id: `${response?.org}`,
+      organization_id: response?.org,
     });
     return response!;
   }

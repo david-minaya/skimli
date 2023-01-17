@@ -16,6 +16,10 @@ const config = {
   api: {
     accountsAPIURL: process.env.ACCOUNTS_API_URL ?? "",
   },
+  lago: {
+    lagoAPIKey: process.env.LAGO_API_KEY ?? "",
+    lagoAPIURL: process.env.LAGO_API_URL ?? "",
+  },
 };
 
 export default config;

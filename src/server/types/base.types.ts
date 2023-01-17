@@ -8,6 +8,8 @@ export type AuthInfo = {
   token: GraphQLContext["token"];
 };
 
+const INTERNAL_ERROR = "Internal Server Error";
+
 export class APIError extends GraphQLError {
   constructor(error: AxiosError | any) {
     const code = error.response?.status || 500;
@@ -18,7 +20,7 @@ export class APIError extends GraphQLError {
       },
     };
     if (code >= 500) {
-      super("api error", options);
+      super(INTERNAL_ERROR, options);
       Sentry.withScope((scope) => {
         console.error(error);
         scope.setLevel("error");
@@ -35,5 +37,15 @@ export class APIError extends GraphQLError {
         error?.response?.data;
       super(message, options);
     }
+  }
+}
+
+export class InternalGraphQLError extends GraphQLError {
+  constructor(error: any) {
+    super(INTERNAL_ERROR, {
+      extensions: {
+        message: error?.message || error?.cause || JSON.stringify(error),
+      },
+    });
   }
 }
