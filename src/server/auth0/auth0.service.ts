@@ -114,9 +114,9 @@ export class Auth0Service {
     });
   }
 
-  async setUserMetadata(userId: string, metadata: object): Promise<void> {
+  async setUserAppMetadata(userId: string, metadata: object): Promise<void> {
     const user = await this.managementAPI.getUser({ id: userId });
-    await this.managementAPI.updateUserMetadata(
+    await this.managementAPI.updateAppMetadata(
       { id: userId },
       {
         ...user?.app_metadata,

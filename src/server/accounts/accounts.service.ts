@@ -74,7 +74,7 @@ export class AccountsService {
     if (error) {
       throw new APIError(error);
     }
-    await this.auth0Service.setUserMetadata(userId, {
+    await this.auth0Service.setUserAppMetadata(userId, {
       organization_id: response?.org,
     });
     return response!;
