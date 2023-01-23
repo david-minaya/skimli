@@ -44,7 +44,7 @@ export class InternalGraphQLError extends GraphQLError {
   constructor(error: any) {
     super(INTERNAL_ERROR, {
       extensions: {
-        message: error?.message || error?.cause || JSON.stringify(error),
+        message: error?.message || error?.cause || error,
       },
     });
   }

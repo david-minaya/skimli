@@ -16,6 +16,8 @@ export interface User {
   billingMethod: BillingMethodType;
   subscriptionId: string;
   settings: object;
+  conversions: number;
+  grantedConversions: number;
 }
 
 export interface CreateUserRequest {

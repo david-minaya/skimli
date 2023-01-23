@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from "type-graphql";
+import { Field, Float, Int, ObjectType } from "type-graphql";
 import type {
   BillingMethodType,
   UserAccountType,
@@ -40,4 +40,10 @@ export class User implements UserType {
 
   @Field(() => GraphQLJSON, { nullable: true })
   settings: object;
+
+  @Field(() => Int)
+  conversions: number;
+
+  @Field(() => Int)
+  grantedConversions: number;
 }
