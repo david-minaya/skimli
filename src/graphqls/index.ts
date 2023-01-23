@@ -23,6 +23,8 @@ export function useApollo() {
     })();
   }, []);
 
+  if (!token) return;
+
   return new ApolloClient({
     uri: process.env.NEXT_PUBLIC_GRAPH_API || '/api/graphql',
     cache: new InMemoryCache(),

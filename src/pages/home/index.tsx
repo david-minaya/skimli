@@ -1,15 +1,50 @@
-import Head from "next/head";
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { Box, Typography } from "@mui/material";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { useCheckUserExists } from '~/graphqls/useCheckUserExists';
+import { Main } from '~/components/main/main.component';
 import { style } from './style';
 
 export function Home() {
 
   const { user, isLoading, error } = useUser();
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const checkUserExists = useCheckUserExists();
+
+  useEffect(() => {
+
+    (async () => {
+
+      try {
+
+        const user = await checkUserExists();
+
+        console.log('user: ', user);
+        
+        if (!user || !user.subscriptionId) {
+          router.push('/onboarding');
+          return;
+        }
+  
+        setLoading(false);
+
+      } catch (err: any) {
+
+        console.log('error: ', err);
+        router.push('/500');
+      }
+    })();
+
+  }, [checkUserExists, router]);
+
+  if (loading) return null;
 
   return (
-    <Box>
+    <Main>
       <Head>
         <title>Skimli | Webapp</title>
       </Head>
@@ -25,7 +60,7 @@ export function Home() {
           }
         </Box>
       </main>
-    </Box>
+    </Main>
   );
 };
 

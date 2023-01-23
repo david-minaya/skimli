@@ -1,9 +1,10 @@
 import { useState, useEffect, Fragment, ChangeEvent } from 'react';
-import { Alert, Box, InputBase, Link, Snackbar } from '@mui/material';
+import { Box, InputBase, Link } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useUpdateName } from '~/graphqls/useUpdateName';
 import { useResetPassword } from '~/graphqls/useResetPassword';
 import { style } from './profile-tab.style';
+import { Toast } from '~/components/toast/toast.component';
 
 export function ProfileTab() {
 
@@ -99,30 +100,16 @@ export function ProfileTab() {
           }
         </Fragment>
       }
-      <Snackbar 
-        open={openSuccessToast} 
-        autoHideDuration={6000} 
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        onClose={() => setOpenSuccessToast(false)}>
-        <Alert 
-          sx={style.alert}
-          severity='success' 
-          onClose={() => setOpenSuccessToast(false)}>
-          Name updated successfully
-        </Alert>
-      </Snackbar>
-      <Snackbar 
-        open={openFailToast} 
-        autoHideDuration={6000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        onClose={() => setOpenFailToast(false)}>
-        <Alert 
-          sx={style.alert}
-          severity='error'
-          onClose={() => setOpenFailToast(false)}>
-          Fail update name
-        </Alert>
-      </Snackbar>
+      <Toast
+        open={openSuccessToast}
+        severity='success'
+        title='Name updated successfully'
+        onClose={() => setOpenSuccessToast(false)}/>
+      <Toast
+        open={openFailToast}
+        severity='error'
+        title='Fail update name'
+        onClose={() => setOpenFailToast(false)}/>
     </Box>
   );
 }
