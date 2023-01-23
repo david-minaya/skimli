@@ -82,3 +82,32 @@ export type LagoAssignPlanToCustomerResponse = [
   LagoSubscription | null,
   LagoAPIError | null
 ];
+
+export interface LagoWallet {
+  lago_id: string;
+  lago_customer_id: string;
+  external_customer_id: string;
+  status: "active" | "terminated";
+  currency: string;
+  name?: string;
+  rate_amount: string;
+  credits_balance: string;
+  balance: string;
+  consumed_credits: string;
+  created_at: string;
+  last_balance_sync_at?: string;
+  last_consumed_credit_at?: string;
+  terminated_at?: string;
+}
+
+export interface LagoCreateWalletRequest {
+  name: string;
+  rate_amount: string;
+  paid_credits?: string;
+  granted_credits: string;
+  currency: string;
+  expiration_at?: string;
+  external_customer_id: string;
+}
+
+export type CreateWalletResponse = [LagoWallet | null, LagoAPIError | null];

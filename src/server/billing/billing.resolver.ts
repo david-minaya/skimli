@@ -1,4 +1,4 @@
-import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
+import { Args, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 import { User } from "../accounts/accounts.types";
 import type { GraphQLContext } from "../schema";
@@ -7,6 +7,7 @@ import { SubscribeToPlanArgs } from "./billing.args";
 import { BillingService } from "./billing.service";
 import { GraphQLError } from "graphql";
 import * as Sentry from "@sentry/nextjs";
+import { Conversions } from "./billing.types";
 
 @Service()
 @Resolver()
@@ -30,5 +31,12 @@ export class BillingResolver {
       }
       throw e;
     }
+  }
+
+  @Authorized()
+  @Query(() => Conversions)
+  async getConversions(@Ctx() ctx: GraphQLContext): Promise<Conversions> {
+    const authInfo: AuthInfo = { auth0: ctx.auth0, token: ctx.token };
+    return this.billingService.getConversions(authInfo);
   }
 }

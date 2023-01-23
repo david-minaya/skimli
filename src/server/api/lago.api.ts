@@ -7,11 +7,13 @@ import axios, {
 import { Service } from "typedi";
 import config from "../../config";
 import {
+  CreateWalletResponse,
   LagoAPIError,
   LagoAssignPlanToCustomerRequest,
   LagoAssignPlanToCustomerResponse,
   LagoCreateCustomerRequest,
   LagoCreateCustomerResponse,
+  LagoCreateWalletRequest,
 } from "../types/lago.types";
 
 @Service()
@@ -24,6 +26,7 @@ export class LagoAPI {
     });
     this.api.interceptors.request.use((request: AxiosRequestConfig) => {
       request.headers!["Content-Type"] = "application/json";
+      request.headers!["Authorization"] = `Bearer ${config.lago.lagoAPIKey}`;
       return request;
     });
     this.api.interceptors.response.use((response: AxiosResponse) => {
@@ -39,13 +42,9 @@ export class LagoAPI {
     data: LagoCreateCustomerRequest
   ): Promise<LagoCreateCustomerResponse> {
     try {
-      const response = await this.api.post(
-        "/api/v1/customers",
-        { customer: data },
-        {
-          headers: { Authorization: `Bearer ${config.lago.lagoAPIKey}` },
-        }
-      );
+      const response = await this.api.post("/api/v1/customers", {
+        customer: data,
+      });
       return [response.data?.customer, null];
     } catch (e) {
       console.warn(e);
@@ -57,14 +56,23 @@ export class LagoAPI {
     data: LagoAssignPlanToCustomerRequest
   ): Promise<LagoAssignPlanToCustomerResponse> {
     try {
-      const response = await this.api.post(
-        "/api/v1/subscriptions",
-        { subscription: data },
-        { headers: { Authorization: `Bearer ${config.lago.lagoAPIKey}` } }
-      );
+      const response = await this.api.post("/api/v1/subscriptions", {
+        subscription: data,
+      });
       return [response.data?.subscription, null];
     } catch (e) {
       console.warn(e);
+      return [null, (e as AxiosError)?.response?.data as LagoAPIError];
+    }
+  }
+
+  async createWallet(
+    data: LagoCreateWalletRequest
+  ): Promise<CreateWalletResponse> {
+    try {
+      const response = await this.api.post("/api/v1/wallets", { wallet: data });
+      return [response?.data?.wallet, null];
+    } catch (e) {
       return [null, (e as AxiosError)?.response?.data as LagoAPIError];
     }
   }
