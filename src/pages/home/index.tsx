@@ -7,6 +7,7 @@ import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { useCheckUserExists } from '~/graphqls/useCheckUserExists';
 import { Main } from '~/components/main/main.component';
 import { style } from './style';
+import { Loading } from '~/components/loading/loading.component';
 
 export function Home() {
 
@@ -41,7 +42,7 @@ export function Home() {
 
   }, [checkUserExists, router]);
 
-  if (loading) return null;
+  if (loading) return <Loading/>;
 
   return (
     <Main>

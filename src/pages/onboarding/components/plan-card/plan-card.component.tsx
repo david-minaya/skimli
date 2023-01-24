@@ -5,6 +5,7 @@ import { style } from './plan-card.style';
 
 interface Props {
   plan: SubscriptionPlan;
+  disabled: boolean;
   onClick: (plan: SubscriptionPlan) => void;
 }
 
@@ -12,6 +13,7 @@ export function PlanCard(props: Props) {
 
   const { 
     plan,
+    disabled,
     onClick
   } = props;
   
@@ -35,6 +37,7 @@ export function PlanCard(props: Props) {
         <Box sx={style.subTitle}>{plan.priceDescription}</Box>
         <Button
           sx={[style.button, plan.mostPopular && style.buttonHighlight as any]}
+          disabled={disabled}
           onClick={() => onClick(plan)}>
           {plan.buttonName}
           <EastRounded sx={style.buttonIcon}/>

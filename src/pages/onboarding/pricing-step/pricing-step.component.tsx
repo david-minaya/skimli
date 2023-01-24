@@ -23,19 +23,20 @@ export function PricingStep(props: Props) {
   const subscriptionPlanSection = useSubscriptionPlans();
   const subscribeToPlan = useSubscribeToPlan();
   const [openFailToast, setOpenFailToast] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   async function handleClick(plan: SubscriptionPlan) {
 
     try {
 
-      console.log('plan: ', plan);
-
+      setDisabled(true);
       await subscribeToPlan('FreePlan');
       onNext();
 
     } catch (err: any) {
 
       setOpenFailToast(true);
+      setDisabled(false);
     }
   }
 
@@ -50,6 +51,7 @@ export function PricingStep(props: Props) {
           <PlanCard 
             key={plan.productCode} 
             plan={plan}
+            disabled={disabled}
             onClick={handleClick}/>
         )}
         </Box>

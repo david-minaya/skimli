@@ -28,6 +28,7 @@ export function ProfileStep(props: Props) {
   const [openFailToast, setOpenFailToast] = useState(false);
   const [openServerErrorToast, setOpenServerErrorToast] = useState(false);
   const [isEmailSended, setIsEmailSended] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const updateName = useUpdateName();
   const resentVerificationEmail = useResentVerificationEmail();
@@ -61,20 +62,30 @@ export function ProfileStep(props: Props) {
   }
 
   async function handleSendVerificationEmail() {
-    setIsEmailSended(true);
-    await resentVerificationEmail();
+
+    try {
+
+      setIsEmailSended(true);
+      await resentVerificationEmail();
+
+    } catch (err: any) {
+
+      console.log('error: ', err);
+    }
   }
 
   async function handleNext() {
 
     try {
 
+      setDisabled(true);
       await createUser();
       onNext();
 
     } catch (err: any) {
 
       setOpenServerErrorToast(true);
+      setDisabled(false);
     }
   }
 
@@ -114,6 +125,7 @@ export function ProfileStep(props: Props) {
           <Button
             sx={style.button} 
             variant='contained'
+            disabled={disabled}
             onClick={handleNext}>
             Next
           </Button>

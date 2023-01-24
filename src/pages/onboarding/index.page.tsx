@@ -8,15 +8,22 @@ import { LibraryStep } from './library-step/library-step.component';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useCheckUserExists } from '~/graphqls/useCheckUserExists';
 import { useRouter } from 'next/router';
+import { Loading } from '~/components/loading/loading.component';
 
 export default function Onboarding() {
 
   const router = useRouter();
-  const { user } = useUser();
-  const [index, setIndex] = useState(3);
+  const { user, isLoading } = useUser();
+  const [index, setIndex] = useState(1);
   const [loading, setLoading] = useState(true);
 
   const checkUserExists = useCheckUserExists();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/');
+    }
+  }, [isLoading, user, router]);
 
   useEffect(() => {
 
@@ -34,7 +41,10 @@ export default function Onboarding() {
   
         if (user) {
           router.push('/');
+          return;
         }
+
+        setLoading(false);
 
       } catch (err: any) {
 
@@ -44,7 +54,7 @@ export default function Onboarding() {
     })();
   }, [checkUserExists, router]);
 
-  if (!user || loading) return null;
+  if (!user || loading) return <Loading/>;
 
   return (
     <Box sx={style.container}>

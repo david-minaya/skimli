@@ -4,7 +4,7 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export function useApollo() {
 
-  const [token, setToken] = useState();
+  const [token, setToken] = useState<string>();
 
   useEffect(() => {
 
@@ -18,7 +18,7 @@ export function useApollo() {
     
       } catch (error) {
         
-        setToken(undefined);
+        setToken('invalid');
       }
     })();
   }, []);
