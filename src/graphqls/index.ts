@@ -4,7 +4,7 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export function useApollo() {
 
-  const [token, setToken] = useState();
+  const [token, setToken] = useState<string>();
 
   useEffect(() => {
 
@@ -18,10 +18,12 @@ export function useApollo() {
     
       } catch (error) {
         
-        setToken(undefined);
+        setToken('invalid');
       }
     })();
   }, []);
+
+  if (!token) return;
 
   return new ApolloClient({
     uri: process.env.NEXT_PUBLIC_GRAPH_API || '/api/graphql',

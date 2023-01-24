@@ -21,7 +21,6 @@ import { META_DESCRIPTION } from '~/constants';
 import { theme } from '../theme';
 import { createEmotionCache } from '../utils';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
-import { Main } from '~/components/main/main.component';
 import { useApollo } from '~/graphqls';
 
 Router.events.on('routeChangeStart', nProgress.start);
@@ -35,6 +34,8 @@ const WebApp = (props) => {
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const apollo = useApollo();
+
+  if (!apollo) return null;
 
   return (
     <CacheProvider value={emotionCache}>
@@ -52,9 +53,7 @@ const WebApp = (props) => {
           <Toaster position='top-center' />
           <UserProvider>
             <ApolloProvider client={apollo}>
-              <Main>
-                <Component {...pageProps} />
-              </Main>
+              <Component {...pageProps} />
             </ApolloProvider>
           </UserProvider>
         </ThemeProvider>

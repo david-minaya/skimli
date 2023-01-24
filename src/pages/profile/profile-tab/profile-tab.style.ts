@@ -51,9 +51,6 @@ export const style = Style({
       padding: '0px'
     }
   },
-  alert: {
-    width: '100%'
-  },
   resetPasswordMessage: {
     color: '#14B8A6',
     fontSize: '14px',
