@@ -110,7 +110,7 @@ export class BillingService {
       billing_configuration: {
         payment_provider: "stripe",
         sync_with_provider: true,
-        sync: true,
+        sync: false,
       },
     };
     try {
