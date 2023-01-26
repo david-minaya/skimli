@@ -6,15 +6,19 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { useCheckUserExists } from '~/graphqls/useCheckUserExists';
 import { Main } from '~/components/main/main.component';
-import { style } from './style';
 import { Loading } from '~/components/loading/loading.component';
+import { useSetAccount } from '~/reducer/provider';
+import { style } from './style';
 
 export function Home() {
 
+  const router = useRouter();
+
   const { user, isLoading, error } = useUser();
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  
   const checkUserExists = useCheckUserExists();
+  const setAccount = useSetAccount();
 
   useEffect(() => {
 
@@ -22,15 +26,14 @@ export function Home() {
 
       try {
 
-        const user = await checkUserExists();
-
-        console.log('user: ', user);
+        const account = await checkUserExists();
         
-        if (!user || !user.subscriptionId) {
+        if (!account || !account.subscriptionId) {
           router.push('/onboarding');
           return;
         }
   
+        setAccount(account);
         setLoading(false);
 
       } catch (err: any) {
@@ -39,8 +42,7 @@ export function Home() {
         router.push('/500');
       }
     })();
-
-  }, [checkUserExists, router]);
+  }, []);
 
   if (loading) return <Loading/>;
 

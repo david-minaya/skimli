@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { Box, Popover } from '@mui/material';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { useAccount } from '~/reducer/provider';
 import { style } from './profile.style';
 
 interface Props {
@@ -16,6 +17,7 @@ export function Profile(props: Props) {
   } = props;
 
   const { user } = useUser();
+  const account = useAccount();
 
   return (
     <Popover
@@ -48,6 +50,9 @@ export function Profile(props: Props) {
         onClick={onClose}>
         <Link href='/profile'>
           <Box sx={style.option}>My Profile</Box>
+        </Link>
+        <Link href={`/organizations/${account?.org}/billing/plan`}>
+          <Box sx={style.option}>Billing</Box>
         </Link>
         <Box
           component='a'

@@ -22,6 +22,7 @@ import { theme } from '../theme';
 import { createEmotionCache } from '../utils';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { useApollo } from '~/graphqls';
+import { Provider } from '~/reducer/provider';
 
 Router.events.on('routeChangeStart', nProgress.start);
 Router.events.on('routeChangeError', nProgress.done);
@@ -41,11 +42,8 @@ const WebApp = (props) => {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>Skimli | Webapp</title>
-        <meta name='viewport' content='initial-scale=1,width=device-width' />
         <meta name='theme-color' content='#FC4603' />
         <meta name='description' content={META_DESCRIPTION}/>
-        <link rel="shortcut icon" href="favicon.png"/>
-        <link rel="icon" type="image/x-icon" href="favicon.png"/>
       </Head>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <ThemeProvider theme={theme}>
@@ -53,7 +51,9 @@ const WebApp = (props) => {
           <Toaster position='top-center' />
           <UserProvider>
             <ApolloProvider client={apollo}>
-              <Component {...pageProps} />
+              <Provider>
+                <Component {...pageProps} />
+              </Provider>
             </ApolloProvider>
           </UserProvider>
         </ThemeProvider>

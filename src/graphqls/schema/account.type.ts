@@ -1,4 +1,4 @@
-export interface User {
+export interface Account {
   account: string;
   accountOwner: boolean;
   billingMethod: string;

@@ -6,10 +6,16 @@ declare module '@mui/material/styles' {
     green: {
       main: string;
     }
+    backgroundColor: {
+      main: string;
+    }
   }
 
   interface PaletteOptions {
     green: {
+      main: string;
+    },
+    backgroundColor: {
       main: string;
     }
   }
@@ -33,10 +39,13 @@ export const theme = responsiveFontSizes(createTheme({
     },
     green: {
       main: '#14B8A6'
+    },
+    backgroundColor: {
+      main: '#F6F6F6'
     }
   },
   typography: {
-    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"'
+    fontFamily: '"Inter", sans-serif'
   },
   components: {
     MuiCssBaseline: {

@@ -19,7 +19,7 @@ export function NavBar() {
           <Box
             sx={style.logo} 
             component='img' 
-            src='logo.svg'/>
+            src='/logo.svg'/>
         </Link>
         <Link href='/'>
           <Box sx={style.option}>

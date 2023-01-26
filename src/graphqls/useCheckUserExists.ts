@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { gql, useApolloClient } from '@apollo/client';
-import { User } from './schema/user.type';
+import { Account } from './schema/account.type';
 
 interface Response {
-  checkUserExists?: User;
+  checkUserExists?: Account;
 }
 
 export function useCheckUserExists() {
