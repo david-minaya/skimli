@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, useCallback, useContext, useState } from 'react';
+import { createContext, Dispatch, ReactNode, useCallback, useContext } from 'react';
 import { useImmerReducer } from 'use-immer';
 import { Account } from '~/graphqls/schema/account.type';
 import { reducer, State, Action } from './reducer';

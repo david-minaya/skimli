@@ -6,9 +6,10 @@ import { Box, Tab, Container } from '@mui/material';
 import { ProfileTab } from './profile-tab/profile-tab.component';
 import { SessionsTab } from './sessions-tab/sessions-tab.component';
 import { Main } from '~/components/main/main.component';
+import { ProtectedRoute } from '~/components/protected-route/protected-route.component';
 import { style } from './style';
 
-export default function Profile() {
+function Profile() {
 
   const [tab, setTab] = useState('1');
 
@@ -35,5 +36,13 @@ export default function Profile() {
         </Container>
       </Box>
     </Main>
+  );
+}
+
+export default function Page() {
+  return (
+    <ProtectedRoute>
+      <Profile/>
+    </ProtectedRoute>
   );
 }

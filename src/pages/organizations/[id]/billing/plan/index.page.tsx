@@ -5,9 +5,10 @@ import { CurrencyDollarIcon } from '~/icons/currencyDollarIcon';
 import { InfoIcon } from '~/icons/infoIcon';
 import { InvoiceIcon } from '~/icons/invoiceIcon';
 import { LightningBoldIcon } from '~/icons/lightningBoltIcon';
+import { ProtectedRoute } from '../../protected-route/protected-route.component';
 import { style } from './index.style';
 
-export default function Plan() {
+function Plan() {
   return (
     <Main>
       <Box sx={style.container}>
@@ -60,5 +61,13 @@ export default function Plan() {
         </Container>
       </Box>
     </Main>
+  );
+}
+
+export default function Page() {
+  return (
+    <ProtectedRoute>
+      <Plan/>
+    </ProtectedRoute>
   );
 }

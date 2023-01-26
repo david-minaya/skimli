@@ -42,6 +42,7 @@ const WebApp = (props) => {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>Skimli | Webapp</title>
+        <meta name='viewport' content='initial-scale=1,width=device-width' />
         <meta name='theme-color' content='#FC4603' />
         <meta name='description' content={META_DESCRIPTION}/>
       </Head>

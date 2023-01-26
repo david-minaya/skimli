@@ -1,27 +1,28 @@
+import Link from 'next/link';
 import { useState } from 'react';
 import { Box, Tooltip } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { HomeIcon } from '~/icons/homeIcon';
 import { Profile } from '../profile/profile.component';
 import { style } from './nav-bar.style';
-import Link from 'next/link';
+import { useAccount } from '~/reducer/provider';
 
 export function NavBar() {
 
+  const account = useAccount();
   const { user } = useUser();
-
   const [profileAnchor, setProfileAnchor] = useState<HTMLDivElement | null>(null);
 
   return (
     <Box sx={style.container}>
       <Box sx={style.options}>
-        <Link href='/'>
+        <Link href={`/organizations/${account?.org}/library`}>
           <Box
             sx={style.logo} 
             component='img' 
             src='/logo.svg'/>
         </Link>
-        <Link href='/'>
+        <Link href={`/organizations/${account?.org}/library`}>
           <Box sx={style.option}>
             <HomeIcon sx={style.optionIcon}/>
           </Box>

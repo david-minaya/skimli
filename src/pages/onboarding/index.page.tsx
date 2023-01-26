@@ -31,15 +31,15 @@ export default function Onboarding() {
 
       try {
 
-        const user = await checkUserExists();
+        const account = await checkUserExists();
   
-        if (user && !user.subscriptionId) {
+        if (account && !account.subscriptionId) {
           setIndex(2);
           setLoading(false);
           return;
         }
   
-        if (user) {
+        if (account) {
           router.push('/');
           return;
         }
