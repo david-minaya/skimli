@@ -1,4 +1,9 @@
-import axios, { AxiosError, AxiosInstance } from "axios";
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from "axios";
 import { Service } from "typedi";
 import config from "../../config";
 import {
@@ -27,6 +32,22 @@ export class AccountsAPI {
       headers: {
         ContentType: "application/json",
       },
+    });
+
+    this.api.interceptors.request.use((request: AxiosRequestConfig) => {
+      console.log(
+        `${new Date().toTimeString()} ${request.method} ${request.url}`
+      );
+      request.headers!["Content-Type"] = "application/json";
+      return request;
+    });
+    this.api.interceptors.response.use((response: AxiosResponse) => {
+      console.log(`response at ${new Date().toTimeString()}`);
+      if (response?.status >= 400) {
+        console.log("response status", response?.statusText);
+        console.log("response body", response?.data);
+      }
+      return response;
     });
   }
 
