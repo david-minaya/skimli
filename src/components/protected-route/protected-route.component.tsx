@@ -40,7 +40,7 @@ export function ProtectedRoute(props: Props) {
       } catch (err: any) {
 
         console.log('error: ', err);
-        router.push('/404');
+        router.push('/401');
       }
     })();
   }, [account]);
