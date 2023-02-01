@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export function useApollo() {
@@ -23,14 +23,18 @@ export function useApollo() {
     })();
   }, []);
 
-  if (!token) return;
+  const client = useMemo(() => {
+    return new ApolloClient({
+      uri: process.env.NEXT_PUBLIC_GRAPH_API || '/api/graphql',
+      cache: new InMemoryCache(),
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }, [token]);
 
-  return new ApolloClient({
-    uri: process.env.NEXT_PUBLIC_GRAPH_API || '/api/graphql',
-    cache: new InMemoryCache(),
-    credentials: 'same-origin',
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
+  if (token) {
+    return client;
+  }
 }

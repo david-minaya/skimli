@@ -1,8 +1,9 @@
-import { Box, Button, Container, IconButton, Tooltip } from '@mui/material';
+import { Box, Container } from '@mui/material';
+import { ConversionsCounter } from '~/components/conversions-counter/conversions-counter.component';
 import { Main } from '~/components/main/main.component';
+import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
 import { BadgeCheckIcon } from '~/icons/badgeCheckIcon';
 import { CurrencyDollarIcon } from '~/icons/currencyDollarIcon';
-import { InfoIcon } from '~/icons/infoIcon';
 import { InvoiceIcon } from '~/icons/invoiceIcon';
 import { LightningBoldIcon } from '~/icons/lightningBoltIcon';
 import { ProtectedRoute } from '../../protected-route/protected-route.component';
@@ -24,16 +25,7 @@ function Plan() {
               <Box sx={style.cardTitle}>Your plan</Box>
               <Box sx={style.cardSubTitle}>Skimli Free</Box>
               <Box sx={style.cardDescription}>Upload, edit and share Skim Videos. Limit of 10 videos in your library</Box>
-              <Box sx={style.cardInfo}>
-                <Tooltip
-                  componentsProps={{ tooltip: { sx: style.tooltip } }}
-                  title='You have a maximum of 10 conversions with your current plan. Upgrade to Skimli Pro to get unlimited conversions.'>
-                  <IconButton sx={style.cardInfoIconButton}>
-                    <InfoIcon sx={style.cardInfoIcon}/>
-                  </IconButton>
-                </Tooltip>
-                0/10 Convercions
-              </Box>
+              <ConversionsCounter sx={style.convertionsCounter}/>
             </Box>
             <Box sx={style.card}>
               <Box sx={style.cardTitle}>Upgrade your plan to</Box>
@@ -41,11 +33,10 @@ function Plan() {
               <Box sx={style.cardDescription}>
                 Customize your viewers experience with your logo, brand and watermark. Unlimited videos in your library.
               </Box>
-              <Button
-                sx={style.button}>
-                <LightningBoldIcon sx={style.buttonIcon}/>
-                Upgrade
-              </Button>
+              <OutlinedButton
+                sx={style.button}
+                title='Upgrade'
+                icon={LightningBoldIcon}/>
             </Box>
           </Box>
           <Box sx={style.sectionTitle}>

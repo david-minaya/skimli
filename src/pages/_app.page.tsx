@@ -21,7 +21,7 @@ import { META_DESCRIPTION } from '~/constants';
 import { theme } from '../theme';
 import { createEmotionCache } from '../utils';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
-import { useApollo } from '~/graphqls';
+import { useApollo } from '~/graphqls/useApollo';
 import { Provider } from '~/reducer/provider';
 
 Router.events.on('routeChangeStart', nProgress.start);

@@ -73,49 +73,9 @@ export const style = Style({
   },
   button: {
     width: '100%',
-    border: '2px solid black',
-    fontSize: '12px',
-    color: 'black',
-    fontWeight: 600,
-    padding: '4px 20px',
-    marginTop: '20px',
-    ':hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.03)'
-    },
-    '&.Mui-disabled': {
-      borderColor: 'lightgray'
-    }
-  },
-  buttonIcon: {
-    width: '20px',
-    height: '20px',
-    marginRight: '8px'
-  },
-  cardInfo: {
-    display: 'flex',
-    justifyContent: 'center',
-    color: 'black',
-    fontWeight: '500',
-    fontSize: '14px',
-    padding: '6px 0px',
     marginTop: '20px'
   },
-  cardInfoIconButton: {
-    display: 'flex',
-    marginRight: '8px',
-    padding: '0px'
-  },
-  cardInfoIcon: {
-    width: '20px',
-    height: '20px',
-  },
-  tooltip: {
-    maxWidth: '360px',
-    backgroundColor: 'white',
-    color: 'black',
-    fontSize: '12px',
-    fontWeight: '600',
-    boxShadow: 1,
-    padding: '8px'
+  convertionsCounter: {
+    marginTop: '20px'
   }
 });
