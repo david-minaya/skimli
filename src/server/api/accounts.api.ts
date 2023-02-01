@@ -17,10 +17,7 @@ import {
   UpdateUserResponse,
 } from "../types/accounts.types";
 import { APIError } from "../types/base.types";
-
-function generateAuthHeaders(token: string): { Authorization: string } {
-  return { Authorization: token };
-}
+import { generateAuthHeaders } from "./base.api";
 
 @Service()
 export class AccountsAPI {
@@ -35,14 +32,10 @@ export class AccountsAPI {
     });
 
     this.api.interceptors.request.use((request: AxiosRequestConfig) => {
-      console.log(
-        `${new Date().toTimeString()} ${request.method} ${request.url}`
-      );
       request.headers!["Content-Type"] = "application/json";
       return request;
     });
     this.api.interceptors.response.use((response: AxiosResponse) => {
-      console.log(`response at ${new Date().toTimeString()}`);
       if (response?.status >= 400) {
         console.log("response status", response?.statusText);
         console.log("response body", response?.data);
