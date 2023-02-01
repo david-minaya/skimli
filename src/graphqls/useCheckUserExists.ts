@@ -29,7 +29,8 @@ export function useCheckUserExists() {
             settings
           }
         }
-      `
+      `,
+      fetchPolicy: 'network-only'
     });
 
     if (response.error || response.errors || !response.data) {
