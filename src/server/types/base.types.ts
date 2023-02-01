@@ -49,3 +49,15 @@ export class InternalGraphQLError extends GraphQLError {
     });
   }
 }
+
+export class MuxError extends GraphQLError {
+  constructor(error: any) {
+    const message = error?.messages[0] || "unknown mux error";
+    super(INTERNAL_ERROR, {
+      extensions: {
+        service: "mux",
+        message: message,
+      },
+    });
+  }
+}

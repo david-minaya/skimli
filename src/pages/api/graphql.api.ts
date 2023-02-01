@@ -4,19 +4,24 @@
  * Do not distribute outside Skimli LLC.
  */
 
-import { getSession } from "@auth0/nextjs-auth0";
 import { useAuth0 } from "@envelop/auth0";
 import { createYoga } from "graphql-yoga";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
-import { schema, UnAuthorizedError } from "~/server/schema";
+import { UnAuthorizedError, schema } from "~/server/schema";
 import AppConfig from "../../config";
+import { app } from "../../server/sqs/sqs";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+if (!app.isRunning) {
+  console.log("starting sqs listener");
+  app.start();
+}
 
 const GRAPHQL_AUTH0_CONTEXT_FIELD = "auth0";
 export default createYoga<{
@@ -31,6 +36,7 @@ export default createYoga<{
       : {
           defaultQuery: ` `,
           title: "Skimli Webapp API",
+          subscriptionsProtocol: "SSE",
         },
   schema: schema,
   plugins: [
