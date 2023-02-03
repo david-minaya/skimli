@@ -1,0 +1,10 @@
+{
+  "tabTitle": "Skimli | App",
+  "title": "Librería",
+  "toolbarTitle": "Cuenta personal - {{email}}",
+  "cardTitle": "Convierte tu primer video!",
+  "cardDescription": "Arrastra y suelta un video para comenzar",
+  "button": "Subir video",
+  "emptyLibraryTitle": "Hmm… Parece que no tienes ningun Skim video todavia!",
+  "emptyLibraryDescription": "Tu nueva conversion aparecera aqui en la libreria. Arrastra y suelta un archivo de video o has click en el boton Subir video para comenzar!"
+}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { Box, Tooltip } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { HomeIcon } from '~/icons/homeIcon';
@@ -10,6 +11,7 @@ import { useAccount } from '~/reducer/provider';
 export function NavBar() {
 
   const account = useAccount();
+  const { t } = useTranslation('components');
   const { user } = useUser();
   const [profileAnchor, setProfileAnchor] = useState<HTMLDivElement | null>(null);
 
@@ -31,7 +33,7 @@ export function NavBar() {
       <Box sx={style.options}>
         <Tooltip
           componentsProps={{ tooltip: { sx: style.tooltip } }}
-          title='My Profile'
+          title={t('navBar.options.profile.tooltip')}
           placement='right'>
           <Box 
             sx={style.option}

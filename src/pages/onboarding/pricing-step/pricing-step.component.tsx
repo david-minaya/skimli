@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Box, Link } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { Toast } from '~/components/toast/toast.component';
 import { SubscriptionPlan } from '~/graphqls/contentful/types/subscriptionPlan';
 import { useSubscriptionPlans } from '~/graphqls/contentful/useSubscriptionPlans';
@@ -20,6 +21,7 @@ export function PricingStep(props: Props) {
     onNext
   } = props;
 
+  const { t } = useTranslation('onboarding');
   const subscriptionPlanSection = useSubscriptionPlans();
   const subscribeToPlan = useSubscribeToPlan();
   const [openFailToast, setOpenFailToast] = useState(false);
@@ -45,7 +47,7 @@ export function PricingStep(props: Props) {
   return (
     <Box sx={style.container}>
       <Box sx={style.content}>
-        <Box sx={style.title}>Start creating Skim Videos today</Box>
+        <Box sx={style.title}>{t('pricing.title')}</Box>
         <Box sx={style.plans}>
         {subscriptionPlanSection.subscriptionPlans?.map(plan => 
           <PlanCard 
@@ -58,14 +60,14 @@ export function PricingStep(props: Props) {
         <Link
           sx={style.link}
           href={`${process.env.NEXT_PUBLIC_WEB_SITE_DOMAIN}/pricing`}>
-          <Box>See Pricing FAQ for more details</Box>
+          <Box>{t('pricing.link')}</Box>
           <OpenInNewRounded sx={style.linkIcon}/>
         </Link>
       </Box>
       <Toast
         open={openFailToast}
         severity='error'
-        title='Plan subscription fail'
+        title={t('pricing.errorToast')}
         onClose={() => setOpenFailToast(false)}/>
     </Box>
   );

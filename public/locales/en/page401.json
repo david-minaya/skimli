@@ -1,0 +1,6 @@
+{
+  "tabTitle": "Error: Authorization Required",
+  "title": "“Hold up!” You are lost",
+  "description": "Error 401: No authorization found. You either tried some shady route or you came here by mistake.",
+  "button": "Back to Home"
+}

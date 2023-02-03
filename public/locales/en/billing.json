@@ -1,0 +1,16 @@
+{
+  "title": "Billing",
+  "planTitle": "Plan",
+  "planSubtitle": "View and change your plan",
+  "freePlanCardTitle": "Your plan",
+  "freePlanCardSubtitle": "Skimli Free",
+  "freePlanCardDescription": "Upload, edit and share Skim Videos. Limit of 10 videos in your library",
+  "proPlanCardTitle": "Upgrade your plan to",
+  "proPlanCardSubtitle": "Skimli Pro",
+  "proPlanCardDescription": "Customize your viewers experience with your logo, brand and watermark. Unlimited videos in your library.",
+  "proPlanCardButton": "Upgrade",
+  "paymentTitle": "Payment details",
+  "paymentSubtitle": "You don’t have any payment details yet",
+  "invoiceTitle": "Invoices",
+  "InvoiceSubtitle": "You don’t have any invoices yet"
+}

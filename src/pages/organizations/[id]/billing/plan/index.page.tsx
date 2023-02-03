@@ -1,4 +1,6 @@
 import { Box, Container } from '@mui/material';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 import { ConversionsCounter } from '~/components/conversions-counter/conversions-counter.component';
 import { Main } from '~/components/main/main.component';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
@@ -10,45 +12,46 @@ import { ProtectedRoute } from '../../protected-route/protected-route.component'
 import { style } from './index.style';
 
 function Plan() {
+
+  const { t } = useTranslation('billing');
+
   return (
     <Main>
       <Box sx={style.container}>
-        <Box sx={style.title}>Billing</Box>
+        <Box sx={style.title}>{t('title')}</Box>
         <Container sx={style.content} maxWidth='md'>
           <Box sx={style.sectionTitle}>
             <BadgeCheckIcon sx={style.sectionTitleIcon}/>
-            <Box>Plan</Box>
+            <Box>{t('planTitle')}</Box>
           </Box>
-          <Box sx={style.sectionSubTitle}>View and change your plan</Box>
+          <Box sx={style.sectionSubTitle}>{t('planSubtitle')}</Box>
           <Box sx={style.cards}>
             <Box sx={style.card}>
-              <Box sx={style.cardTitle}>Your plan</Box>
-              <Box sx={style.cardSubTitle}>Skimli Free</Box>
-              <Box sx={style.cardDescription}>Upload, edit and share Skim Videos. Limit of 10 videos in your library</Box>
+              <Box sx={style.cardTitle}>{t('freePlanCardTitle')}</Box>
+              <Box sx={style.cardSubTitle}>{t('freePlanCardSubtitle')}</Box>
+              <Box sx={style.cardDescription}>{t('freePlanCardDescription')}</Box>
               <ConversionsCounter sx={style.convertionsCounter}/>
             </Box>
             <Box sx={style.card}>
-              <Box sx={style.cardTitle}>Upgrade your plan to</Box>
-              <Box sx={style.cardSubTitle}>Skimli Pro</Box>
-              <Box sx={style.cardDescription}>
-                Customize your viewers experience with your logo, brand and watermark. Unlimited videos in your library.
-              </Box>
+              <Box sx={style.cardTitle}>{t('proPlanCardTitle')}</Box>
+              <Box sx={style.cardSubTitle}>{t('proPlanCardSubtitle')}</Box>
+              <Box sx={style.cardDescription}>{t('proPlanCardDescription')}</Box>
               <OutlinedButton
                 sx={style.button}
-                title='Upgrade'
+                title={t('proPlanCardButton')}
                 icon={LightningBoldIcon}/>
             </Box>
           </Box>
           <Box sx={style.sectionTitle}>
             <CurrencyDollarIcon sx={style.sectionTitleIcon}/>
-            <Box>Payment details</Box>
+            <Box>{t('paymentTitle')}</Box>
           </Box>
-          <Box sx={style.sectionSubTitle}>You don’t have any payment details yet</Box>
+          <Box sx={style.sectionSubTitle}>{t('paymentSubtitle')}</Box>
           <Box sx={style.sectionTitle}>
             <InvoiceIcon sx={style.sectionTitleIcon}/>
-            <Box>Invoices</Box>
+            <Box>{t('invoiceTitle')}</Box>
           </Box>
-          <Box sx={style.sectionSubTitle}>You don’t have any invoices yet</Box>
+          <Box sx={style.sectionSubTitle}>{t('InvoiceSubtitle')}</Box>
         </Container>
       </Box>
     </Main>
@@ -61,4 +64,12 @@ export default function Page() {
       <Plan/>
     </ProtectedRoute>
   );
+}
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: { 
+      ...(await serverSideTranslations(locale, ['billing', 'components']))
+    }
+  }
 }

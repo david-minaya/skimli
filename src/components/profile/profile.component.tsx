@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Box, Popover } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useAccount } from '~/reducer/provider';
 import { style } from './profile.style';
@@ -16,6 +17,7 @@ export function Profile(props: Props) {
     onClose
   } = props;
 
+  const { t } = useTranslation('components');
   const { user } = useUser();
   const account = useAccount();
 
@@ -49,15 +51,15 @@ export function Profile(props: Props) {
         sx={style.options}
         onClick={onClose}>
         <Link href='/profile'>
-          <Box sx={style.option}>My Profile</Box>
+          <Box sx={style.option}>{t('profile.options.profile')}</Box>
         </Link>
         <Link href={`/organizations/${account?.org}/billing/plan`}>
-          <Box sx={style.option}>Billing</Box>
+          <Box sx={style.option}>{t('profile.options.billing')}</Box>
         </Link>
         <Box
           component='a'
           href='/api/auth/logout'
-          sx={style.option}>Logout</Box>
+          sx={style.option}>{t('profile.options.logout')}</Box>
       </Box>
     </Popover>
   );

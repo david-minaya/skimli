@@ -1,0 +1,28 @@
+{
+  "title": "My Profile",
+  "profile": {
+    "title": "Profile",
+    "updateImage": "Your Skimli profile picture is provided by Gravatar",
+    "link": "Change picture",
+    "nameInput": "Name",
+    "emailInput": "Current Email Address",
+    "changePassword": "Change Your Password",
+    "resetPasswordMessage": "Check your email for instructions on how to reset your password.",
+    "successToast": "Name updated successfully",
+    "failToast": "Fail update name"
+  },
+  "notifications": {
+    "title": "Notifications"
+  },
+  "sessions": {
+    "tab": "Sessions",
+    "title": "Session History",
+    "ipAddress": "IP ADDRESS",
+    "date": "DATE",
+    "time": "TIME",
+    "loading": "Loading..."
+  },
+  "applications": {
+    "title": "Applications"
+  }
+}

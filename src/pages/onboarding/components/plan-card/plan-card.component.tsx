@@ -1,5 +1,6 @@
 import { Box, Button, Tooltip, Typography } from '@mui/material';
 import { CheckRounded, EastRounded, HelpOutline } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { SubscriptionPlan } from '~/graphqls/contentful/types/subscriptionPlan';
 import { style } from './plan-card.style';
 
@@ -16,13 +17,15 @@ export function PlanCard(props: Props) {
     disabled,
     onClick
   } = props;
+
+  const { t } = useTranslation('onboarding');
   
   return (
     <Box 
       sx={[style.card, plan.mostPopular && style.cardHighlight as any]}>
       <Box 
         sx={[style.popular, plan.mostPopular && style.visible as any]}>
-        Most Popular
+        {t('planCard.mostPopular')}
       </Box>
       <Box sx={style.header}>
         <Typography

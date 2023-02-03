@@ -1,0 +1,23 @@
+{
+  "conversions": {
+    "title": "{{counter}}/{{total}} Conversions",
+    "tooltip": "You have a maximum of {{total}} conversions with your current plan. Upgrade to Skimli Pro to get unlimited conversions"
+  },
+  "navBar": {
+    "options": {
+      "profile": {
+        "tooltip": "My Profile"
+      }
+    }
+  },
+  "profile": {
+    "options": {
+      "profile": "My Profile",
+      "billing": "Billing",
+      "logout": "Logout"
+    }
+  },
+  "timeout": {
+    "text": "Wait {{minutes}}m {{seconds}}s to send"
+  }
+}
