@@ -4,7 +4,6 @@
  * Do not distribute outside Skimli LLC.
  */
 
-import '../i18n';
 import Head from 'next/head';
 import Router from 'next/router';
 import nProgress from 'nprogress';
@@ -23,6 +22,7 @@ import { createEmotionCache } from '../utils';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { useApollo } from '~/graphqls/useApollo';
 import { Provider } from '~/reducer/provider';
+import { appWithTranslation } from 'next-i18next';
 
 Router.events.on('routeChangeStart', nProgress.start);
 Router.events.on('routeChangeError', nProgress.done);
@@ -31,7 +31,7 @@ Router.events.on('routeChangeComplete', nProgress.done);
 // Client side cache, shared for the whole session of the user in the browser
 const clientSideEmotionCache = createEmotionCache();
 
-const WebApp = (props) => {
+const App = (props) => {
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const apollo = useApollo();
@@ -63,6 +63,8 @@ const WebApp = (props) => {
   );
 };
 
+const i18n = appWithTranslation(App);
+
 export default withLDProvider({
   clientSideID: process.env.NEXT_PUBLIC_LD_CLIENT_ID ?? '',
   options: {
@@ -70,4 +72,4 @@ export default withLDProvider({
       level: process.env.NODE_ENV === 'production' ? 'error' : 'info',
     }),
   },
-})(WebApp);
+})(i18n);

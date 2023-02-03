@@ -1,14 +1,15 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { Box, Button } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { TaskAltRounded, ErrorOutlineRounded } from '@mui/icons-material';
 import { useUpdateName } from '~/graphqls/useUpdateName';
+import { useCreateUser } from '~/graphqls/useCreateUser';
 import { useResentVerificationEmail } from '~/graphqls/useResentVerificationEmail';
 import { TextField } from '~/components/text-field/text-field.component';
 import { Timeout } from '~/components/timeout/timeout.component';
 import { Toast } from '~/components/toast/toast.component';
 import { style } from './profile-step.style';
-import { useCreateUser } from '~/graphqls/useCreateUser';
 
 interface Props {
   show: boolean;
@@ -22,6 +23,7 @@ export function ProfileStep(props: Props) {
     onNext
   } = props;
 
+  const { t } = useTranslation('onboarding');
   const { user, checkSession } = useUser();
   const [name, setName] = useState('');
   const [openSuccessToast, setOpenSuccessToast] = useState(false);
@@ -94,10 +96,10 @@ export function ProfileStep(props: Props) {
   return (
     <Box sx={style.container}>
       <Box sx={style.content}>
-        <Box sx={style.title}>Your profile details</Box>
+        <Box sx={style.title}>{t('profile.title')}</Box>
         <TextField
           sx={style.textField as any}
-          title='Name'
+          title={t('profile.nameTextField')}
           value={name}
           onChange={handleNameChange}
           onBlur={handleUpdateName}/>
@@ -106,19 +108,19 @@ export function ProfileStep(props: Props) {
             ...style.textField as any,
             ...(!user.email_verified ? style.emailNotVerified : {})
           }}
-          title='Email'
+          title={t('profile.emailTextField')}
           value={user.email || ''}
           disabled={true}/>
         {user.email_verified &&
           <Box sx={style.message}>
             <TaskAltRounded sx={style.verifiedIcon}/>
-            <Box>Email verified</Box>
+            <Box>{t('profile.verifiedEmail')}</Box>
           </Box>
         }
         {!user.email_verified &&
           <Box sx={style.message}>
             <ErrorOutlineRounded sx={style.errorIcon}/>
-            <Box>Check your inbox for verification instructions and refresh this page after completed.</Box>
+            <Box>{t('profile.notVerifiedEmail')}</Box>
           </Box>
         }
         {user.email_verified &&
@@ -127,7 +129,7 @@ export function ProfileStep(props: Props) {
             variant='contained'
             disabled={disabled}
             onClick={handleNext}>
-            Next
+            {t('profile.nextButton')}
           </Button>
         }
         {!user.email_verified &&
@@ -136,7 +138,7 @@ export function ProfileStep(props: Props) {
             variant='contained'
             disabled={isEmailSended}
             onClick={handleSendVerificationEmail}>
-            Resend Verification Email
+            {t('profile.verificationButton')}
           </Button>
         }
         <Timeout
@@ -147,17 +149,17 @@ export function ProfileStep(props: Props) {
       <Toast
         open={openSuccessToast}
         severity='success'
-        title='Name updated successfully'
+        title={t('profile.successToast')}
         onClose={() => setOpenSuccessToast(false)}/>
       <Toast
         open={openFailToast}
         severity='error'
-        title='Fail update name'
+        title={t('profile.errorToast')}
         onClose={() => setOpenFailToast(false)}/>
       <Toast
         open={openServerErrorToast}
         severity='error'
-        title='Upps an error happened'
+        title={t('profile.serverErrorToast')}
         onClose={() => setOpenServerErrorToast(false)}/>
     </Box>
   );

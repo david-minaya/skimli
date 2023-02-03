@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Box } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { style } from './timeout.style';
 
 interface Props {
@@ -15,6 +16,8 @@ export function Timeout(props: Props) {
     timeout,
     onTimeout
   } = props;
+
+  const { t } = useTranslation('components');
 
   const [minutes, setMinutes] = useState<number>();
   const [seconds, setSeconds] = useState<number>();
@@ -62,7 +65,7 @@ export function Timeout(props: Props) {
 
   return (
     <Box sx={style.timeout}>
-      Wait {minutes}m {seconds}s to send
+      {t('timeout.text', { minutes, seconds })}
     </Box>
   );
 }

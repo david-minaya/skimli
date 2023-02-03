@@ -1,6 +1,7 @@
 import { useState, useEffect, Fragment, ChangeEvent } from 'react';
 import { Box, InputBase, Link } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { useTranslation } from 'next-i18next';
 import { useUpdateName } from '~/graphqls/useUpdateName';
 import { useResetPassword } from '~/graphqls/useResetPassword';
 import { style } from './profile-tab.style';
@@ -8,6 +9,7 @@ import { Toast } from '~/components/toast/toast.component';
 
 export function ProfileTab() {
 
+  const { t } = useTranslation('profile');
   const { user, checkSession } = useUser();
   const [name, setName] = useState('');
   const [openSuccessToast, setOpenSuccessToast] = useState(false);
@@ -51,7 +53,7 @@ export function ProfileTab() {
 
   return (
     <Box>
-      <Box sx={style.title}>Profile</Box>
+      <Box sx={style.title}>{t('profile.title')}</Box>
       <Box sx={style.info}>
         <Box 
           sx={style.image}
@@ -59,18 +61,18 @@ export function ProfileTab() {
           src={user?.picture || ''}/>
         <Box sx={style.details}>
           <Box>{user?.email}</Box>
-          <Box>Your Skimli profile picture is provided by Gravatar</Box>
+          <Box>{t('profile.updateImage')}</Box>
           <Link 
             href='https://en.gravatar.com/' 
             sx={style.link}
             target="_blank">
-            Change picture
+            {t('profile.link')}
           </Link>
         </Box>
       </Box>
       <Box sx={style.inputContainer}>
         <Box sx={style.inputTitle}>
-          <Box>Name</Box>
+          <Box>{t('profile.nameInput')}</Box>
           <Box>{name.length}/64</Box>
         </Box>
         <InputBase
@@ -80,7 +82,7 @@ export function ProfileTab() {
           onBlur={handleUpdateName}/>
       </Box>
       <Box sx={style.inputContainer}>
-        <Box sx={style.inputTitle}>Current Email Address</Box>
+        <Box sx={style.inputTitle}>{t('profile.emailInput')}</Box>
         <InputBase
           sx={style.input}
           disabled
@@ -91,11 +93,11 @@ export function ProfileTab() {
           <Link
             sx={style.link}
             onClick={handleResetPassword}>
-            Change Your Password
+            {t('profile.changePassword')}
           </Link>
           {showResetPasswordMessage &&
             <Box sx={style.resetPasswordMessage}>
-              Check your email for instructions on how to reset your password.
+              {t('profile.resetPasswordMessage')}
             </Box>
           }
         </Fragment>
@@ -103,12 +105,12 @@ export function ProfileTab() {
       <Toast
         open={openSuccessToast}
         severity='success'
-        title='Name updated successfully'
+        title={t('profile.successToast')}
         onClose={() => setOpenSuccessToast(false)}/>
       <Toast
         open={openFailToast}
         severity='error'
-        title='Fail update name'
+        title={t('profile.failToast')}
         onClose={() => setOpenFailToast(false)}/>
     </Box>
   );

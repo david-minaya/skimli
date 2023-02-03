@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useGetUserLogs } from '~/graphqls/useGetUserLogs';
 import { ISession } from '~/graphqls/schema/session';
-import { style } from './sessions-tab.style';
 import { MobileIcon } from '~/icons/mobileIcon';
 import { DesktopIcon } from '~/icons/desktopIcon';
+import { style } from './sessions-tab.style';
 
 export function SessionsTab() {
 
+  const { t } = useTranslation('profile');
   const [sessionHistory, setSessionHistory] = useState<ISession[]>();
 
   const getUserLogs = useGetUserLogs();
@@ -36,7 +38,7 @@ export function SessionsTab() {
 
   return (
     <Box sx={style.container}>
-      <Box sx={style.title}>Session History</Box>
+      <Box sx={style.title}>{t('sessions.title')}</Box>
       <TableContainer sx={style.tableContainer}>
         <Table stickyHeader>
           <TableHead sx={style.tableHeader}>
@@ -44,15 +46,15 @@ export function SessionsTab() {
               <TableCell sx={style.th}></TableCell>
               <TableCell sx={style.th}></TableCell>
               <TableCell sx={style.th}></TableCell>
-              <TableCell sx={style.th}>IP ADDRESS</TableCell>
-              <TableCell sx={style.th}>DATE</TableCell>
-              <TableCell sx={style.th}>TIME</TableCell>
+              <TableCell sx={style.th}>{t('sessions.ipAddress')}</TableCell>
+              <TableCell sx={style.th}>{t('sessions.date')}</TableCell>
+              <TableCell sx={style.th}>{t('sessions.time')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {!sessionHistory &&
               <TableRow>
-                <TableCell sx={style.td}>Loading...</TableCell>
+                <TableCell sx={style.td}>{t('sessions.loading')}</TableCell>
               </TableRow>
             }
             {sessionHistory?.map(session => (

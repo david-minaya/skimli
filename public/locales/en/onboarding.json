@@ -1,0 +1,29 @@
+{
+  "profile": {
+    "step": "Profile details",
+    "title": "Your profile details",
+    "nameTextField": "Name",
+    "emailTextField": "Email",
+    "verifiedEmail": "Email verified",
+    "notVerifiedEmail": "Check your inbox for verification instructions and refresh this page after completed.",
+    "nextButton": "Next",
+    "verificationButton": "Resend Verification Email",
+    "successToast": "Name updated successfully",
+    "errorToast": "Fail update name",
+    "serverErrorToast": "Upps an error happened"
+  },
+  "pricing": {
+    "step": "Choose a plan",
+    "title": "Start creating Skim Videos today",
+    "link": "See Pricing FAQ for more details",
+    "errorToast": "Plan subscription fail"
+  }, 
+  "library": {
+    "step": "Get started",
+    "title": "Your Free account is ready",
+    "button": "Take me to my library"
+  },
+  "planCard": {
+    "mostPopular": "Most Popular"
+  }
+}
