@@ -15,6 +15,11 @@ import { auth, decodeToken } from "./auth";
 import { GraphQLContext, schema } from "./schema";
 import { sqsListener } from "./sqs/sqs";
 import { muxWebhook, verifyMuxWebhookMiddleware } from "./webhooks/mux.hooks";
+import AppConfig from "../config";
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
 
 const nextConfig = (nextConfigFunction as any)();
 
@@ -55,7 +60,11 @@ const serverCleanup = useServer(
 
 const server = new ApolloServer<GraphQLContext>({
   schema: schema,
+  introspection: AppConfig.graphql.introspectionEnabled,
   plugins: [
+    AppConfig.graphql.playgroundEnabled
+      ? ApolloServerPluginLandingPageLocalDefault()
+      : ApolloServerPluginLandingPageProductionDefault(),
     ApolloServerPluginDrainHttpServer({ httpServer }),
     {
       async serverWillStart() {

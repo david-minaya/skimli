@@ -62,6 +62,13 @@
     "@apollo/utils.keyvaluecache" "^2.1.0"
     "@apollo/utils.logger" "^2.0.0"
 
+"@apollo/server-plugin-landing-page-graphql-playground@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@apollo/server-plugin-landing-page-graphql-playground/-/server-plugin-landing-page-graphql-playground-4.0.0.tgz#eff593de6c37a0b63d740f1c6498d69f67644aed"
+  integrity sha512-PBDtKI/chJ+hHeoJUUH9Kuqu58txQl00vUGuxqiC9XcReulIg7RjsyD0G1u3drX4V709bxkL5S0nTeXfRHD0qA==
+  dependencies:
+    "@apollographql/graphql-playground-html" "1.6.29"
+
 "@apollo/server@^4.3.3":
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.3.3.tgz#0f802dad2956f560dee51e87b0678d680ef47324"
@@ -175,6 +182,13 @@
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@apollo/utils.withrequired/-/utils.withrequired-2.0.0.tgz#f39340f7b621b214d7a063b8da3eab24a9b7b7e8"
   integrity sha512-+djpTu6AEE/A1etryZs9tmXRyDY6XXGe3G29MS/LB09uHq3pcl3n4Q5lvDTL5JWKuJixrulg5djePLDAooG8dQ==
+
+"@apollographql/graphql-playground-html@1.6.29":
+  version "1.6.29"
+  resolved "https://registry.yarnpkg.com/@apollographql/graphql-playground-html/-/graphql-playground-html-1.6.29.tgz#a7a646614a255f62e10dcf64a7f68ead41dec453"
+  integrity sha512-xCcXpoz52rI4ksJSdOCxeOCn2DLocxwHf9dVT/Q90Pte1LX+LY+91SFtJF3KXVHH8kEin+g1KKCQPKBjZJfWNA==
+  dependencies:
+    xss "^1.0.8"
 
 "@ardatan/relay-compiler@12.0.0":
   version "12.0.0"
@@ -4121,6 +4135,11 @@ combined-stream@^1.0.8:
   dependencies:
     delayed-stream "~1.0.0"
 
+commander@^2.20.3:
+  version "2.20.3"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
+  integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
+
 commander@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
@@ -4294,6 +4313,11 @@ cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
+
+cssfilter@0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/cssfilter/-/cssfilter-0.0.10.tgz#c6d2672632a2e5c83e013e6864a42ce8defd20ae"
+  integrity sha512-FAaLDaplstoRsDR8XGYH51znUN0UY7nMc6Z9/fvE8EXGwvJE9hu7W2vHwx1+bd6gCYnln9nLbzxFTrcO9YQDZw==
 
 csstype@^3.0.2, csstype@^3.1.1:
   version "3.1.1"
@@ -8511,6 +8535,14 @@ xmlbuilder@~9.0.1:
   version "9.0.7"
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-9.0.7.tgz#132ee63d2ec5565c557e20f4c22df9aca686b10d"
   integrity sha512-7YXTQc3P2l9+0rjaUbLwMKRhtmwg1M1eDf6nag7urC7pIPYLD9W/jmzQ4ptRSUbodw5S0jfoGTflLemQibSpeQ==
+
+xss@^1.0.8:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/xss/-/xss-1.0.14.tgz#4f3efbde75ad0d82e9921cc3c95e6590dd336694"
+  integrity sha512-og7TEJhXvn1a7kzZGQ7ETjdQVS2UfZyTlsEdDOqvQF7GoxNfY+0YLCzBy1kPdsDDx4QuNAonQPddpsn6Xl/7sw==
+  dependencies:
+    commander "^2.20.3"
+    cssfilter "0.0.10"
 
 y18n@^4.0.0:
   version "4.0.3"

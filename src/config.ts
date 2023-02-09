@@ -39,6 +39,11 @@ const config = {
     muxSigningSecret: process.env.MUX_SECURE_PLAYBACK_SECRET_KEY ?? "",
     muxAPIBaseURL: "https://api.mux.com",
   },
+  graphql: {
+    // set to false in production env and true in dev env
+    introspectionEnabled: !!process.env.GRAPHQL_INTROSPECTION_ENABLED || false,
+    playgroundEnabled: !!process.env.GRAPHQL_PLAYGROUND_ENABLED || false,
+  },
 };
 
 export default config;
