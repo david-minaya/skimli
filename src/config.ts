@@ -1,3 +1,7 @@
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 // Configurations
 
 const config = {
@@ -15,7 +19,7 @@ const config = {
   },
   api: {
     accountsAPIURL: process.env.ACCOUNTS_API_URL ?? "",
-    assetsAPIURL: process.env.ASSETS_API_URL ?? "",
+    videosAPIURL: process.env.VIDEOS_API_URL ?? "",
   },
   lago: {
     lagoAPIKey: process.env.LAGO_API_KEY ?? "",
@@ -33,6 +37,7 @@ const config = {
     muxWebhookSigningSecret: process.env.MUX_WEBHOOK_SIGNING_SECRET ?? "",
     muxSigningKey: process.env.MUX_SECURE_PLAYBACK_SIGNING_KEY ?? "",
     muxSigningSecret: process.env.MUX_SECURE_PLAYBACK_SECRET_KEY ?? "",
+    muxAPIBaseURL: "https://api.mux.com",
   },
 };
 

@@ -1,4 +1,4 @@
-import Mux, { CreateAssetParams } from "@mux/mux-node";
+import Mux, { CreateAssetParams, InputInfo } from "@mux/mux-node";
 import { Service } from "typedi";
 import config from "../../config";
 import { MuxError } from "../types/base.types";
@@ -60,5 +60,9 @@ export class MuxService {
     } catch (e) {
       throw new MuxError(e);
     }
+  }
+
+  async getAssetInput(assetId: string): Promise<InputInfo[]> {
+    return this.muxClient.Video.Assets.inputInfo(assetId);
   }
 }

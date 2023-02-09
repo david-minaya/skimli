@@ -1,8 +1,10 @@
 import { Type } from "class-transformer";
 import {
+  IsArray,
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsUUID,
   Validate,
   ValidateNested,
 } from "class-validator";
@@ -72,4 +74,25 @@ export class AbortUploadArgs {
   @IsString()
   @IsNotEmpty()
   uploadId: string;
+}
+
+@ArgsType()
+export class GetAssetsArgs {
+  @Field(() => Int, { nullable: true })
+  skip?: number;
+
+  @Field(() => Int, { nullable: true })
+  take?: number;
+
+  @Field(() => String, { nullable: true })
+  name?: string;
+}
+
+@ArgsType()
+export class DeleteAssetsArgs {
+  @Field(() => [String!]!, { description: "video's uuid field" })
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @IsString({ each: true })
+  assetIds: string[];
 }

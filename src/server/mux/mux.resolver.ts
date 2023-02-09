@@ -10,7 +10,7 @@ export class MuxResolver {
   constructor(private readonly muxService: MuxService) {}
 
   @Query(() => MuxSignedAsset, { nullable: true })
-  async getAsset(
+  async getMuxAsset(
     @Args() args: GetMuxAssetArgs
   ): Promise<MuxSignedAsset | null> {
     return this.muxService.getMuxAsset(args.assetId);

@@ -1,3 +1,4 @@
+import { InputInfo, Asset as MuxAsset } from "@mux/mux-node";
 import { AxiosError } from "axios";
 
 enum AssetStatus {
@@ -27,11 +28,19 @@ export interface CreateAssetRequest {
   status: AssetStatus;
   sourceUrl: string;
   sourceMuxAssetId?: string;
-  sourceMuxInputInfo?: string;
-  sourceMuxAssetData?: string;
+  sourceMuxInputInfo?: InputInfo[];
+  sourceMuxAssetData?: object;
 }
 
-export interface UpdateAssetRequest extends Partial<CreateAssetRequest> {}
+export interface UpdateAssetRequest extends Partial<CreateAssetRequest> {
+  status: AssetStatus;
+}
 
 export type CreateAssetResponse = [Asset | null, AxiosError | null];
 export type UpdateAssetResponse = CreateAssetResponse;
+
+export interface GetAssetsArgs {
+  take?: number;
+  skip?: number;
+  name?: string;
+}

@@ -18,23 +18,26 @@ import { AuthInfo } from "../types/base.types";
 import {
   AbortUploadArgs,
   CompleteUploadArgs,
+  DeleteAssetsArgs,
+  GetAssetsArgs,
   GetPartUploadURLArgs,
   StartUploadArgs,
-} from "./assets.args";
-import { ASSET_UPLOAD_EVENT } from "./assets.constants";
-import { AssetsService } from "./assets.service";
+} from "./videos.args";
+import { ASSET_UPLOAD_EVENT } from "./videos.constants";
+import { VideosService } from "./videos.service";
 import {
+  Asset,
   AssetStatus,
   AssetUploadResponse,
   AssetUploads,
   GetPartUploadResponse,
   StartUploadResponse,
-} from "./assets.types";
+} from "./videos.types";
 
 @Service()
 @Resolver()
-export class AssetsResolver {
-  constructor(private readonly uploadsService: AssetsService) {}
+export class VideosResolver {
+  constructor(private readonly videosService: VideosService) {}
 
   @UseMiddleware(IsAppUserGuard)
   @Authorized()
@@ -47,7 +50,7 @@ export class AssetsResolver {
       auth0: ctx?.auth0,
       token: ctx?.token,
     };
-    return this.uploadsService.startUpload(authInfo, args);
+    return this.videosService.startUpload(authInfo, args);
   }
 
   @UseMiddleware(IsAppUserGuard)
@@ -56,14 +59,14 @@ export class AssetsResolver {
   async getPartUploadURL(
     @Args() args: GetPartUploadURLArgs
   ): Promise<GetPartUploadResponse> {
-    return this.uploadsService.getPartUploadURL(args);
+    return this.videosService.getPartUploadURL(args);
   }
 
   @UseMiddleware(IsAppUserGuard)
   @Authorized()
   @Mutation(() => Boolean)
   async completeUpload(@Args() args: CompleteUploadArgs): Promise<Boolean> {
-    await this.uploadsService.completeUpload(args);
+    await this.videosService.completeUpload(args);
     return true;
   }
 
@@ -71,7 +74,7 @@ export class AssetsResolver {
   @Authorized()
   @Mutation(() => Boolean)
   async abortUpload(@Args() args: AbortUploadArgs): Promise<Boolean> {
-    await this.uploadsService.abortUpload(args);
+    await this.videosService.abortUpload(args);
     return true;
   }
 
@@ -86,7 +89,7 @@ export class AssetsResolver {
       payload: AssetUploads;
       context: GraphQLContext;
     }) => {
-      return context?.auth0?.organization_id == payload?.org;
+      return Number(context?.auth0?.organization_id) == Number(payload?.org);
     },
   })
   async assetUploads(
@@ -97,12 +100,41 @@ export class AssetsResolver {
 
   // TODO: remove after supporting subscriptions on infrastructure
   @Query(() => Boolean)
-  async testAssetUpload(@Arg("org") org: string) {
+  async testAssetUpload(@Arg("org") org: number) {
     await pubSub.publish("assetUploads", {
       assetId: Math.floor(Math.random() * 10000).toString(),
       status: AssetStatus.CONVERTING,
       org: org,
     });
+    return true;
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => [Asset])
+  async getAssets(
+    @Args() args: GetAssetsArgs,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<Asset[]> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.getAssets(authInfo, args);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => Boolean)
+  async deleteAssets(
+    @Args() args: DeleteAssetsArgs,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<boolean> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    await this.videosService.deleteAssets(authInfo, args.assetIds);
     return true;
   }
 }

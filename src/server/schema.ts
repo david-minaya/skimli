@@ -8,9 +8,10 @@ import { GraphQLError } from "graphql";
 import { ApiResolver } from "./api.resolver";
 import { AccountsResolver } from "./accounts/accounts.resolver";
 import { BillingResolver } from "./billing/billing.resolver";
-import { AssetsResolver } from "./assets/assets.resolver";
+import { VideosResolver } from "./videos/videos.resolver";
 import pubSub from "./common/pubsub";
 import { MuxResolver } from "./mux/mux.resolver";
+import { Request, Response } from "express";
 
 export const UnAuthorizedError = new GraphQLError(
   "Access denied! You need to be authorized to perform this action!"
@@ -22,7 +23,7 @@ export const schema = buildSchemaSync({
     Auth0Resolver,
     AccountsResolver,
     BillingResolver,
-    AssetsResolver,
+    VideosResolver,
     MuxResolver,
   ],
   container: Container,
@@ -48,6 +49,7 @@ export interface GraphQLContext {
     scope: string;
     organization_id?: string;
   };
-  req: NextApiRequest;
-  res: NextApiResponse;
+  req: NextApiRequest | Request;
+  res: NextApiResponse | Response;
+  ip: string;
 }

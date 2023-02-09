@@ -153,6 +153,7 @@ export class BillingService {
         createWalletData
       );
       if (createWalletError) {
+        console.error(createWalletError);
         throw new InternalGraphQLError(createWalletError);
       }
       grantedConversions = Number(createWalletData.granted_credits);

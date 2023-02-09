@@ -1,7 +1,7 @@
 import { Consumer } from "sqs-consumer";
 import config from "../../config";
 import Container from "typedi";
-import { AssetsService } from "../assets/assets.service";
+import { VideosService } from "../videos/videos.service";
 
 export type SQSMessageBody = {
   Records: Array<{
@@ -40,9 +40,9 @@ export type SQSMessageBody = {
   }>;
 };
 
-const assetService = Container.get<AssetsService>(AssetsService);
+const videosService = Container.get<VideosService>(VideosService);
 
-export const app = Consumer.create({
+export const sqsListener = Consumer.create({
   queueUrl: config.aws.awsSQSAssetNotificationURL,
   region: config.aws.awsRegion,
   handleMessage: async (message): Promise<void> => {
@@ -53,15 +53,15 @@ export const app = Consumer.create({
       const bucket = record?.s3.bucket.name;
       const key = record?.s3?.object?.key;
       console.log(`s3 asset uploaded: ${bucket}/${key}`);
-      await assetService.handleS3AssetUploadEvent(bucket, key);
+      await videosService.handleS3AssetUploadEvent(bucket, key);
     }
   },
 });
 
-app.on("error", (err) => {
+sqsListener.on("error", (err) => {
   console.error(err.message);
 });
 
-app.on("processing_error", (err) => {
+sqsListener.on("processing_error", (err) => {
   console.error(err.message);
 });
