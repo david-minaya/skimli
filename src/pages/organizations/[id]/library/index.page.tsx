@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { Box, Container } from '@mui/material';
+import { Box, Container, InputBase } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Main } from '~/components/main/main.component';
@@ -9,11 +9,32 @@ import { OutlinedButton } from '~/components/outlined-button/outlined-button.com
 import { UploadIcon } from '~/icons/uploadIcon';
 import { useTranslation } from 'next-i18next';
 import { style } from './index.style';
+import { ChangeEvent, useRef } from 'react';
+import { UploadFiles } from '~/components/upload-files/upload-files.component';
+import { useUploadFiles } from '~/utils/UploadFilesProvider';
 
 function Library() {
 
+  const inputFileRef = useRef<HTMLInputElement>(null);
   const { user } = useUser();
   const { t } = useTranslation('library');
+  const { inProgress, uploadFiles } = useUploadFiles();
+
+  function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.files) {
+      uploadFiles(event.target.files);
+    }
+  }
+
+  function getFileTypes() {
+
+    const fileTypes =  [
+      ...process.env.NEXT_PUBLIC_SUPPORTED_MIMETYPES?.split(', ') || ['video/mp4'],
+      ...process.env.NEXT_PUBLIC_SUPPORTED_FILES_EXT?.split(', ') || ['.mp4']
+    ];
+
+    return fileTypes.join(',');
+  }
 
   return (
     <Main>
@@ -34,7 +55,18 @@ function Library() {
             </Box>
             <OutlinedButton
               title={t('button')}
-              icon={UploadIcon}/>
+              icon={UploadIcon}
+              disabled={inProgress}
+              onClick={() => inputFileRef.current?.click()}/>
+            <InputBase
+              sx={style.fileInput}
+              type='file'
+              inputRef={inputFileRef}
+              inputProps={{
+                accept: getFileTypes(),
+                multiple: true
+              }}
+              onChange={handleInputFileChange}/>
           </Box>
           <Box sx={style.emptyLibrary}>
             <Box
@@ -46,6 +78,7 @@ function Library() {
           </Box>
         </Container>
       </Box>
+      <UploadFiles/>
     </Main>
   );
 };

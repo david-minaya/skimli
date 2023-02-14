@@ -15,7 +15,7 @@ export const style = Style({
       borderColor: 'lightgray'
     }
   },
-  buttonIcon: {
+  icon: {
     width: '20px',
     height: '20px',
     marginRight: '8px'

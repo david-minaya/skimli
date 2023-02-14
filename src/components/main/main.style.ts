@@ -10,6 +10,7 @@ export const style = Style({
   content: {
     height: '100%',
     flexGrow: 1,
+    position: 'relative',
     overflow: 'auto'
   }
 });

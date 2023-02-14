@@ -29,6 +29,9 @@ export const style = Style({
     fontSize: '16px',
     fontWeight: 400
   },
+  fileInput: {
+    display: 'none'
+  },
   card: {
     display: 'flex',
     justifyContent: 'space-between',
