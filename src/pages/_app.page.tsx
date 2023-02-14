@@ -23,6 +23,7 @@ import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { useApollo } from '~/graphqls/useApollo';
 import { Provider } from '~/reducer/provider';
 import { appWithTranslation } from 'next-i18next';
+import { UploadFilesProvider } from '~/utils/UploadFilesProvider';
 
 Router.events.on('routeChangeStart', nProgress.start);
 Router.events.on('routeChangeError', nProgress.done);
@@ -53,7 +54,9 @@ const App = (props) => {
           <UserProvider>
             <ApolloProvider client={apollo}>
               <Provider>
-                <Component {...pageProps} />
+                <UploadFilesProvider>
+                  <Component {...pageProps} />
+                </UploadFilesProvider>
               </Provider>
             </ApolloProvider>
           </UserProvider>

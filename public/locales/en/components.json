@@ -19,5 +19,34 @@
   },
   "timeout": {
     "text": "Wait {{minutes}}m {{seconds}}s to send"
+  },
+  "uploadFiles": {
+    "percent": "Uploading: {{percent}}%",
+    "counter": "{{counter}} of {{total}} files uploaded - ",
+    "progress": "{{progress}} MB of {{size}} MB - {{time}}"
+  },
+  "uploadFilesProvider": {
+    "preventPageExit": "If you leave the pages the upload files will be cancelled",
+    "fileAlreadyExistsError": {
+      "title": "Error uploading file {{name}}",
+      "description": "File already exists"
+    },
+    "unsupportedVideoFileError": {
+      "title": "Error uploading file {{name}}",
+      "description": "Unsupported video file"
+    },
+    "maxSizeError": {
+      "title": "Error uploading file {{name}}",
+      "description": "Videos must be smaller than {{maxSize}} GB"
+    },
+    "minDurationError": {
+      "title": "Error uploading file {{name}}",
+      "description": "Videos must be longer than {{duration}} minutes"
+    },
+    "filesUploadCompleted": {
+      "title": "Files upload completed",
+      "description_one": "{{count}} file uploaded successfully",
+      "description_other": "{{count}} files uploaded successfully"
+    }
   }
 }
