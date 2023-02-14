@@ -16,6 +16,11 @@ const config = {
     auth0LogoutURL: process.env.AUTH0_LOGOUT_URL ?? "",
     // custom domain cannot be used here we have to use the original one
     auth0ManagementAPIDomain: process.env.AUTH0_MANAGEMENT_API_DOMAIN ?? "",
+    auth0AppServicesClientId:
+      process.env.AUTH0_APP_SERVICES_API_CLIENT_ID ?? "",
+    auth0AppServicesClientSecret:
+      process.env.AUTH0_APP_SERVICES_API_CLIENT_SECRET ?? "",
+    auth0AppServicesAudience: process.env.AUTH0_APP_SERVICES_API_AUDIENCE ?? "",
   },
   api: {
     accountsAPIURL: process.env.ACCOUNTS_API_URL ?? "",

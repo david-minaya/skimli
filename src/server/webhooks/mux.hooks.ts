@@ -2,18 +2,39 @@ import { NextFunction, Request, Response } from "express";
 import "reflect-metadata";
 import Container from "typedi";
 import { VideosService } from "../videos/videos.service";
+import Mux from "@mux/mux-node";
+import AppConfig from "../../config";
 
 const videosService = Container.get<VideosService>(VideosService);
 
 const ASSET_READY_EVENT = "video.asset.ready";
 const ASSET_ERRED_EVENT = "video.asset.errored";
 
-// TODO: add in next pr
+const MUX_SIGNATURE_HEADER = "mux-signature";
+
 export function verifyMuxWebhookMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
+  const signature = req.get(MUX_SIGNATURE_HEADER);
+  const body = JSON.stringify(req.body);
+
+  const isValid = Mux.Webhooks.verifyHeader(
+    body,
+    signature as string,
+    AppConfig.mux.muxWebhookSigningSecret
+  );
+
+  if (!isValid) {
+    console.warn(
+      "invalid request with body and headers",
+      JSON.stringify(req.body),
+      JSON.stringify(req.headers)
+    );
+    return res.status(400).json({ message: "bad request" });
+  }
+
   next();
 }
 

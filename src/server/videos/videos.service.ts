@@ -137,7 +137,7 @@ export class VideosService {
     const org = this.getOrgFromKey(key);
 
     const filename = this.getFilenameFromKey(key);
-    const [createdAsset, error] = await this.videosAPI.createAsset(
+    const [createdAsset, error] = await this.videosAPI.adminCreateAsset(
       {
         name: filename,
         sourceUrl: `s3://${bucket}/${key}`,
@@ -146,8 +146,8 @@ export class VideosService {
       org
     );
     if (error != null) {
+      console.error("create asset error", error);
       Sentry.captureException(error);
-      console.error("unable to create asset in assets api", error);
       return;
     }
 
@@ -169,23 +169,16 @@ export class VideosService {
     );
     const organizationId = Number(org);
 
-    // TODO: remove in next PR
-    if (!isUUID(videoAssetId, "4")) return;
-
     const assetInput = await this.muxService.getAssetInput(event.assetId!);
     const assetInfo = await this.muxService.getMuxAsset(event.assetId!);
-    const [_, error] = await this.videosAPI.updateAsset(
-      videoAssetId,
-      {
-        status: AssetStatus.UNCONVERTED,
-        sourceMuxAssetId: event?.assetId,
-        sourceMuxInputInfo: assetInput,
-        sourceMuxAssetData: assetInfo!.asset,
-      },
-      organizationId
-    );
+    const [_, error] = await this.videosAPI.adminUpdateAsset(videoAssetId, {
+      status: AssetStatus.UNCONVERTED,
+      sourceMuxAssetId: event?.assetId,
+      sourceMuxInputInfo: assetInput,
+      sourceMuxAssetData: assetInfo!.asset,
+    });
     if (error != null) {
-      console.error(error);
+      console.error("update asset error", error);
       Sentry.captureException(error);
     }
 
@@ -205,8 +198,7 @@ export class VideosService {
   }
 
   async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<Asset[]> {
-    const org = Number(authInfo.auth0.organization_id);
-    const assets = await this.videosAPI.getAssets(args, org, authInfo.token);
+    const assets = await this.videosAPI.getAssets(args, authInfo.token);
     return assets;
   }
 
