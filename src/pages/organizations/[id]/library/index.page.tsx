@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useState, DragEvent } from 'react';
 import { Box, Container, InputBase } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -19,11 +20,23 @@ function Library() {
   const { user } = useUser();
   const { t } = useTranslation('library');
   const { inProgress, uploadFiles } = useUploadFiles();
+  const [showDragArea, setShowDragArea] = useState(false);
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
       uploadFiles(event.target.files);
     }
+  }
+
+  function handleDrop(event: DragEvent<HTMLDivElement>) {
+
+    event.preventDefault();
+
+    if (event.dataTransfer.files && !inProgress) {
+      uploadFiles(event.dataTransfer.files);
+    }
+    
+    setShowDragArea(false);
   }
 
   function getFileTypes() {
@@ -41,9 +54,15 @@ function Library() {
       <Head>
         <title>{t('tabTitle')}</title>
       </Head>
-      <Box sx={style.container}>
+      <Box 
+        sx={style.container}
+        onDrop={handleDrop}
+        onDragOver={e => e.preventDefault()}
+        onDragEnter={() => setShowDragArea(true)}>
         <Box sx={style.title}>{t('title')}</Box>
-        <Container sx={style.content} maxWidth='md'>
+        <Container 
+          sx={style.content} 
+          maxWidth='md'>
           <Box sx={style.toolbar}>
             <Box>{t('toolbarTitle', { email: user?.email })}</Box>
             <ConversionsCounter/>
@@ -76,6 +95,21 @@ function Library() {
             <Box sx={style.emptyLibraryTitle}>{t('emptyLibraryTitle')}</Box>
             <Box sx={style.emptyLibraryDescription}>{t`emptyLibraryDescription`}</Box>
           </Box>
+          {showDragArea && 
+            <Box 
+              sx={style.dragArea}
+              onDragLeave={e => setShowDragArea(false)}>
+              <Box sx={style.dragAreaContent}>
+                <Box
+                  sx={style.dragAreaImage}
+                  component='img'
+                  src='/images/upload-file.svg'/>
+                <Box sx={style.dragAreaTitle}>
+                  Drag your video files here to upload
+                </Box>
+              </Box>
+            </Box>
+          }
         </Container>
       </Box>
       <UploadFiles/>

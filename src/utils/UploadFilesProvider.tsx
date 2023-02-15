@@ -155,7 +155,7 @@ export function UploadFilesProvider(props: Props) {
       const ext = `.${file.name.split('.').pop()}`;
       const duration = await getVideoDuration(file);
       
-      if (!mimetypes.includes(file.type) || !exts.includes(ext)) {
+      if (!mimetypes.includes(file.type) || !exts.includes(ext) || duration === -1) {
         setErrorTitle(t('uploadFilesProvider.unsupportedVideoFileError.title', { name: file.name }));
         setErrorDescription(t('uploadFilesProvider.unsupportedVideoFileError.description'));
         setOpenErrorToast(true);
@@ -187,8 +187,12 @@ export function UploadFilesProvider(props: Props) {
       const video = document.createElement('video');
   
       video.preload = 'metadata';
+
+      video.onerror = () => {
+        resolve(-1);
+      }
   
-      video.onloadedmetadata = function() {
+      video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
         resolve(video.duration);
       }

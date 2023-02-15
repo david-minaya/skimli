@@ -46,7 +46,7 @@ export class UploadFile {
       this.uploadId = response.uploadId;
 
       for (let start = 0; start < this.file.size; start += UploadFile.CHUNK_SIZE) {
-        const chunk = this.file.slice(start, start + UploadFile.CHUNK_SIZE + 1);
+        const chunk = this.file.slice(start, start + UploadFile.CHUNK_SIZE);
         await this._uploadChunk(chunk);
       }
 
