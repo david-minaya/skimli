@@ -43,6 +43,10 @@
       "title": "Error uploading file {{name}}",
       "description": "Videos must be longer than {{duration}} minutes"
     },
+    "uploadingError": {
+      "title": "Error uploading file {{name}}",
+      "description": "An error occurred while uploading the file"
+    },
     "filesUploadCompleted": {
       "title": "Files upload completed",
       "description_one": "{{count}} file uploaded successfully",

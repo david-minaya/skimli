@@ -105,12 +105,12 @@ export function ProfileTab() {
       <Toast
         open={openSuccessToast}
         severity='success'
-        title={t('profile.successToast')}
+        description={t('profile.successToast')}
         onClose={() => setOpenSuccessToast(false)}/>
       <Toast
         open={openFailToast}
         severity='error'
-        title={t('profile.failToast')}
+        description={t('profile.failToast')}
         onClose={() => setOpenFailToast(false)}/>
     </Box>
   );

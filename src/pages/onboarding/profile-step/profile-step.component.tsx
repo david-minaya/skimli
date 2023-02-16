@@ -149,17 +149,17 @@ export function ProfileStep(props: Props) {
       <Toast
         open={openSuccessToast}
         severity='success'
-        title={t('profile.successToast')}
+        description={t('profile.successToast')}
         onClose={() => setOpenSuccessToast(false)}/>
       <Toast
         open={openFailToast}
         severity='error'
-        title={t('profile.errorToast')}
+        description={t('profile.errorToast')}
         onClose={() => setOpenFailToast(false)}/>
       <Toast
         open={openServerErrorToast}
         severity='error'
-        title={t('profile.serverErrorToast')}
+        description={t('profile.serverErrorToast')}
         onClose={() => setOpenServerErrorToast(false)}/>
     </Box>
   );

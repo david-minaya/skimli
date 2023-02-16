@@ -112,7 +112,12 @@ export function UploadFilesProvider(props: Props) {
           setErrorTitle(t('uploadFilesProvider.fileAlreadyExistsError.title', { name: file.name }));
           setErrorDescription(t('uploadFilesProvider.fileAlreadyExistsError.description'));
           setOpenErrorToast(true);
+          return;
         }
+
+        setErrorTitle(t('uploadFilesProvider.uploadingError.title', { name: file.name }));
+        setErrorDescription(t('uploadFilesProvider.uploadingError.description'));
+        setOpenErrorToast(true);
       });
 
       uploadFile.onCompleted(() => {
@@ -243,14 +248,12 @@ export function UploadFilesProvider(props: Props) {
       <Toast
         open={openErrorToast}
         severity='error'
-        variant='standard'
         title={errorTitle!}
         description={errorDescription}
         onClose={handleCloseToast}/>
       <Toast
         open={openSuccessfulToast}
         severity='success'
-        variant='standard'
         title={t('uploadFilesProvider.filesUploadCompleted.title')}
         description={t('uploadFilesProvider.filesUploadCompleted.description', { count: uploadedFilesCounter })}
         onClose={() => setOpenSuccessfulToast(false)}/>

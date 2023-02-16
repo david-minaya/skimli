@@ -115,7 +115,7 @@ function Library() {
       <UploadFiles/>
     </Main>
   );
-};
+}
 
 export default function Page() {
   return (

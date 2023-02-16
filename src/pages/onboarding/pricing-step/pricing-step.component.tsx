@@ -67,7 +67,7 @@ export function PricingStep(props: Props) {
       <Toast
         open={openFailToast}
         severity='error'
-        title={t('pricing.errorToast')}
+        description={t('pricing.errorToast')}
         onClose={() => setOpenFailToast(false)}/>
     </Box>
   );

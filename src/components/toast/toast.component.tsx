@@ -3,9 +3,9 @@ import { style } from './toast.style';
 
 interface Props {
   open: boolean;
-  title: string;
+  title?: string;
   description?: string;
-  severity: 'success' | 'error';
+  severity: 'info' | 'success' | 'warning' | 'error';
   variant?: 'filled' | 'standard' | 'outlined' | undefined;
   onClose: () => void;
 }
@@ -17,7 +17,7 @@ export function Toast(props: Props) {
     title,
     description,
     severity,
-    variant = 'filled',
+    variant = 'standard',
     onClose
   } = props;
 
@@ -32,7 +32,7 @@ export function Toast(props: Props) {
         severity={severity}
         variant={variant}
         onClose={onClose}>
-        <AlertTitle>{title}</AlertTitle>
+        {title && <AlertTitle>{title}</AlertTitle>}
         {description}
       </Alert>
     </Snackbar>
