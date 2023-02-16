@@ -51,7 +51,9 @@ export const sqsListener = Consumer.create({
     let record: SQSMessageBody["Records"][0];
     for (record of body.Records) {
       const bucket = record?.s3.bucket.name;
-      const key = record?.s3?.object?.key;
+      const key = decodeURIComponent(
+        record?.s3?.object?.key.replace(/\+/g, " ")
+      );
       console.log(`s3 asset uploaded: ${bucket}/${key}`);
       await videosService.handleS3AssetUploadEvent(bucket, key);
     }
