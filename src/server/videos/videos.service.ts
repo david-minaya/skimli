@@ -30,7 +30,6 @@ import {
   GetPartUploadResponse,
   StartUploadResponse,
 } from "./videos.types";
-import { IsUUID, isUUID } from "class-validator";
 
 @Service()
 export class VideosService {
@@ -145,7 +144,7 @@ export class VideosService {
       },
       org
     );
-    if (error != null) {
+    if (error) {
       console.error("create asset error", error);
       Sentry.captureException(error);
       return;
@@ -164,8 +163,10 @@ export class VideosService {
     event: MuxAssetReadyEventPayload
   ): Promise<void> {
     const [org, videoAssetId] = event.passthrough.split("#");
+    if (!videoAssetId || !org) return;
     console.log(
-      `received mux webhook org: ${org} and videoId: ${videoAssetId}`
+      `received mux webhook org: ${org} videoId: ${videoAssetId} and event: `,
+      event
     );
     const organizationId = Number(org);
 

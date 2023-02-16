@@ -60,6 +60,7 @@ export class VideosAPI {
           APP_SERVICES_M2M_TOKEN = await getAppServicesM2MToken();
           return this.api(config);
         }
+        Promise.reject(error);
       }
     );
   }
