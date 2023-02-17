@@ -19,5 +19,10 @@ export const style = Style({
     width: '20px',
     height: '20px',
     marginRight: '8px'
+  },
+  secondaryIcon: {
+    width: '20px',
+    height: '20px',
+    marginLeft: '8px'
   }
 });

@@ -6,5 +6,8 @@
   "cardDescription": "Get started by uploading a video by dragging and dropping",
   "button": "Upload Video",
   "emptyLibraryTitle": "Hmm… Looks like you don’t have any Skim Videos yet!",
-  "emptyLibraryDescription": "You new conversions will appear here in the library. Drag and drop a video file or click the upload button to get started!"
+  "emptyLibraryDescription": "You new conversions will appear here in the library. Drag and drop a video file or click the upload button to get started!",
+  "newButton": "New",
+  "uploadOption": "Upload",
+  "dropAreaTitle": "Drag your video files here to upload."
 }

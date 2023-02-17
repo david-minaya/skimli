@@ -1,31 +1,36 @@
 import Head from 'next/head';
-import { useState, DragEvent } from 'react';
-import { Box, Container, InputBase } from '@mui/material';
+import { useTranslation } from 'next-i18next';
+import { ChangeEvent, useRef, useState, DragEvent } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { Box, Container, InputBase } from '@mui/material';
 import { Main } from '~/components/main/main.component';
 import { ProtectedRoute } from '../protected-route/protected-route.component';
 import { ConversionsCounter } from '~/components/conversions-counter/conversions-counter.component';
-import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
-import { UploadIcon } from '~/icons/uploadIcon';
-import { useTranslation } from 'next-i18next';
-import { style } from './index.style';
-import { ChangeEvent, useRef } from 'react';
 import { UploadFiles } from '~/components/upload-files/upload-files.component';
 import { useUploadFiles } from '~/utils/UploadFilesProvider';
+import { EmptyLibrary } from './components/empty-library/empty-library.component';
+import { DropArea } from './components/drop-area/drop-area.component';
+import { DropDownButton } from './components/drop-down-button/drop-down-button.component';
+import { style } from './index.style';
 
 function Library() {
 
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { user } = useUser();
+
   const { t } = useTranslation('library');
+  const { user } = useUser();
   const { inProgress, uploadFiles } = useUploadFiles();
-  const [showDragArea, setShowDragArea] = useState(false);
+  const [showDropArea, setShowDropArea] = useState(false);
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
       uploadFiles(event.target.files);
     }
+  }
+
+  function handleOpenFilePicker() {
+    inputFileRef.current?.click();
   }
 
   function handleDrop(event: DragEvent<HTMLDivElement>) {
@@ -36,17 +41,14 @@ function Library() {
       uploadFiles(event.dataTransfer.files);
     }
     
-    setShowDragArea(false);
+    setShowDropArea(false);
   }
 
   function getFileTypes() {
-
-    const fileTypes =  [
+    return [
       ...process.env.NEXT_PUBLIC_SUPPORTED_MIMETYPES?.split(', ') || ['video/mp4'],
       ...process.env.NEXT_PUBLIC_SUPPORTED_FILES_EXT?.split(', ') || ['.mp4']
-    ];
-
-    return fileTypes.join(',');
+    ].join(',');
   }
 
   return (
@@ -58,8 +60,11 @@ function Library() {
         sx={style.container}
         onDrop={handleDrop}
         onDragOver={e => e.preventDefault()}
-        onDragEnter={() => setShowDragArea(true)}>
-        <Box sx={style.title}>{t('title')}</Box>
+        onDragEnter={() => setShowDropArea(true)}>
+        <Box sx={style.appBar}>
+          <Box sx={style.title}>{t('title')}</Box>
+          <DropDownButton onUploadFile={handleOpenFilePicker}/>
+        </Box>
         <Container 
           sx={style.content} 
           maxWidth='md'>
@@ -67,51 +72,20 @@ function Library() {
             <Box>{t('toolbarTitle', { email: user?.email })}</Box>
             <ConversionsCounter/>
           </Box>
-          <Box sx={style.card}>
-            <Box>
-              <Box sx={style.cardTitle}>{t('cardTitle')}</Box>
-              <Box sx={style.cardDescription}>{t('cardDescription')}</Box>
-            </Box>
-            <OutlinedButton
-              title={t('button')}
-              icon={UploadIcon}
-              disabled={inProgress}
-              onClick={() => inputFileRef.current?.click()}/>
-            <InputBase
-              sx={style.fileInput}
-              type='file'
-              inputRef={inputFileRef}
-              inputProps={{
-                accept: getFileTypes(),
-                multiple: true
-              }}
-              onChange={handleInputFileChange}/>
-          </Box>
-          <Box sx={style.emptyLibrary}>
-            <Box
-              sx={style.emptyLibraryImage}
-              component='img'
-              src='/images/empty-library.svg'/>
-            <Box sx={style.emptyLibraryTitle}>{t('emptyLibraryTitle')}</Box>
-            <Box sx={style.emptyLibraryDescription}>{t`emptyLibraryDescription`}</Box>
-          </Box>
-          {showDragArea && 
-            <Box 
-              sx={style.dragArea}
-              onDragLeave={e => setShowDragArea(false)}>
-              <Box sx={style.dragAreaContent}>
-                <Box
-                  sx={style.dragAreaImage}
-                  component='img'
-                  src='/images/upload-file.svg'/>
-                <Box sx={style.dragAreaTitle}>
-                  Drag your video files here to upload
-                </Box>
-              </Box>
-            </Box>
-          }
+          <EmptyLibrary
+            show={true}
+            onUploadFile={handleOpenFilePicker}/>
+          <DropArea
+            show={showDropArea}
+            onHide={() => setShowDropArea(false)}/>
         </Container>
       </Box>
+      <InputBase
+        sx={style.fileInput}
+        type='file'
+        inputRef={inputFileRef}
+        inputProps={{ accept: getFileTypes(), multiple: true }}
+        onChange={handleInputFileChange}/>
       <UploadFiles/>
     </Main>
   );
