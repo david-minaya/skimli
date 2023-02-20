@@ -5,6 +5,7 @@ import { useGetUserLogs } from '~/graphqls/useGetUserLogs';
 import { ISession } from '~/graphqls/schema/session';
 import { MobileIcon } from '~/icons/mobileIcon';
 import { DesktopIcon } from '~/icons/desktopIcon';
+import { formatDate } from '~/utils/formatDate';
 import { style } from './sessions-tab.style';
 
 export function SessionsTab() {
@@ -27,10 +28,6 @@ export function SessionsTab() {
       setSessionHistory(filtered);
     })()
   }, [getUserLogs]);
-
-  function formatDate(date: string) {
-    return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(Date.parse(date));
-  }
 
   function formatTime(date: string) {
     return new Intl.DateTimeFormat('en-US', { timeStyle: 'long' }).format(Date.parse(date));

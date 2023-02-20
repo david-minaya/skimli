@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useTranslation } from 'next-i18next';
-import { ChangeEvent, useRef, useState, DragEvent } from 'react';
+import { ChangeEvent, useRef, useState, DragEvent, useEffect, useCallback } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Box, Container, InputBase } from '@mui/material';
@@ -12,16 +12,38 @@ import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { EmptyLibrary } from './components/empty-library/empty-library.component';
 import { DropArea } from './components/drop-area/drop-area.component';
 import { DropDownButton } from './components/drop-down-button/drop-down-button.component';
+import { useGetAssets } from '~/graphqls/useGetAssets';
+import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
+import { VideoItem } from './components/video-item/video-item.component';
+import { Asset } from '~/types/assets.type';
 import { style } from './index.style';
 
 function Library() {
 
-  const inputFileRef = useRef<HTMLInputElement>(null);
+  const hiddenFileInputRef = useRef<HTMLInputElement>(null);
 
   const { t } = useTranslation('library');
   const { user } = useUser();
   const { inProgress, uploadFiles } = useUploadFiles();
   const [showDropArea, setShowDropArea] = useState(false);
+  const [assets, setAssets] = useState<Asset[]>();
+
+  const getAssets = useGetAssets();
+
+  const update = useCallback(async () => {
+    try {
+      setAssets(await getAssets() || []);
+    } catch (err: any) {
+      setAssets([]);
+    }
+  }, [getAssets])
+
+  const videoUploaded = useCallback(() => {
+    update();
+  }, [update])
+
+  useEffect(() => { update(); }, [update]);
+  useAseetsUploaded(videoUploaded);
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
@@ -30,7 +52,7 @@ function Library() {
   }
 
   function handleOpenFilePicker() {
-    inputFileRef.current?.click();
+    hiddenFileInputRef.current?.click();
   }
 
   function handleDrop(event: DragEvent<HTMLDivElement>) {
@@ -65,15 +87,25 @@ function Library() {
           <Box sx={style.title}>{t('title')}</Box>
           <DropDownButton onUploadFile={handleOpenFilePicker}/>
         </Box>
-        <Container 
-          sx={style.content} 
-          maxWidth='md'>
+        <Container sx={style.content}>
           <Box sx={style.toolbar}>
             <Box>{t('toolbarTitle', { email: user?.email })}</Box>
             <ConversionsCounter/>
           </Box>
+          {assets != undefined && assets.length > 0 &&
+            <Box sx={style.videoContainer}>
+              <Box sx={style.videoTitle}>Videos</Box>
+              <Box sx={style.videos}>
+                {assets?.map(asset =>
+                  <VideoItem 
+                    key={asset.uuid}
+                    asset={asset}/>
+                )}
+              </Box>
+            </Box>
+          }
           <EmptyLibrary
-            show={true}
+            show={assets != undefined && assets.length === 0}
             onUploadFile={handleOpenFilePicker}/>
           <DropArea
             show={showDropArea}
@@ -81,9 +113,9 @@ function Library() {
         </Container>
       </Box>
       <InputBase
-        sx={style.fileInput}
+        sx={style.hiddenFileInput}
         type='file'
-        inputRef={inputFileRef}
+        inputRef={hiddenFileInputRef}
         inputProps={{ accept: getFileTypes(), multiple: true }}
         onChange={handleInputFileChange}/>
       <UploadFiles/>

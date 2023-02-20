@@ -5,14 +5,13 @@ export const style = Style({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'hidden'
   },
   appBar: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexShrink: 0,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: 'backgroundColor.main',
     padding: '12px 16px'
   },
   title: {
@@ -34,7 +33,28 @@ export const style = Style({
     fontSize: '16px',
     fontWeight: 400
   },
-  fileInput: {
+  videoContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: '24px',
+    height: '100%',
+    overflow: 'hidden'
+  },
+  videoTitle: {
+    flexShrink: 0,
+    fontSize: '12px',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    backgroundColor: '#F3F4F6',
+    padding: '8px 12px'
+  },
+  videos: {
+    height: '100%',
+    flexGrow: 1,
+    overflow: 'auto',
+    marginTop: '8px'
+  },
+  hiddenFileInput: {
     display: 'none'
   }
 });

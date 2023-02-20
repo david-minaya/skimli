@@ -31,13 +31,11 @@ export function DropDownButton(props: Props) {
         title={t('newButton')}
         secondaryIcon={ExpandMore}
         onClick={() => setOpenPopup(true)}/>
+      {/* @ts-ignore */}
       <Popper
         open={openPopup}
         placement='bottom-end'
-        anchorEl={newButtonRef.current} 
-        nonce={undefined} 
-        onResize={undefined} 
-        onResizeCapture={undefined}>
+        anchorEl={newButtonRef.current}>
         <Paper 
           sx={style.paper}
           elevation={2}>
