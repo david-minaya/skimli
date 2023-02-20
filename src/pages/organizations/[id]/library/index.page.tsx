@@ -94,7 +94,7 @@ function Library() {
           </Box>
           {assets != undefined && assets.length > 0 &&
             <Box sx={style.videoContainer}>
-              <Box sx={style.videoTitle}>Videos</Box>
+              <Box sx={style.videoTitle}>{t('videoTitle')}</Box>
               <Box sx={style.videos}>
                 {assets?.map(asset =>
                   <VideoItem 

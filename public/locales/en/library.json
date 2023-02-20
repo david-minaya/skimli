@@ -9,5 +9,6 @@
   "emptyLibraryDescription": "You new conversions will appear here in the library. Drag and drop a video file or click the upload button to get started!",
   "newButton": "New",
   "uploadOption": "Upload",
-  "dropAreaTitle": "Drag your video files here to upload."
+  "dropAreaTitle": "Drag your video files here to upload.",
+  "videoTitle": "Videos"
 }
