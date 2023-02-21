@@ -15,6 +15,7 @@ import { DropDownButton } from './components/drop-down-button/drop-down-button.c
 import { useGetAssets } from '~/graphqls/useGetAssets';
 import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
 import { VideoItem } from './components/video-item/video-item.component';
+import { VideoModal } from './components/video-modal/video-modal.component';
 import { Asset } from '~/types/assets.type';
 import { style } from './index.style';
 
@@ -27,6 +28,7 @@ function Library() {
   const { inProgress, uploadFiles } = useUploadFiles();
   const [showDropArea, setShowDropArea] = useState(false);
   const [assets, setAssets] = useState<Asset[]>();
+  const [asset, setAsset] = useState<Asset>();
 
   const getAssets = useGetAssets();
 
@@ -66,6 +68,10 @@ function Library() {
     setShowDropArea(false);
   }
 
+  function handleVideoItemClick(asset: Asset) {
+    setAsset(asset);
+  }
+
   function getFileTypes() {
     return [
       ...process.env.NEXT_PUBLIC_SUPPORTED_MIMETYPES?.split(', ') || ['video/mp4'],
@@ -99,7 +105,8 @@ function Library() {
                 {assets?.map(asset =>
                   <VideoItem 
                     key={asset.uuid}
-                    asset={asset}/>
+                    asset={asset}
+                    onClick={handleVideoItemClick}/>
                 )}
               </Box>
             </Box>
@@ -112,13 +119,16 @@ function Library() {
             onHide={() => setShowDropArea(false)}/>
         </Container>
       </Box>
+      <UploadFiles/>
+      <VideoModal 
+        asset={asset}
+        onClose={() => setAsset(undefined)}/>
       <InputBase
         sx={style.hiddenFileInput}
         type='file'
         inputRef={hiddenFileInputRef}
         inputProps={{ accept: getFileTypes(), multiple: true }}
         onChange={handleInputFileChange}/>
-      <UploadFiles/>
     </Main>
   );
 }

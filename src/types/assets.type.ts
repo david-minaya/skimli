@@ -1,3 +1,5 @@
+import { MuxAsset } from './muxAsset.type';
+
 export interface Asset {
   uuid: string;
   createdAt: string;
@@ -6,4 +8,5 @@ export interface Asset {
   name: string;
   status: 'PROCESSING' | 'UNCONVERTED' | 'CONVERTING' | 'CONVERTED' | 'DELETING' | 'ERRORED';
   sourceMuxAssetId?: string;
+  mux?: MuxAsset;
 }

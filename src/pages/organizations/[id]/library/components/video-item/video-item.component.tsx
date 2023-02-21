@@ -1,5 +1,4 @@
 import { Box } from '@mui/material';
-import { useGetMuxAsset } from '~/graphqls/useGetMuxAsset';
 import { Asset } from '~/types/assets.type';
 import { style } from './video-item.style';
 import { formatDate } from '~/utils/formatDate';
@@ -10,17 +9,19 @@ import { PlayIcon } from '~/icons/playIcon';
 
 interface Props {
   asset: Asset;
+  onClick: (asset: Asset) => void;
 }
 
 export function VideoItem(props: Props) {
 
-  const { asset } = props;
+  const { 
+    asset,
+    onClick 
+  } = props;
 
   const [hover, setHover] = useState(false);
 
-  const muxAsset = useGetMuxAsset(asset.sourceMuxAssetId!);
-
-  if (asset.status !== 'PROCESSING' && !muxAsset) {
+  if (asset.status !== 'PROCESSING' && !asset.mux) {
     return null;
   }
 
@@ -31,18 +32,19 @@ export function VideoItem(props: Props) {
           <RefreshIcon sx={style.processingIcon}/>
         </Box>
       }
-      {muxAsset &&
+      {asset.mux &&
         <Box 
           sx={style.imageContainer}
           onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}>
+          onMouseLeave={() => setHover(false)}
+          onClick={() => onClick(asset)}>
           <Box
             sx={style.image}
             component='img'
-            src={`https://image.mux.com/${muxAsset.asset.playback_ids[0].id}/thumbnail.png?token=${muxAsset.tokens.thumbnail}`}/>
+            src={`https://image.mux.com/${asset.mux.asset.playback_ids[0].id}/thumbnail.png?token=${asset.mux.tokens.thumbnail}`}/>
           {!hover &&
             <Box sx={style.duration}>
-              {formatSeconds(muxAsset.asset.duration)}
+              {formatSeconds(asset.mux.asset.duration)}
             </Box>
           }
           {hover &&
@@ -54,7 +56,7 @@ export function VideoItem(props: Props) {
       }
       <Box sx={style.info}>
         <Box sx={style.title}>{asset.name}</Box>
-        {muxAsset &&
+        {asset.mux &&
           <Box sx={style.date}>{formatDate(asset.createdAt)}</Box>
         }
       </Box>

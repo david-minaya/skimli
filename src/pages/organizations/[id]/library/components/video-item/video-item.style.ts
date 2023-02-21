@@ -62,6 +62,7 @@ export const style = Style({
     position: 'absolute',
     top: '0px',
     left: '0px',
+    cursor: 'pointer',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   playIcon: {

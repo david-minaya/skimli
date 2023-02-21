@@ -22,6 +22,21 @@ export function useGetAssets() {
           name
           status
           sourceMuxAssetId
+          mux {
+            asset {
+              created_at
+              duration
+              playback_ids {
+                id
+                policy
+              }
+            }
+            tokens {
+              video
+              thumbnail
+              storyboard
+            }
+          }
         }
       }`,
       fetchPolicy: 'network-only'
