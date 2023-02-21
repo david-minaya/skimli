@@ -16,6 +16,9 @@ import {
   UpdateAssetResponse,
 } from "../types/videos.types";
 import {
+  axiosRequestErrorLoggerInterceptor,
+  axiosRequestLoggerInterceptor,
+  axiosResponseErrorLoggerInterceptor,
   generateAuthHeaders,
   getAppServicesM2MToken,
   isAdminURL,
@@ -42,14 +45,14 @@ export class VideosAPI {
       }
       return request;
     });
+
+    this.api.interceptors.request.use(
+      (request: AxiosRequestConfig) => axiosRequestLoggerInterceptor(request),
+      (error) => axiosRequestErrorLoggerInterceptor(error)
+    );
+
     this.api.interceptors.response.use(
-      (response: AxiosResponse) => {
-        if (response?.status >= 400) {
-          console.log("response status", response?.statusText);
-          console.log("response body", response?.data);
-        }
-        return response;
-      },
+      (response: AxiosResponse) => response,
       async (error: AxiosError) => {
         const config = error.config!;
         if (
@@ -60,8 +63,13 @@ export class VideosAPI {
           APP_SERVICES_M2M_TOKEN = await getAppServicesM2MToken();
           return this.api(config);
         }
-        Promise.reject(error);
+        return Promise.reject(error);
       }
+    );
+
+    this.api.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error) => axiosResponseErrorLoggerInterceptor(error)
     );
   }
 
@@ -73,7 +81,6 @@ export class VideosAPI {
       });
       return response?.data;
     } catch (e) {
-      console.error("unable to get assets", e);
       throw new APIError(e);
     }
   }

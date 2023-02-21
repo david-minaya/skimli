@@ -15,6 +15,11 @@ import {
   LagoCreateCustomerResponse,
   LagoCreateWalletRequest,
 } from "../types/lago.types";
+import {
+  axiosRequestErrorLoggerInterceptor,
+  axiosRequestLoggerInterceptor,
+  axiosResponseErrorLoggerInterceptor,
+} from "./base.api";
 
 @Service()
 export class LagoAPI {
@@ -24,18 +29,22 @@ export class LagoAPI {
     this.api = axios.create({
       baseURL: config.lago.lagoAPIURL,
     });
+
     this.api.interceptors.request.use((request: AxiosRequestConfig) => {
       request.headers!["Content-Type"] = "application/json";
       request.headers!["Authorization"] = `Bearer ${config.lago.lagoAPIKey}`;
       return request;
     });
-    this.api.interceptors.response.use((response: AxiosResponse) => {
-      if (response?.status >= 400) {
-        console.log("response status", response?.statusText);
-        console.log("response body", response?.data);
-      }
-      return response;
-    });
+
+    this.api.interceptors.request.use(
+      (request: AxiosRequestConfig) => axiosRequestLoggerInterceptor(request),
+      (error) => axiosRequestErrorLoggerInterceptor(error)
+    );
+
+    this.api.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error) => axiosResponseErrorLoggerInterceptor(error)
+    );
   }
 
   async createOrUpdateCustomer(

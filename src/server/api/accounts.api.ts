@@ -17,7 +17,12 @@ import {
   UpdateUserResponse,
 } from "../types/accounts.types";
 import { APIError } from "../types/base.types";
-import { generateAuthHeaders } from "./base.api";
+import {
+  axiosRequestErrorLoggerInterceptor,
+  axiosRequestLoggerInterceptor,
+  axiosResponseErrorLoggerInterceptor,
+  generateAuthHeaders,
+} from "./base.api";
 
 @Service()
 export class AccountsAPI {
@@ -35,13 +40,16 @@ export class AccountsAPI {
       request.headers!["Content-Type"] = "application/json";
       return request;
     });
-    this.api.interceptors.response.use((response: AxiosResponse) => {
-      if (response?.status >= 400) {
-        console.log("response status", response?.statusText);
-        console.log("response body", response?.data);
-      }
-      return response;
-    });
+
+    this.api.interceptors.request.use(
+      (request: AxiosRequestConfig) => axiosRequestLoggerInterceptor(request),
+      (error) => axiosRequestErrorLoggerInterceptor(error)
+    );
+
+    this.api.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error) => axiosResponseErrorLoggerInterceptor(error)
+    );
   }
 
   async checkUserExists(

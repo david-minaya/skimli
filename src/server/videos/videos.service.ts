@@ -146,7 +146,6 @@ export class VideosService {
       org
     );
     if (error) {
-      console.error("create asset error", error);
       Sentry.captureException(error);
       return;
     }
@@ -180,7 +179,6 @@ export class VideosService {
       sourceMuxAssetData: assetInfo!.asset,
     });
     if (error != null) {
-      console.error("update asset error", error);
       Sentry.captureException(error);
     }
 

@@ -96,6 +96,7 @@
     "@types/auth0": "^2.35.8",
     "@types/cors": "^2.8.13",
     "@types/uuid": "^9.0.0",
+    "axios-logger": "^2.6.2",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1"
   }
