@@ -28,6 +28,7 @@ import {
   AssetStatus,
   AssetUploads,
   GetPartUploadResponse,
+  MuxData,
   StartUploadResponse,
 } from "./videos.types";
 
@@ -199,8 +200,16 @@ export class VideosService {
   }
 
   async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<Asset[]> {
-    const assets = await this.videosAPI.getAssets(args, authInfo.token);
-    return assets;
+    return this.videosAPI.getAssets(args, authInfo.token);
+  }
+
+  async getMuxDataForAsset(assetId: string): Promise<MuxData | null> {
+    try {
+      const muxData = await this.muxService.getMuxAsset(assetId);
+      return muxData;
+    } catch (e) {
+      return null;
+    }
   }
 
   async deleteAssets(authInfo: AuthInfo, assetIds: string[]): Promise<void> {

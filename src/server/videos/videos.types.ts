@@ -1,5 +1,7 @@
 import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Asset as BaseAsset } from "../types/videos.types";
+import { MuxTokens } from "../mux/mux.types";
+import { MuxAsset } from "../mux/mux.types";
 
 @ObjectType()
 export class StartUploadResponse {
@@ -45,6 +47,15 @@ export interface AssetUploads {
 }
 
 @ObjectType()
+export class MuxData {
+  @Field(() => MuxAsset, { nullable: true })
+  asset?: MuxAsset;
+
+  @Field(() => MuxTokens, { nullable: true })
+  tokens?: MuxTokens;
+}
+
+@ObjectType()
 export class Asset implements BaseAsset {
   @Field(() => String)
   uuid: string;
@@ -78,4 +89,7 @@ export class Asset implements BaseAsset {
   // not exposing this field
   // @Field(() => GraphQLJSON)
   sourceMuxAssetData: object;
+
+  @Field(() => MuxData, { nullable: true })
+  mux?: MuxData;
 }

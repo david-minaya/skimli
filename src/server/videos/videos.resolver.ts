@@ -3,6 +3,7 @@ import {
   Args,
   Authorized,
   Ctx,
+  FieldResolver,
   Mutation,
   Query,
   Resolver,
@@ -31,11 +32,12 @@ import {
   AssetUploadResponse,
   AssetUploads,
   GetPartUploadResponse,
+  MuxData,
   StartUploadResponse,
 } from "./videos.types";
 
 @Service()
-@Resolver()
+@Resolver(() => Asset)
 export class VideosResolver {
   constructor(private readonly videosService: VideosService) {}
 
@@ -121,6 +123,11 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.getAssets(authInfo, args);
+  }
+
+  @FieldResolver(() => MuxData, { nullable: true })
+  async mux(@Root() asset: Asset): Promise<MuxData | null> {
+    return this.videosService.getMuxDataForAsset(asset.sourceMuxAssetId);
   }
 
   @UseMiddleware(IsAppUserGuard)
