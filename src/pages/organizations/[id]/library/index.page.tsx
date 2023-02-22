@@ -106,7 +106,8 @@ function Library() {
                   <VideoItem 
                     key={asset.uuid}
                     asset={asset}
-                    onClick={handleVideoItemClick}/>
+                    onClick={handleVideoItemClick}
+                    onUpdate={update}/>
                 )}
               </Box>
             </Box>
