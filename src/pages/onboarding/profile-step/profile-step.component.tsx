@@ -10,6 +10,7 @@ import { TextField } from '~/components/text-field/text-field.component';
 import { Timeout } from '~/components/timeout/timeout.component';
 import { Toast } from '~/components/toast/toast.component';
 import { style } from './profile-step.style';
+import axios from 'axios';
 
 interface Props {
   show: boolean;
@@ -82,6 +83,7 @@ export function ProfileStep(props: Props) {
 
       setDisabled(true);
       await createUser();
+      await axios.get('/api/auth/silent-login');
       onNext();
 
     } catch (err: any) {
