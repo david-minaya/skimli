@@ -1,25 +1,51 @@
-import { Box } from '@mui/material';
-import { Asset } from '~/types/assets.type';
-import { style } from './video-item.style';
+import { useTranslation } from 'next-i18next';
+import { MoreHoriz } from '@mui/icons-material';
+import { Box, IconButton, Menu, MenuItem } from '@mui/material';
 import { formatDate } from '~/utils/formatDate';
 import { RefreshIcon } from '~/icons/refreshIcon';
-import { Fragment, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { PlayIcon } from '~/icons/playIcon';
+import { Asset } from '~/types/assets.type';
+import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
+import { useDeleteAssets } from '~/graphqls/useDeleteAssets';
+import { style } from './video-item.style';
 
 interface Props {
   asset: Asset;
   onClick: (asset: Asset) => void;
+  onUpdate: () => void;
 }
 
 export function VideoItem(props: Props) {
 
   const { 
-    asset,
-    onClick 
+    asset: _asset,
+    onClick,
+    onUpdate
   } = props;
 
+  const menuOptionRef = useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation('library');
+  const [asset, setAsset] = useState(_asset);
   const [hover, setHover] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const deleteAssets = useDeleteAssets();
+
+  function handleOpenDeleteDialog() {
+    setOpenDeleteDialog(true);
+    setOpenMenu(false);
+  }
+
+  async function handleDelete() {
+    setOpenDeleteDialog(false);
+    setAsset(asset => ({ ...asset, status: 'DELETING' }));
+    await deleteAssets([asset.uuid]);
+    // TODO: Workaround, after the bug in the server be fixed the setTimeoud wouldn't be necesary
+    setTimeout(onUpdate, 2000);
+  }
 
   if (asset.status !== 'PROCESSING' && !asset.mux) {
     return null;
@@ -64,10 +90,36 @@ export function VideoItem(props: Props) {
         {asset.status === 'PROCESSING' &&
           <Fragment>
             <RefreshIcon sx={style.processingTagIcon}/>
-            <Box sx={style.processingTag}>Processing</Box>
+            <Box sx={style.processingTag}>{t('videoItem.processingTag')}</Box>
           </Fragment>
         }
+        {asset.status === 'UNCONVERTED' &&
+          <Fragment>
+            <Box sx={style.unconvertedTag}>{t('videoItem.unconvertedTag')}</Box>
+            <IconButton 
+              sx={style.menuOption} 
+              size='small'
+              ref={menuOptionRef}
+              onClick={() => setOpenMenu(true)}>
+              <MoreHoriz/>
+            </IconButton>
+          </Fragment>
+        }
+        {asset.status === 'DELETING' &&
+          <Box sx={style.deletingTag}>{t('videoItem.deletingTag')}</Box>
+        }
       </Box>
+      <Menu
+        open={openMenu}
+        anchorEl={menuOptionRef.current}
+        onClose={() => setOpenMenu(false)}>
+        <MenuItem>{t('videoItem.menu.convert')}</MenuItem>
+        <MenuItem onClick={handleOpenDeleteDialog}>{t('videoItem.menu.delete')}</MenuItem>
+      </Menu>
+      <DeleteDialog
+        open={openDeleteDialog}
+        onConfirm={handleDelete}
+        onClose={() => setOpenDeleteDialog(false)}/>
     </Box>
   )
 }

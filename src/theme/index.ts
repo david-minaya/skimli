@@ -152,6 +152,40 @@ export const theme = responsiveFontSizes(createTheme({
           fontWeight: 'bold'
         }
       }
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          border: '1px solid #D1D5DB',
+          '&.MuiPaper-elevation': {
+            borderRadius: '8px',
+            boxShadow: '0px 2px 4px rgba(31, 41, 55, 0.06), 0px 4px 6px rgba(100, 116, 139, 0.12)'
+          }
+        }
+      },
+      defaultProps: {
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right'
+        },
+        transformOrigin: {
+          vertical: 'top',
+          horizontal: 'right'
+        }
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          minWidth: '180px',
+          color: 'black',
+          fontSize: '14px',
+          opacity: '1',
+          ':not(:last-of-type)': {
+            borderBottom: '1px solid #E6E8F0',
+          }
+        }
+      }
     }
-  }
+  },
 }));

@@ -105,5 +105,25 @@ export const style = Style({
     backgroundColor: '#FFB020',
     borderRadius: '100px',
     padding: '2px 8px'
+  },
+  unconvertedTag: {
+    color: 'white',
+    fontSize: '11px',
+    fontWeight: 500,
+    backgroundColor: 'green.main',
+    borderRadius: '100px',
+    padding: '2px 8px'
+  },
+  deletingTag: {
+    color: 'white',
+    fontSize: '11px',
+    fontWeight: 500,
+    backgroundColor: '#D14343',
+    borderRadius: '100px',
+    padding: '2px 8px'
+  },
+  menuOption: {
+    color: 'black',
+    marginLeft: '8px'
   }
 });
