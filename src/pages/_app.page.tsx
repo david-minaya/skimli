@@ -8,7 +8,6 @@ import Head from 'next/head';
 import Router from 'next/router';
 import nProgress from 'nprogress';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Inter } from '@next/font/google'
 import { ApolloProvider } from '@apollo/client';
 import { CacheProvider } from '@emotion/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -32,7 +31,6 @@ Router.events.on('routeChangeComplete', nProgress.done);
 
 // Client side cache, shared for the whole session of the user in the browser
 const clientSideEmotionCache = createEmotionCache();
-const inter = Inter();
 
 const App = (props) => {
 
@@ -57,9 +55,7 @@ const App = (props) => {
             <ApolloProvider client={apollo}>
               <Provider>
                 <UploadFilesProvider>
-                  <main className={inter.className}>
-                    <Component {...pageProps} />
-                  </main>
+                  <Component {...pageProps} />
                 </UploadFilesProvider>
               </Provider>
             </ApolloProvider>
