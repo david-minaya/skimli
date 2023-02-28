@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Toast } from '~/components/toast/toast.component';
 import { useAbortUpload } from '~/graphqls/useAbortUpload';
@@ -16,17 +16,24 @@ interface UploadFiles {
   inProgress: boolean;
   completed: boolean;
   failed: boolean;
+  uploadFiles: (files: FileList) => Promise<void>;
+  cancel: () => Promise<void>;
+}
+
+interface UploadFilesProgress {
+  inProgress: boolean;
+  completed: boolean;
+  failed: boolean;
   percent: number;
   progress: number;
   duration: number;
   uploadedFilesCounter: number;
   totalSize: number;
   totalFiles: number;
-  uploadFiles: (files: FileList) => Promise<void>;
-  cancel: () => Promise<void>;
 }
 
 const Context = createContext({} as UploadFiles);
+const ProgressContext = createContext({} as UploadFilesProgress)
 
 export function UploadFilesProvider(props: Props) {
 
@@ -228,39 +235,51 @@ export function UploadFilesProvider(props: Props) {
     setErrorDescription(undefined);
   }
 
-  const value: UploadFiles = {
+  const value = useMemo<UploadFiles>(() => ({
+    inProgress,
+    completed,
+    failed,
+    uploadFiles,
+    cancel
+  }), [inProgress, completed, failed, uploadFiles, cancel]);
+
+  const progressContext: UploadFilesProgress = {
     inProgress,
     completed,
     failed,
     percent,
     progress,
     duration,
-    uploadedFilesCounter,
     totalSize,
     totalFiles,
-    uploadFiles,
-    cancel
+    uploadedFilesCounter,
   };
 
   return (
     <Context.Provider value={value}>
-      {props.children}
-      <Toast
-        open={openErrorToast}
-        severity='error'
-        title={errorTitle!}
-        description={errorDescription}
-        onClose={handleCloseToast}/>
-      <Toast
-        open={openSuccessfulToast}
-        severity='success'
-        title={t('uploadFilesProvider.filesUploadCompleted.title')}
-        description={t('uploadFilesProvider.filesUploadCompleted.description', { count: uploadedFilesCounter })}
-        onClose={() => setOpenSuccessfulToast(false)}/>
+      <ProgressContext.Provider value={progressContext}>
+        {props.children}
+        <Toast
+          open={openErrorToast}
+          severity='error'
+          title={errorTitle!}
+          description={errorDescription}
+          onClose={handleCloseToast}/>
+        <Toast
+          open={openSuccessfulToast}
+          severity='success'
+          title={t('uploadFilesProvider.filesUploadCompleted.title')}
+          description={t('uploadFilesProvider.filesUploadCompleted.description', { count: uploadedFilesCounter })}
+          onClose={() => setOpenSuccessfulToast(false)}/>
+      </ProgressContext.Provider>
     </Context.Provider>
   )
 }
 
 export function useUploadFiles() {
   return useContext(Context);
+}
+
+export function useUploadFilesProgress() {
+  return useContext(ProgressContext);
 }
