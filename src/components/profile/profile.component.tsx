@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Box, Popover } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { useAccount } from '~/reducer/provider';
 import { style } from './profile.style';
+import { useAccount } from '~/store/account.slice';
 
 interface Props {
   anchor: Element | null;
@@ -19,7 +19,8 @@ export function Profile(props: Props) {
 
   const { t } = useTranslation('components');
   const { user } = useUser();
-  const account = useAccount();
+  const accountStore = useAccount();
+  const account = accountStore.get();
 
   return (
     <Popover

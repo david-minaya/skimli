@@ -1,8 +1,8 @@
 import React, { Fragment, ReactNode, useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import { useCheckUserExists } from '~/graphqls/useCheckUserExists';
-import { useAccount, useSetAccount } from '~/reducer/provider';
 import { Loading } from '../loading/loading.component';
+import { useAccount } from '~/store/account.slice';
 
 interface Props {
   children: ReactNode;
@@ -10,10 +10,10 @@ interface Props {
 
 export function ProtectedRoute(props: Props) {
 
+  const accountStore = useAccount();
   const router = useRouter();
-  const account = useAccount();
+  const account = accountStore.get();
   const checkUserExists = useCheckUserExists();
-  const setAccount = useSetAccount();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function ProtectedRoute(props: Props) {
           return;
         }
   
-        setAccount(_account);
+        accountStore.set(_account);
         setLoading(false);
 
       } catch (err: any) {

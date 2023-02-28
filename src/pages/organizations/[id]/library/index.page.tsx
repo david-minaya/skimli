@@ -12,33 +12,28 @@ import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { EmptyLibrary } from './components/empty-library/empty-library.component';
 import { DropArea } from './components/drop-area/drop-area.component';
 import { DropDownButton } from './components/drop-down-button/drop-down-button.component';
-import { useGetAssets } from '~/graphqls/useGetAssets';
 import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
 import { VideoItem } from './components/video-item/video-item.component';
 import { VideoModal } from './components/video-modal/video-modal.component';
 import { Asset } from '~/types/assets.type';
+import { useAssets } from '~/store/assets.slice';
 import { style } from './index.style';
 
 function Library() {
 
+  const assetsStore = useAssets();
+  const assets = assetsStore.getAll();
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
 
   const { t } = useTranslation('library');
   const { user } = useUser();
   const { inProgress, uploadFiles } = useUploadFiles();
   const [showDropArea, setShowDropArea] = useState(false);
-  const [assets, setAssets] = useState<Asset[]>();
   const [asset, setAsset] = useState<Asset>();
 
-  const getAssets = useGetAssets();
-
   const update = useCallback(async () => {
-    try {
-      setAssets(await getAssets() || []);
-    } catch (err: any) {
-      setAssets([]);
-    }
-  }, [getAssets])
+    await assetsStore.fetchAll();
+  }, [assetsStore])
 
   const videoUploaded = useCallback(() => {
     update();
@@ -98,22 +93,21 @@ function Library() {
             <Box>{t('toolbarTitle', { email: user?.email })}</Box>
             <ConversionsCounter/>
           </Box>
-          {assets != undefined && assets.length > 0 &&
+          {assets.entities.length > 0 &&
             <Box sx={style.videoContainer}>
               <Box sx={style.videoTitle}>{t('videoTitle')}</Box>
               <Box sx={style.videos}>
-                {assets?.map(asset =>
+                {assets.entities.map(asset =>
                   <VideoItem 
                     key={asset.uuid}
                     asset={asset}
-                    onClick={handleVideoItemClick}
-                    onUpdate={update}/>
+                    onClick={handleVideoItemClick}/>
                 )}
               </Box>
             </Box>
           }
           <EmptyLibrary
-            show={assets != undefined && assets.length === 0}
+            show={assets.success && assets.entities.length === 0}
             onUploadFile={handleOpenFilePicker}/>
           <DropArea
             show={showDropArea}
