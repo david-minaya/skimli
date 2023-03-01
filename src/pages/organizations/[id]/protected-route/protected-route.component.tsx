@@ -1,7 +1,7 @@
 import { Fragment, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAccount } from '~/reducer/provider';
 import { ProtectedRoute as Protected } from '~/components/protected-route/protected-route.component';
+import { useAccount } from '~/store/account.slice';
 
 interface Props {
   children: ReactNode;
@@ -10,7 +10,8 @@ interface Props {
 function ValidateOrgId(props: Props) {
 
   const router = useRouter();
-  const account = useAccount();
+  const accountStore = useAccount();
+  const account = accountStore.get();
   const id = router.query.id;
 
   useEffect(() => {

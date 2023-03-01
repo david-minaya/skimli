@@ -12,33 +12,32 @@ import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { EmptyLibrary } from './components/empty-library/empty-library.component';
 import { DropArea } from './components/drop-area/drop-area.component';
 import { DropDownButton } from './components/drop-down-button/drop-down-button.component';
-import { useGetAssets } from '~/graphqls/useGetAssets';
 import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
 import { VideoItem } from './components/video-item/video-item.component';
 import { VideoModal } from './components/video-modal/video-modal.component';
+import { SearchField } from './components/search-field/search-field.component';
+import { NoResultsFound } from './components/no-results-found/no-results-found.component';
 import { Asset } from '~/types/assets.type';
+import { useAssets } from '~/store/assets.slice';
 import { style } from './index.style';
 
 function Library() {
 
+  const assetsStore = useAssets();
+  const assets = assetsStore.getAll();
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
 
   const { t } = useTranslation('library');
   const { user } = useUser();
   const { inProgress, uploadFiles } = useUploadFiles();
   const [showDropArea, setShowDropArea] = useState(false);
-  const [assets, setAssets] = useState<Asset[]>();
   const [asset, setAsset] = useState<Asset>();
-
-  const getAssets = useGetAssets();
+  const [search, setSearch] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   const update = useCallback(async () => {
-    try {
-      setAssets(await getAssets() || []);
-    } catch (err: any) {
-      setAssets([]);
-    }
-  }, [getAssets])
+    await assetsStore.fetchAll();
+  }, [assetsStore])
 
   const videoUploaded = useCallback(() => {
     update();
@@ -68,6 +67,12 @@ function Library() {
     setShowDropArea(false);
   }
 
+  async function handleSearchChange(value?: string) {
+    setIsSearching(value !== undefined && value !== '');
+    setSearch(value || '');
+    await assetsStore.fetchAll(value);
+  }
+
   function handleVideoItemClick(asset: Asset) {
     setAsset(asset);
   }
@@ -91,29 +96,42 @@ function Library() {
         onDragEnter={() => setShowDropArea(true)}>
         <Box sx={style.appBar}>
           <Box sx={style.title}>{t('title')}</Box>
+          <SearchField onChange={handleSearchChange}/>
           <DropDownButton onUploadFile={handleOpenFilePicker}/>
         </Box>
         <Container sx={style.content}>
-          <Box sx={style.toolbar}>
-            <Box>{t('toolbarTitle', { email: user?.email })}</Box>
-            <ConversionsCounter/>
-          </Box>
-          {assets != undefined && assets.length > 0 &&
+          {!isSearching &&
+            <Box sx={style.toolbar}>
+              <Box>{t('toolbarTitle', { email: user?.email })}</Box>
+              <ConversionsCounter/>
+            </Box>
+          }
+          {isSearching &&
+            <Box sx={style.toolbar}>
+              <Box sx={style.searchTitle}>{t('searchTitle')}</Box>
+              <Box sx={style.results}>{t('searchResults', { count: assets.entities.length })}</Box>
+            </Box>
+          }
+          {(assets.loading || assets.entities.length > 0 || isSearching) &&
             <Box sx={style.videoContainer}>
               <Box sx={style.videoTitle}>{t('videoTitle')}</Box>
-              <Box sx={style.videos}>
-                {assets?.map(asset =>
-                  <VideoItem 
-                    key={asset.uuid}
-                    asset={asset}
-                    onClick={handleVideoItemClick}
-                    onUpdate={update}/>
-                )}
-              </Box>
+              {assets.entities.length > 0 &&
+                <Box sx={style.videos}>
+                  {assets.entities.map(asset =>
+                    <VideoItem 
+                      key={asset.uuid}
+                      asset={asset}
+                      onClick={handleVideoItemClick}/>
+                  )}
+                </Box>
+              }
+              <NoResultsFound 
+                show={isSearching && !assets.loading && assets.entities.length === 0}
+                search={search}/>
             </Box>
           }
           <EmptyLibrary
-            show={assets != undefined && assets.length === 0}
+            show={assets.success && assets.entities.length === 0 && !isSearching}
             onUploadFile={handleOpenFilePicker}/>
           <DropArea
             show={showDropArea}

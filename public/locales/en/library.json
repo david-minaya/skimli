@@ -11,6 +11,9 @@
   "uploadOption": "Upload",
   "dropAreaTitle": "Drag your video files here to upload.",
   "videoTitle": "Videos",
+  "searchTitle": "Search Results",
+  "searchResults_one": "{{count}} result",
+  "searchResults_other": "{{count}} results",
   "videoItem": {
     "processingTag": "Processing",
     "unconvertedTag": "Convert to clips",
@@ -25,5 +28,11 @@
     "description": "Your video(s) will be removed from your library, and cannot be recovered after you click delete. Your conversions will not appear in any places where they are embedded, and anyone you previously shared the link with will not be able to access your content.",
     "cancelButton": "Cancel",
     "confirmButton": "Confirm"
+  },
+  "searchField": {
+    "placeholder": "Search"
+  },
+  "noResultsFound": {
+    "description": "No search results found for “{{search}}”"
   }
 }

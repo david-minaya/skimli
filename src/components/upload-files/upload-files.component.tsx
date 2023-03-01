@@ -1,12 +1,13 @@
 import { Close } from '@mui/icons-material';
-import { Box, IconButton, LinearProgress, Paper } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import { useUploadFiles } from '~/utils/UploadFilesProvider';
+import { Box, IconButton, LinearProgress, Paper } from '@mui/material';
+import { useUploadFiles, useUploadFilesProgress } from '~/utils/UploadFilesProvider';
 import { style } from './upload-files.style';
 
 export function UploadFiles() {
 
   const { t } = useTranslation('components');
+  const { cancel } = useUploadFiles();
 
   const { 
     inProgress,
@@ -15,9 +16,8 @@ export function UploadFiles() {
     duration,
     totalSize,
     uploadedFilesCounter,
-    totalFiles,
-    cancel
-  } = useUploadFiles();
+    totalFiles
+  } = useUploadFilesProgress();
 
   if (!inProgress) {
     return null;

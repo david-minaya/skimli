@@ -8,31 +8,28 @@ import { formatSeconds } from '~/utils/formatSeconds';
 import { PlayIcon } from '~/icons/playIcon';
 import { Asset } from '~/types/assets.type';
 import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
-import { useDeleteAssets } from '~/graphqls/useDeleteAssets';
 import { style } from './video-item.style';
+import { useAssets } from '~/store/assets.slice';
+import { MuxAsset } from '~/types/muxAsset.type';
 
 interface Props {
   asset: Asset;
   onClick: (asset: Asset) => void;
-  onUpdate: () => void;
 }
 
 export function VideoItem(props: Props) {
 
   const { 
-    asset: _asset,
+    asset,
     onClick,
-    onUpdate
   } = props;
 
+  const assetsStore = useAssets();
   const menuOptionRef = useRef<HTMLButtonElement>(null);
   const { t } = useTranslation('library');
-  const [asset, setAsset] = useState(_asset);
   const [hover, setHover] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-  const deleteAssets = useDeleteAssets();
 
   function handleOpenDeleteDialog() {
     setOpenDeleteDialog(true);
@@ -41,10 +38,17 @@ export function VideoItem(props: Props) {
 
   async function handleDelete() {
     setOpenDeleteDialog(false);
-    setAsset(asset => ({ ...asset, status: 'DELETING' }));
-    await deleteAssets([asset.uuid]);
-    // TODO: Workaround, after the bug in the server be fixed the setTimeoud wouldn't be necesary
-    setTimeout(onUpdate, 2000);
+    await assetsStore.deleteOne(asset.uuid);
+    await assetsStore.fetchAll();
+  }
+
+  function getImage(asset: MuxAsset) {
+    return (
+      `https://image.mux.com/${asset.asset.playback_ids[0].id}/thumbnail.png`+ 
+      `?token=${asset.tokens.thumbnail}` +
+      `&width=176` +
+      `&height=100`
+    ) 
   }
 
   if (asset.status !== 'PROCESSING' && !asset.mux) {
@@ -67,7 +71,7 @@ export function VideoItem(props: Props) {
           <Box
             sx={style.image}
             component='img'
-            src={`https://image.mux.com/${asset.mux.asset.playback_ids[0].id}/thumbnail.png?token=${asset.mux.tokens.thumbnail}`}/>
+            src={getImage(asset.mux)}/>
           {!hover &&
             <Box sx={style.duration}>
               {formatSeconds(asset.mux.asset.duration)}

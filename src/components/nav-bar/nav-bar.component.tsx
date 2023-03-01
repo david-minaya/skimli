@@ -6,11 +6,12 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { HomeIcon } from '~/icons/homeIcon';
 import { Profile } from '../profile/profile.component';
 import { style } from './nav-bar.style';
-import { useAccount } from '~/reducer/provider';
+import { useAccount } from '~/store/account.slice';
 
 export function NavBar() {
 
-  const account = useAccount();
+  const accountStore = useAccount();
+  const account = accountStore.get();
   const { t } = useTranslation('components');
   const { user } = useUser();
   const [profileAnchor, setProfileAnchor] = useState<HTMLDivElement | null>(null);

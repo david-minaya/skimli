@@ -21,9 +21,10 @@ import { theme } from '../theme';
 import { createEmotionCache } from '../utils';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { useApollo } from '~/graphqls/useApollo';
-import { Provider } from '~/reducer/provider';
 import { appWithTranslation } from 'next-i18next';
 import { UploadFilesProvider } from '~/utils/UploadFilesProvider';
+import { Provider as ReduxProvider } from 'react-redux'
+import { store } from '../store/store';
 
 Router.events.on('routeChangeStart', nProgress.start);
 Router.events.on('routeChangeError', nProgress.done);
@@ -51,15 +52,15 @@ const App = (props) => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Toaster position='top-center' />
-          <UserProvider>
-            <ApolloProvider client={apollo}>
-              <Provider>
+          <ReduxProvider store={store}>
+            <UserProvider>
+              <ApolloProvider client={apollo}>
                 <UploadFilesProvider>
                   <Component {...pageProps} />
                 </UploadFilesProvider>
-              </Provider>
-            </ApolloProvider>
-          </UserProvider>
+              </ApolloProvider>
+            </UserProvider>
+          </ReduxProvider>
         </ThemeProvider>
       </LocalizationProvider>
     </CacheProvider>
