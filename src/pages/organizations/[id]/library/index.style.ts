@@ -27,11 +27,20 @@ export const style = Style({
     overflow: 'hidden'
   },
   toolbar: {
+    height: '36px',
+    flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     fontSize: '16px',
     fontWeight: 400
+  },
+  searchTitle: {
+    fontSize: '17px'
+  },
+  results: {
+    fontWeight: 500,
+    fontSize: '15px'
   },
   videoContainer: {
     display: 'flex',

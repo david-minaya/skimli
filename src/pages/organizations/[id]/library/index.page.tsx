@@ -15,6 +15,8 @@ import { DropDownButton } from './components/drop-down-button/drop-down-button.c
 import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
 import { VideoItem } from './components/video-item/video-item.component';
 import { VideoModal } from './components/video-modal/video-modal.component';
+import { SearchField } from './components/search-field/search-field.component';
+import { NoResultsFound } from './components/no-results-found/no-results-found.component';
 import { Asset } from '~/types/assets.type';
 import { useAssets } from '~/store/assets.slice';
 import { style } from './index.style';
@@ -30,6 +32,8 @@ function Library() {
   const { inProgress, uploadFiles } = useUploadFiles();
   const [showDropArea, setShowDropArea] = useState(false);
   const [asset, setAsset] = useState<Asset>();
+  const [search, setSearch] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   const update = useCallback(async () => {
     await assetsStore.fetchAll();
@@ -63,6 +67,12 @@ function Library() {
     setShowDropArea(false);
   }
 
+  async function handleSearchChange(value?: string) {
+    setIsSearching(value !== undefined && value !== '');
+    setSearch(value || '');
+    await assetsStore.fetchAll(value);
+  }
+
   function handleVideoItemClick(asset: Asset) {
     setAsset(asset);
   }
@@ -86,28 +96,42 @@ function Library() {
         onDragEnter={() => setShowDropArea(true)}>
         <Box sx={style.appBar}>
           <Box sx={style.title}>{t('title')}</Box>
+          <SearchField onChange={handleSearchChange}/>
           <DropDownButton onUploadFile={handleOpenFilePicker}/>
         </Box>
         <Container sx={style.content}>
-          <Box sx={style.toolbar}>
-            <Box>{t('toolbarTitle', { email: user?.email })}</Box>
-            <ConversionsCounter/>
-          </Box>
-          {assets.entities.length > 0 &&
+          {!isSearching &&
+            <Box sx={style.toolbar}>
+              <Box>{t('toolbarTitle', { email: user?.email })}</Box>
+              <ConversionsCounter/>
+            </Box>
+          }
+          {isSearching &&
+            <Box sx={style.toolbar}>
+              <Box sx={style.searchTitle}>{t('searchTitle')}</Box>
+              <Box sx={style.results}>{t('searchResults', { count: assets.entities.length })}</Box>
+            </Box>
+          }
+          {(assets.loading || assets.entities.length > 0 || isSearching) &&
             <Box sx={style.videoContainer}>
               <Box sx={style.videoTitle}>{t('videoTitle')}</Box>
-              <Box sx={style.videos}>
-                {assets.entities.map(asset =>
-                  <VideoItem 
-                    key={asset.uuid}
-                    asset={asset}
-                    onClick={handleVideoItemClick}/>
-                )}
-              </Box>
+              {assets.entities.length > 0 &&
+                <Box sx={style.videos}>
+                  {assets.entities.map(asset =>
+                    <VideoItem 
+                      key={asset.uuid}
+                      asset={asset}
+                      onClick={handleVideoItemClick}/>
+                  )}
+                </Box>
+              }
+              <NoResultsFound 
+                show={isSearching && !assets.loading && assets.entities.length === 0}
+                search={search}/>
             </Box>
           }
           <EmptyLibrary
-            show={assets.success && assets.entities.length === 0}
+            show={assets.success && assets.entities.length === 0 && !isSearching}
             onUploadFile={handleOpenFilePicker}/>
           <DropArea
             show={showDropArea}

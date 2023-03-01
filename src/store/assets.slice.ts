@@ -49,10 +49,10 @@ export function useAssets() {
     useAppSelector(state => ({ ...state.assets, entities: selectors.selectAll(state) }))
   , []);
 
-  const fetchAll = useCallback(async () => {
+  const fetchAll = useCallback(async (name?: string) => {
     try {
       dispatch(assetsSlice.actions.setLoading());
-      dispatch(assetsSlice.actions.addAll(await getAssets()));
+      dispatch(assetsSlice.actions.addAll(await getAssets(name)));
       dispatch(assetsSlice.actions.setSuccess());
     } catch (err: any) {
       dispatch(assetsSlice.actions.setError());

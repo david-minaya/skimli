@@ -10,6 +10,7 @@ import { Asset } from '~/types/assets.type';
 import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
 import { style } from './video-item.style';
 import { useAssets } from '~/store/assets.slice';
+import { MuxAsset } from '~/types/muxAsset.type';
 
 interface Props {
   asset: Asset;
@@ -41,6 +42,15 @@ export function VideoItem(props: Props) {
     await assetsStore.fetchAll();
   }
 
+  function getImage(asset: MuxAsset) {
+    return (
+      `https://image.mux.com/${asset.asset.playback_ids[0].id}/thumbnail.png`+ 
+      `?token=${asset.tokens.thumbnail}` +
+      `&width=176` +
+      `&height=100`
+    ) 
+  }
+
   if (asset.status !== 'PROCESSING' && !asset.mux) {
     return null;
   }
@@ -61,7 +71,7 @@ export function VideoItem(props: Props) {
           <Box
             sx={style.image}
             component='img'
-            src={`https://image.mux.com/${asset.mux.asset.playback_ids[0].id}/thumbnail.png?token=${asset.mux.tokens.thumbnail}`}/>
+            src={getImage(asset.mux)}/>
           {!hover &&
             <Box sx={style.duration}>
               {formatSeconds(asset.mux.asset.duration)}

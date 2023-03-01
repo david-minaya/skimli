@@ -10,35 +10,38 @@ export function useGetAssets() {
 
   const client = useApolloClient();
 
-  return useCallback(async () => {
+  return useCallback(async (name?: string) => {
 
     const response = await client.query<Response>({
-      query: gql`{
-        getAssets {
-          uuid
-          createdAt
-          updatedAt
-          org
-          name
-          status
-          sourceMuxAssetId
-          mux {
-            asset {
-              created_at
-              duration
-              playback_ids {
-                id
-                policy
+      query: gql`
+        query GetAssets($name: String) {
+          getAssets(name: $name) {
+            uuid
+            createdAt
+            updatedAt
+            org
+            name
+            status
+            sourceMuxAssetId
+            mux {
+              asset {
+                created_at
+                duration
+                playback_ids {
+                  id
+                  policy
+                }
               }
-            }
-            tokens {
-              video
-              thumbnail
-              storyboard
+              tokens {
+                video
+                thumbnail
+                storyboard
+              }
             }
           }
         }
-      }`,
+      `,
+      variables: { name },
       fetchPolicy: 'network-only'
     });
 
