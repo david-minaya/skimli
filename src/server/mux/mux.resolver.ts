@@ -1,7 +1,7 @@
-import { Args, Query, Resolver } from "type-graphql";
+import { Arg, Args, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 import { MuxService } from "./mux.service";
-import { MuxSignedAsset } from "./mux.types";
+import { GetMuxThumbnailArgs, MuxSignedAsset } from "./mux.types";
 import { GetMuxAssetArgs } from "./mux.args";
 
 @Resolver()
@@ -14,5 +14,11 @@ export class MuxResolver {
     @Args() args: GetMuxAssetArgs
   ): Promise<MuxSignedAsset | null> {
     return this.muxService.getMuxAsset(args.assetId);
+  }
+
+  @Query(() => String)
+  async getThumbnail(@Args() args: GetMuxThumbnailArgs): Promise<string> {
+    const { playbackId, ...params } = args;
+    return this.muxService.getThumbnail(playbackId, params);
   }
 }

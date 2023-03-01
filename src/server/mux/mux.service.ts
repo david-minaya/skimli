@@ -2,11 +2,17 @@ import Mux, { CreateAssetParams, InputInfo } from "@mux/mux-node";
 import { Service } from "typedi";
 import config from "../../config";
 import { MuxError } from "../types/base.types";
-import { MuxCreateClipResponse, MuxSignedAsset } from "./mux.types";
+import {
+  IGetMuxThumbnailArgs,
+  MuxCreateClipResponse,
+  MuxSignedAsset,
+} from "./mux.types";
 
 const TOKEN_TYPE_VIDEO = "video";
 const TOKEN_TYPE_THUMBNAIL = "thumbnail";
 const TOKEN_TYPE_STORYBOARD = "storyboard";
+
+const MUX_THUMBNAIL_BASE_URL = "https://image.mux.com";
 
 @Service()
 export class MuxService {
@@ -64,5 +70,15 @@ export class MuxService {
 
   async getAssetInput(assetId: string): Promise<InputInfo[]> {
     return this.muxClient.Video.Assets.inputInfo(assetId);
+  }
+
+  async getThumbnail(playbackId: string, params: IGetMuxThumbnailArgs) {
+    const token = Mux.JWT.signPlaybackId(playbackId, {
+      keyId: config.mux.muxSigningKey,
+      keySecret: config.mux.muxSigningSecret,
+      type: "thumbnail" as const,
+      params: params as any,
+    });
+    return `${MUX_THUMBNAIL_BASE_URL}/${playbackId}/thumbnail.png?token=${token}`;
   }
 }

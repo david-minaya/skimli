@@ -1,4 +1,21 @@
-import { createUnionType, Field, Float, Int, ObjectType } from "type-graphql";
+import {
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
+import {
+  ArgsType,
+  createUnionType,
+  Field,
+  Float,
+  InputType,
+  Int,
+  ObjectType,
+  registerEnumType,
+} from "type-graphql";
 
 export interface MuxPlaybackId {
   id: string;
@@ -226,4 +243,70 @@ export class MuxSignedAsset {
 
   @Field(() => MuxTokens, { nullable: true })
   tokens?: MuxTokens;
+}
+
+export interface IGetMuxThumbnailArgs {
+  time?: number; // float
+  height?: number; // int32
+  width?: number; // int32
+  rotate?: number; // 90, 180 and 270
+  fit_mode?: ImageFitMode;
+  flip_v?: boolean;
+  flip_h?: boolean;
+}
+
+enum ImageFitMode {
+  preserve = "preserve",
+  stretch = "stretch",
+  crop = "crop",
+  smartcrop = "smartcrop",
+  pad = "pad",
+}
+
+registerEnumType(ImageFitMode, {
+  name: "ImageFitMode",
+});
+
+@ArgsType()
+export class GetMuxThumbnailArgs implements IGetMuxThumbnailArgs {
+  @Field(() => String)
+  @IsNotEmpty()
+  @IsString()
+  playbackId: string;
+
+  @Field(() => Float, { nullable: true })
+  @IsNumber({ allowInfinity: false, allowNaN: false })
+  @IsOptional()
+  time?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsInt()
+  @IsOptional()
+  height?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsInt()
+  @IsOptional()
+  width?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsInt()
+  @IsOptional()
+  rotate?: number;
+
+  @Field(() => ImageFitMode, {
+    nullable: true,
+  })
+  @IsOptional()
+  fit_mode?: ImageFitMode;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsBoolean()
+  @IsOptional()
+  flip_v?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsBoolean()
+  @IsOptional()
+  flip_h?: boolean;
 }
