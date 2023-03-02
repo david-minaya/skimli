@@ -61,8 +61,8 @@ const ServerError: NextPage = () => {
             <Image
               src="/static/error500.png"
               alt="error401"
-              width="511px"
-              height="588px"
+              width="511"
+              height="588"
             />
           </Box>
           <Box

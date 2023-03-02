@@ -53,7 +53,7 @@ const AuthorizationRequired: NextPage = () => {
             justifyContent: "center",
             marginBottom: '48px'
           }}>
-            <Image src="/static/error401.png" alt="error401" width="424px" height="663px" />
+            <Image src="/static/error401.png" alt="error401" width="424" height="663" />
           </Box>
           <Box
             sx={{

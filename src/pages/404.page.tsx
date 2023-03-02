@@ -62,8 +62,8 @@ const NotFound: NextPage = () => {
             <Image
               src="/static/error404.png"
               alt="error404"
-              width="637px"
-              height="365px"
+              width="637"
+              height="365"
             />
           </Box>
           <Box

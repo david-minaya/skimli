@@ -1,7 +1,10 @@
+import { Inter } from 'next/font/google'
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { ErrorIcon } from '~/icons/errorIcon';
 import { SuccessIcon } from '~/icons/successIcon';
 import { WarningIcon } from '~/icons/warningIcon';
+
+const inter = Inter({ subsets: ['latin'] });
 
 declare module '@mui/material/styles' {
 
@@ -60,7 +63,7 @@ export const theme = responsiveFontSizes(createTheme({
     }
   },
   typography: {
-    fontFamily: '"Inter", sans-serif'
+    fontFamily: inter.style.fontFamily
   },
   components: {
     MuiCssBaseline: {
