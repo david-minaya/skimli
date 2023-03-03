@@ -2,7 +2,8 @@ import { Style } from '~/utils/style';
 
 export const style = Style({
   container: {
-    width: '360px',
+    width: '100%',
+    maxWidth: '360px',
     display: 'flex',
     alignItems: 'center',
     backgroundColor: 'white',

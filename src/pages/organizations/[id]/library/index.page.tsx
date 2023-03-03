@@ -11,12 +11,11 @@ import { UploadFiles } from '~/components/upload-files/upload-files.component';
 import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { EmptyLibrary } from './components/empty-library/empty-library.component';
 import { DropArea } from './components/drop-area/drop-area.component';
-import { DropDownButton } from './components/drop-down-button/drop-down-button.component';
 import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
 import { VideoItem } from './components/video-item/video-item.component';
 import { VideoModal } from './components/video-modal/video-modal.component';
-import { SearchField } from './components/search-field/search-field.component';
 import { NoResultsFound } from './components/no-results-found/no-results-found.component';
+import { AppBar } from './components/app-bar/app-bar.component';
 import { Asset } from '~/types/assets.type';
 import { useAssets } from '~/store/assets.slice';
 import { style } from './index.style';
@@ -26,6 +25,7 @@ function Library() {
   const assetsStore = useAssets();
   const assets = assetsStore.getAll();
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
+  const areAssetsSelected = assetsStore.areSelected();
 
   const { t } = useTranslation('library');
   const { user } = useUser();
@@ -94,11 +94,9 @@ function Library() {
         onDrop={handleDrop}
         onDragOver={e => e.preventDefault()}
         onDragEnter={() => setShowDropArea(true)}>
-        <Box sx={style.appBar}>
-          <Box sx={style.title}>{t('title')}</Box>
-          <SearchField onChange={handleSearchChange}/>
-          <DropDownButton onUploadFile={handleOpenFilePicker}/>
-        </Box>
+        <AppBar
+          onSearchChange={handleSearchChange}
+          onOpenFilePicker={handleOpenFilePicker}/>
         <Container sx={style.content}>
           {!isSearching &&
             <Box sx={style.toolbar}>
@@ -126,6 +124,7 @@ function Library() {
                     <VideoItem 
                       key={asset.uuid}
                       asset={asset}
+                      showCheckBox={areAssetsSelected}
                       onClick={handleVideoItemClick}/>
                   )}
                 </Box>

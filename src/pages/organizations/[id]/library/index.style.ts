@@ -6,18 +6,6 @@ export const style = Style({
     display: 'flex',
     flexDirection: 'column',
   },
-  appBar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexShrink: 0,
-    backgroundColor: 'backgroundColor.main',
-    padding: '12px 16px'
-  },
-  title: {
-    fontSize: '22px',
-    fontWeight: 'bold'
-  },
   content: {
     display: 'flex',
     flexDirection: 'column',

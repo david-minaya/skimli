@@ -1,19 +1,21 @@
 import { useTranslation } from 'next-i18next';
 import { MoreHoriz } from '@mui/icons-material';
 import { Fragment, useRef, useState, useEffect } from 'react';
-import { Box, IconButton, Menu, MenuItem } from '@mui/material';
+import { Box, Checkbox, IconButton, Menu, MenuItem } from '@mui/material';
 import { formatDate } from '~/utils/formatDate';
 import { RefreshIcon } from '~/icons/refreshIcon';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { PlayIcon } from '~/icons/playIcon';
 import { Asset } from '~/types/assets.type';
 import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
-import { style } from './video-item.style';
 import { useAssets } from '~/store/assets.slice';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
+import { Toast } from '~/components/toast/toast.component';
+import { style } from './video-item.style';
 
 interface Props {
   asset: Asset;
+  showCheckBox: boolean;
   onClick: (asset: Asset) => void;
 }
 
@@ -21,16 +23,19 @@ export function VideoItem(props: Props) {
 
   const { 
     asset,
+    showCheckBox,
     onClick,
   } = props;
 
+  const { t } = useTranslation('library');
   const assetsStore = useAssets();
   const menuOptionRef = useRef<HTMLButtonElement>(null);
-  const { t } = useTranslation('library');
   const [hover, setHover] = useState(false);
+  const [hoverImage, setHoverImage] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [thumbnail, setThumbnail] = useState('');
+  const [openErrorToast, setOpenErrorToast] = useState(false);
 
   const getThumbnail = useGetThumbnail();
 
@@ -48,9 +53,19 @@ export function VideoItem(props: Props) {
   }
 
   async function handleDelete() {
-    setOpenDeleteDialog(false);
-    await assetsStore.deleteOne(asset.uuid);
-    await assetsStore.fetchAll();
+
+    try {
+
+      setOpenDeleteDialog(false);
+      await assetsStore.deleteOne(asset.uuid);
+      await assetsStore.fetchAll();
+    
+    } catch (err: any) {
+
+      await assetsStore.fetchAll();
+      setOpenErrorToast(true);
+    }
+
   }
 
   if (asset.status !== 'PROCESSING' && !asset.mux || !thumbnail) {
@@ -58,7 +73,21 @@ export function VideoItem(props: Props) {
   }
 
   return (
-    <Box sx={style.container}>
+    <Box 
+      sx={[
+        style.container, 
+        asset.selected && style.containerSelected as any
+      ]}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}>
+      <Checkbox 
+        sx={[
+          style.checkBox, 
+          (hover || showCheckBox) && style.checkBoxVisible as any
+        ]}
+        size='small'
+        checked={asset.selected}
+        onChange={e => assetsStore.select(asset.uuid, e.target.checked)}/>
       {asset.status === 'PROCESSING' &&
         <Box sx={style.loading}>
           <RefreshIcon sx={style.processingIcon}/>
@@ -67,19 +96,19 @@ export function VideoItem(props: Props) {
       {asset.mux &&
         <Box 
           sx={style.imageContainer}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
+          onMouseEnter={() => setHoverImage(true)}
+          onMouseLeave={() => setHoverImage(false)}
           onClick={() => onClick(asset)}>
           <Box
             sx={style.image}
             component='img'
             src={thumbnail}/>
-          {!hover &&
+          {!hoverImage &&
             <Box sx={style.duration}>
               {formatSeconds(asset.mux.asset.duration)}
             </Box>
           }
-          {hover &&
+          {hoverImage &&
             <Box sx={style.playContainer}>
               <PlayIcon sx={style.playIcon}/>
             </Box>
@@ -126,6 +155,11 @@ export function VideoItem(props: Props) {
         open={openDeleteDialog}
         onConfirm={handleDelete}
         onClose={() => setOpenDeleteDialog(false)}/>
+      <Toast
+        open={openErrorToast}
+        severity='error'
+        description={t('videoItem.errorToast')}
+        onClose={() => setOpenErrorToast(false)}/>
     </Box>
   )
 }

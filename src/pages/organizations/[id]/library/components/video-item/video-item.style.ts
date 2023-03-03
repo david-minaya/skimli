@@ -4,11 +4,21 @@ export const style = Style({
   container: {
     display: 'flex',
     alignItems: 'center',
-    padding: '28px 8px',
+    padding: '28px 8px 28px 0px',
     borderBottom: '1px solid #E6E8F0',
     ':last-of-type': {
       borderBottom: 'none'
     }
+  },
+  containerSelected: {
+    backgroundColor: '#FEF3EF'
+  },
+  checkBox: {
+    visibility: 'hidden',
+    marginRight: '8px'
+  },
+  checkBoxVisible: {
+    visibility: 'visible'
   },
   loading: {
     width: '160px',
