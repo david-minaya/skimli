@@ -1,16 +1,16 @@
 import { useTranslation } from 'next-i18next';
 import { MoreHoriz } from '@mui/icons-material';
+import { Fragment, useRef, useState, useEffect } from 'react';
 import { Box, IconButton, Menu, MenuItem } from '@mui/material';
 import { formatDate } from '~/utils/formatDate';
 import { RefreshIcon } from '~/icons/refreshIcon';
-import { Fragment, useRef, useState } from 'react';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { PlayIcon } from '~/icons/playIcon';
 import { Asset } from '~/types/assets.type';
 import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
 import { style } from './video-item.style';
 import { useAssets } from '~/store/assets.slice';
-import { MuxAsset } from '~/types/muxAsset.type';
+import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 
 interface Props {
   asset: Asset;
@@ -30,6 +30,17 @@ export function VideoItem(props: Props) {
   const [hover, setHover] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [thumbnail, setThumbnail] = useState('');
+
+  const getThumbnail = useGetThumbnail();
+
+  useEffect(() => {
+    (async () => {
+      if (asset.mux) {
+        setThumbnail(await getThumbnail(asset.mux.asset.playback_ids[0].id, 170, 100))
+      }
+    })();
+  }, [asset.mux, getThumbnail])
 
   function handleOpenDeleteDialog() {
     setOpenDeleteDialog(true);
@@ -42,16 +53,7 @@ export function VideoItem(props: Props) {
     await assetsStore.fetchAll();
   }
 
-  function getImage(asset: MuxAsset) {
-    return (
-      `https://image.mux.com/${asset.asset.playback_ids[0].id}/thumbnail.png`+ 
-      `?token=${asset.tokens.thumbnail}` +
-      `&width=176` +
-      `&height=100`
-    ) 
-  }
-
-  if (asset.status !== 'PROCESSING' && !asset.mux) {
+  if (asset.status !== 'PROCESSING' && !asset.mux || !thumbnail) {
     return null;
   }
 
@@ -71,7 +73,7 @@ export function VideoItem(props: Props) {
           <Box
             sx={style.image}
             component='img'
-            src={getImage(asset.mux)}/>
+            src={thumbnail}/>
           {!hover &&
             <Box sx={style.duration}>
               {formatSeconds(asset.mux.asset.duration)}

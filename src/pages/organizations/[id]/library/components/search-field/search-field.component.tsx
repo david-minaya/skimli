@@ -1,5 +1,5 @@
 import { Box, IconButton, InputBase } from '@mui/material';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { CloseIcon } from '~/icons/closeIcon';
 import { SearchIcon } from '~/icons/searchIcon';
@@ -15,29 +15,22 @@ export function SearchField(props: Props) {
 
   const { t } = useTranslation('library');
   const [value, setValue] = useState('');
+  const [focus, setFocus] = useState(false);
 
-  useEffect(() => {
-
-    if (value === '') return;
-
-    const timeout = setTimeout(() => {
-      onChange(value);
-    }, 100)
-
-    return () => {
+  const onDelayChange = useMemo(() => {
+    let timeout: NodeJS.Timeout;
+    return (value: string) => {
       clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        onChange(value);
+      }, 100);
     }
-  }, [value]);
+  }, []);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
-
-    const value = event.target.value.trim();
-
+    const value = event.target.value;
     setValue(value);
-
-    if (value === '') {
-      onChange(undefined);
-    }
+    onDelayChange(value);
   }
 
   function handleClear() {
@@ -46,13 +39,15 @@ export function SearchField(props: Props) {
   }
 
   return (
-    <Box sx={style.container}>
+    <Box sx={[style.container, focus && style.focus as any]}>
       <SearchIcon sx={style.icon}/>
       <InputBase 
         sx={style.input}
         value={value}
         placeholder={t('searchField.placeholder')}
-        onChange={handleChange}/>
+        onChange={handleChange}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}/>
       {value.trim() !== '' &&
         <IconButton 
           size='small'

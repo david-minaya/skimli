@@ -109,7 +109,12 @@ function Library() {
           {isSearching &&
             <Box sx={style.toolbar}>
               <Box sx={style.searchTitle}>{t('searchTitle')}</Box>
-              <Box sx={style.results}>{t('searchResults', { count: assets.entities.length })}</Box>
+              {assets.success &&
+                <Box 
+                  sx={style.results}>
+                  {t('searchResults', { count: assets.entities.length })}
+                </Box>
+              }
             </Box>
           }
           {(assets.loading || assets.entities.length > 0 || isSearching) &&

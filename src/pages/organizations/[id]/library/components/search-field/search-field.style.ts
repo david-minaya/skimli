@@ -10,6 +10,9 @@ export const style = Style({
     borderRadius: '8px',
     padding: '2px 2px 2px 8px'
   },
+  focus: {
+    borderColor: 'primary.main'
+  },
   icon: {
     width: '20px',
     height: '20px',
