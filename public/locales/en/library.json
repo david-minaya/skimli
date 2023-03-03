@@ -1,6 +1,5 @@
 {
   "tabTitle": "Skimli | Webapp",
-  "title": "Library",
   "toolbarTitle": "Personal Account - {{email}}",
   "cardTitle": "Convert your first video!",
   "cardDescription": "Get started by uploading a video by dragging and dropping",
@@ -14,10 +13,16 @@
   "searchTitle": "Search Results",
   "searchResults_one": "{{count}} result",
   "searchResults_other": "{{count}} results",
+  "appBar": {
+    "title": "Library",
+    "counter": "{{count}} selected",
+    "errorToast": "Error deleting assets"
+  },
   "videoItem": {
     "processingTag": "Processing",
     "unconvertedTag": "Convert to clips",
     "deletingTag": "Deleting",
+    "errorToast": "Error deleting asset",
     "menu": {
       "convert": "Convert to clips",
       "delete": "Delete"

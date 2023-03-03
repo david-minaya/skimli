@@ -8,5 +8,6 @@ export interface Asset {
   name: string;
   status: 'PROCESSING' | 'UNCONVERTED' | 'CONVERTING' | 'CONVERTED' | 'DELETING' | 'ERRORED';
   sourceMuxAssetId?: string;
+  selected: boolean;
   mux?: MuxAsset;
 }

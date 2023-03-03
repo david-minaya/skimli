@@ -1,4 +1,4 @@
-import { Inter } from '@next/font/google'
+import { Inter } from '@next/font/google';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { ErrorIcon } from '~/icons/errorIcon';
 import { SuccessIcon } from '~/icons/successIcon';
