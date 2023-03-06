@@ -3,7 +3,9 @@ import config from "../../config";
 import Container from "typedi";
 import { VideosService } from "../videos/videos.service";
 
-export type SQSMessageBody = {
+const ASSETS_PREFIX = "/assets/";
+
+type SQSMessageBody = {
   Records: Array<{
     eventVersion: string;
     eventSource: string;
@@ -42,7 +44,7 @@ export type SQSMessageBody = {
 
 const videosService = Container.get<VideosService>(VideosService);
 
-export const sqsListener = Consumer.create({
+export const assetUploadProcessor = Consumer.create({
   queueUrl: config.aws.awsSQSAssetNotificationURL,
   region: config.aws.awsRegion,
   handleMessage: async (message): Promise<void> => {
@@ -54,16 +56,18 @@ export const sqsListener = Consumer.create({
       const key = decodeURIComponent(
         record?.s3?.object?.key.replace(/\+/g, " ")
       );
-      console.log(`s3 asset uploaded: ${bucket}/${key}`);
-      await videosService.handleS3AssetUploadEvent(bucket, key);
+      if (key.includes(ASSETS_PREFIX)) {
+        console.log(`s3 asset uploaded: ${bucket}/${key}`);
+        await videosService.handleS3AssetUploadEvent(bucket, key);
+      }
     }
   },
 });
 
-sqsListener.on("error", (err) => {
+assetUploadProcessor.on("error", (err) => {
   console.error(err.message);
 });
 
-sqsListener.on("processing_error", (err) => {
+assetUploadProcessor.on("processing_error", (err) => {
   console.error(err.message);
 });

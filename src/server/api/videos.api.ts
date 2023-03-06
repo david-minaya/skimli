@@ -4,13 +4,17 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
+import { GraphQLError } from "graphql";
 import { Service } from "typedi";
 import config from "../../config";
 import { APIError } from "../types/base.types";
 import {
   Asset,
+  ConvertToClipsArgs,
+  ConvertToClipsWorkflowResponse,
   CreateAssetRequest,
   CreateAssetResponse,
+  DeleteAssetArgs,
   GetAssetsArgs,
   UpdateAssetRequest,
   UpdateAssetResponse,
@@ -26,6 +30,7 @@ import {
 
 let APP_SERVICES_M2M_TOKEN = "";
 
+const quotaExceeded = "quota has been used";
 @Service()
 export class VideosAPI {
   api: AxiosInstance;
@@ -114,16 +119,51 @@ export class VideosAPI {
     }
   }
 
-  async deleteAssets(assetIds: string[], token: string): Promise<void> {
+  async deleteAssets(args: DeleteAssetArgs): Promise<void> {
     try {
       // returns string[] for later referece
       await this.api.post(
         "/video/v1/workflows",
-        { name: "DEL_ASSET" as const, assetsId: assetIds },
-        { headers: { ...generateAuthHeaders(token) } }
+        {
+          name: "DEL_ASSET" as const,
+          assetsId: args.assetIds,
+          userId: args.userId,
+        },
+        { headers: { ...generateAuthHeaders(args.token) } }
       );
     } catch (e) {
       throw new APIError(e);
+    }
+  }
+
+  async convertToClips(
+    args: ConvertToClipsArgs,
+    token: string
+  ): Promise<ConvertToClipsWorkflowResponse> {
+    try {
+      const response = await this.api.post(
+        "/video/v1/workflows",
+        {
+          name: "CONVERT_TO_CLIPS" as const,
+          assetsId: [args.assetId],
+          userId: args.userId,
+          category: args.category,
+        },
+        { headers: { ...generateAuthHeaders(token) } }
+      );
+      return response?.data[0];
+    } catch (e) {
+      const error = e as AxiosError;
+      if (
+        error?.response?.data &&
+        (error?.response?.data as any)?.message == quotaExceeded
+      ) {
+        throw new GraphQLError(quotaExceeded, {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      } else throw new APIError(e);
     }
   }
 }

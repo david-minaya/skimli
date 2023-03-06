@@ -11,7 +11,6 @@ import {
 const TOKEN_TYPE_VIDEO = "video";
 const TOKEN_TYPE_THUMBNAIL = "thumbnail";
 const TOKEN_TYPE_STORYBOARD = "storyboard";
-
 const MUX_THUMBNAIL_BASE_URL = "https://image.mux.com";
 
 @Service()

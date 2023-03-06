@@ -39,7 +39,7 @@ export function useApollo() {
     });
     
     const wsLink = new GraphQLWsLink(createClient({
-      url: process.env.NEXT_PUBLIC_GRAPH_WSS || 'wss://localhost:3001/api/graphql',
+      url: process.env.NEXT_PUBLIC_GRAPH_WSS || 'ws://localhost:3001/api/graphql',
       connectionParams: {
         Authorization: `Bearer ${token}`
       }

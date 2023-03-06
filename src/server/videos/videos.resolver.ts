@@ -19,22 +19,26 @@ import { AuthInfo } from "../types/base.types";
 import {
   AbortUploadArgs,
   CompleteUploadArgs,
+  ConvertToClipsArgs,
+  ConvertToClipsWorkflowStatusArgs,
   DeleteAssetsArgs,
   GetAssetsArgs,
   GetPartUploadURLArgs,
   StartUploadArgs,
 } from "./videos.args";
-import { ASSET_UPLOAD_EVENT } from "./videos.constants";
+import { ASSET_UPLOAD_EVENT, CONVERT_TO_CLIPS_TOPIC } from "./videos.constants";
 import { VideosService } from "./videos.service";
 import {
   Asset,
-  AssetStatus,
   AssetUploadResponse,
   AssetUploads,
+  ConvertToClipsWorkflowResponse,
+  ConvertToClipsWorkflowStatus,
   GetPartUploadResponse,
   MuxData,
   StartUploadResponse,
 } from "./videos.types";
+import { AssetStatus } from "../types/videos.types";
 
 @Service()
 @Resolver(() => Asset)
@@ -143,5 +147,45 @@ export class VideosResolver {
     };
     await this.videosService.deleteAssets(authInfo, args.assetIds);
     return true;
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => ConvertToClipsWorkflowResponse)
+  async convertToClips(
+    @Args() args: ConvertToClipsArgs,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<ConvertToClipsWorkflowResponse> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.convertToClips(authInfo, args);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Subscription(() => ConvertToClipsWorkflowStatus, {
+    topics: CONVERT_TO_CLIPS_TOPIC,
+    filter: ({
+      payload,
+      args,
+      context,
+    }: {
+      args: ConvertToClipsWorkflowStatusArgs;
+      payload: ConvertToClipsWorkflowStatus;
+      context: GraphQLContext;
+    }) => {
+      return (
+        args.assetId === payload.assetId &&
+        Number(context.auth0!.organization_id) == payload.org
+      );
+    },
+  })
+  async convertToClipsWorkflowStatus(
+    @Root() workflowStatus: ConvertToClipsWorkflowStatus,
+    @Args() args: ConvertToClipsWorkflowStatusArgs
+  ) {
+    return workflowStatus;
   }
 }

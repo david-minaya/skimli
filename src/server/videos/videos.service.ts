@@ -14,6 +14,12 @@ import pubSub from "../common/pubsub";
 import { MuxService } from "../mux/mux.service";
 import { MuxAssetReadyEventPayload } from "../mux/mux.types";
 import { AuthInfo, InternalGraphQLError } from "../types/base.types";
+import {
+  AssetStatus,
+  ConvertToClipsArgs,
+  ConvertToClipsWorkflowResponse,
+  ConvertToClipsWorkflowStatus,
+} from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
 import {
   AbortUploadArgs,
@@ -22,10 +28,9 @@ import {
   GetPartUploadURLArgs as GetPartUploadArgs,
   StartUploadArgs,
 } from "./videos.args";
-import { ASSET_UPLOAD_EVENT } from "./videos.constants";
+import { ASSET_UPLOAD_EVENT, CONVERT_TO_CLIPS_TOPIC } from "./videos.constants";
 import {
   Asset,
-  AssetStatus,
   AssetUploads,
   GetPartUploadResponse,
   MuxData,
@@ -211,7 +216,26 @@ export class VideosService {
   }
 
   async deleteAssets(authInfo: AuthInfo, assetIds: string[]): Promise<void> {
-    await this.videosAPI.deleteAssets(assetIds, authInfo.token);
-    return;
+    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
+    await this.videosAPI.deleteAssets({
+      assetIds: assetIds,
+      userId: user!.uuid,
+      token: authInfo.token,
+    });
+  }
+
+  async convertToClips(
+    authInfo: AuthInfo,
+    args: ConvertToClipsArgs
+  ): Promise<ConvertToClipsWorkflowResponse> {
+    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
+    args.userId = user!.uuid;
+    return this.videosAPI.convertToClips(args, authInfo.token);
+  }
+
+  async updateConvertToClipsWorkflowStatus(
+    workflowStatus: ConvertToClipsWorkflowStatus
+  ): Promise<void> {
+    await pubSub.publish(CONVERT_TO_CLIPS_TOPIC, workflowStatus);
   }
 }

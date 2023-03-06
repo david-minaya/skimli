@@ -1,0 +1,16 @@
+{
+  "version": 1.0,
+  "releaseDate": "2022-12-18",
+  "categories": [
+    {
+      "code": "VIDEO-CATEGORY-OTHER",
+      "archived": false,
+      "label": "Other"
+    },
+    {
+      "code": "VIDEO-CATEGORY-TRAVEL-EVENTS",
+      "archived": false,
+      "label": "Travel & Events"
+    }
+  ]
+}

@@ -12,6 +12,8 @@ import { VideosResolver } from "./videos/videos.resolver";
 import pubSub from "./common/pubsub";
 import { MuxResolver } from "./mux/mux.resolver";
 import { Request, Response } from "express";
+import { CategoriesResolver } from "./categories/categories.resolver";
+import { decodeToken } from "./auth";
 
 export const UnAuthorizedError = new GraphQLError(
   "Access denied! You need to be authorized to perform this action!"
@@ -25,11 +27,12 @@ export const schema = buildSchemaSync({
     BillingResolver,
     VideosResolver,
     MuxResolver,
+    CategoriesResolver,
   ],
   container: Container,
   validate: validateInput,
-  authChecker: ({ context }) => {
-    if (!context?.auth0) {
+  authChecker: async ({ context }: { context: GraphQLContext }) => {
+    if (!context.auth0) {
       throw UnAuthorizedError;
     }
     return true;

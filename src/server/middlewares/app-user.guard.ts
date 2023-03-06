@@ -9,6 +9,9 @@ export class IsAppUserGuard implements MiddlewareInterface<GraphQLContext> {
   constructor(private readonly accountsService: AccountsService) {}
 
   async use({ context }: ResolverData<GraphQLContext>, next: NextFn) {
+    if (context.auth0.organization_id) {
+      return next();
+    }
     const user = await this.accountsService.getAppUserById(context.auth0.sub);
     if (!user?.org) {
       throw new GraphQLError("organization not set");

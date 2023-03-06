@@ -1,6 +1,10 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
 import bodyParser from "body-parser";
 import cors from "cors";
 import express, { Request, Response } from "express";
@@ -10,18 +14,11 @@ import next from "next";
 import requestIp from "request-ip";
 import { parse } from "url";
 import { WebSocket } from "ws";
-import nextConfigFunction from "../../next.config";
+import AppConfig from "../config";
 import { auth, decodeToken } from "./auth";
 import { GraphQLContext, schema } from "./schema";
-import { sqsListener } from "./sqs/sqs";
+import { listen as sqsListener } from "./sqs";
 import { muxWebhook, verifyMuxWebhookMiddleware } from "./webhooks/mux.hooks";
-import AppConfig from "../config";
-import {
-  ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginLandingPageProductionDefault,
-} from "@apollo/server/plugin/landingPage/default";
-
-const nextConfig = (nextConfigFunction as any)();
 
 const port = parseInt(process.env.PORT || "3001", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -32,7 +29,6 @@ const httpServer = http.createServer(expressApp);
 const nextApp = next({
   dev,
   port,
-  conf: nextConfig,
 });
 const handle = nextApp.getRequestHandler();
 
@@ -130,10 +126,7 @@ async function bootstrap() {
   });
 
   // start sqs listener
-  if (!sqsListener.isRunning) {
-    sqsListener.start();
-    console.log("starting sqs listener");
-  }
+  await sqsListener();
 
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: port }, resolve)

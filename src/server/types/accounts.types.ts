@@ -5,12 +5,13 @@ export type UserIDPType = "AUTH0";
 export type BillingMethodType = "SUBSCRIPTION" | "CONTRACT";
 
 export interface User {
+  uuid: string;
+  email: string;
   org: number;
   account: UserAccountType;
   accountOwner: boolean;
   idp: UserIDPType;
   idpUser: string;
-  email: string;
   product: object;
   entitlements: object;
   billingMethod: BillingMethodType;

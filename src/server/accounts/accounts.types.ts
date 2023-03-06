@@ -1,13 +1,19 @@
-import { Field, Float, Int, ObjectType } from "type-graphql";
+import GraphQLJSON from "graphql-type-json";
+import { Field, Int, ObjectType } from "type-graphql";
 import type {
   BillingMethodType,
   UserAccountType,
   User as UserType,
 } from "../types/accounts.types";
-import GraphQLJSON from "graphql-type-json";
 
 @ObjectType()
 export class User implements UserType {
+  @Field(() => String)
+  uuid: string;
+
+  @Field(() => String)
+  email: string;
+
   @Field(() => Int)
   org: number;
 
@@ -22,9 +28,6 @@ export class User implements UserType {
 
   @Field(() => String)
   idpUser: string;
-
-  @Field(() => String)
-  email: string;
 
   @Field(() => GraphQLJSON, { nullable: true })
   product: object;

@@ -35,6 +35,7 @@ const config = {
     awsRegion: process.env.AWS_REGION ?? "us-west-2",
     awsSQSAssetNotificationURL:
       process.env.AWS_SQS_ASSET_UPLOAD_NOTIFICATION_URL ?? "",
+    awsSQSVideosQueueURL: process.env.AWS_SQS_VIDEOS_QUEUE_URL ?? "",
   },
   mux: {
     muxToken: process.env.MUX_TOKEN ?? "",

@@ -22,7 +22,6 @@ export class APIError extends GraphQLError {
     if (code >= 500) {
       super(INTERNAL_ERROR, options);
       Sentry.withScope((scope) => {
-        console.error(error);
         scope.setLevel("error");
         scope.setExtra("response", error.response?.data);
         scope.setExtra("request", error.request);
