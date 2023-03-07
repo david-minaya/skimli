@@ -5,6 +5,7 @@ import { Toast } from '~/components/toast/toast.component';
 import { ClearSelectionIcon } from '~/icons/clearSelectionIcon';
 import { DeleteIcon } from '~/icons/deleteIcon';
 import { useAssets } from '~/store/assets.slice';
+import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
 import { DropDownButton } from '../drop-down-button/drop-down-button.component';
 import { SearchField } from '../search-field/search-field.component';
 import { style } from './app-bar.style';
@@ -26,12 +27,15 @@ export function AppBar(props: Props) {
   const areAssetsSelected = assetsStore.areSelected();
   const selectedIds = assetsStore.getSelectedIds();
   const [openErrorToast, setOpenErrorToast] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   function handleUnselectAll() {
     assetsStore.unSelectAll();
   }
 
   async function handleDelete() {
+
+    setOpenDeleteDialog(false);
 
     try {
 
@@ -76,7 +80,7 @@ export function AppBar(props: Props) {
         {areAssetsSelected &&
           <IconButton 
             size='small'
-            onClick={handleDelete}>
+            onClick={() => setOpenDeleteDialog(true)}>
             <DeleteIcon/>
           </IconButton>
         }
@@ -90,6 +94,10 @@ export function AppBar(props: Props) {
         severity='error'
         description={t('appBar.errorToast')}
         onClose={() => setOpenErrorToast(false)}/>
+      <DeleteDialog
+        open={openDeleteDialog}
+        onConfirm={handleDelete}
+        onClose={() => setOpenDeleteDialog(false)}/>
     </Box>
   );
 }

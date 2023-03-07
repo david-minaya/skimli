@@ -78,6 +78,9 @@ export const theme = responsiveFontSizes(createTheme({
         },
         "#__next": {
           height: "100%"
+        },
+        a: {
+          textDecoration: 'none'
         }
       },
     },

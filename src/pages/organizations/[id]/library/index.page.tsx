@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useTranslation } from 'next-i18next';
-import { ChangeEvent, useRef, useState, DragEvent, useEffect, useCallback } from 'react';
+import { ChangeEvent, useRef, useState, DragEvent, useEffect } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Box, Container, InputBase } from '@mui/material';
@@ -24,8 +24,8 @@ function Library() {
 
   const assetsStore = useAssets();
   const assets = assetsStore.getAll();
-  const hiddenFileInputRef = useRef<HTMLInputElement>(null);
   const areAssetsSelected = assetsStore.areSelected();
+  const hiddenFileInputRef = useRef<HTMLInputElement>(null);
 
   const { t } = useTranslation('library');
   const { user } = useUser();
@@ -35,16 +35,13 @@ function Library() {
   const [search, setSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  const update = useCallback(async () => {
-    await assetsStore.fetchAll();
-  }, [assetsStore])
+  useEffect(() => {
+    assetsStore.fetchAll();
+  }, []);
 
-  const videoUploaded = useCallback(() => {
-    update();
-  }, [update])
-
-  useEffect(() => { update(); }, [update]);
-  useAseetsUploaded(videoUploaded);
+  useAseetsUploaded(() => {
+    assetsStore.fetchAll();
+  });
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {

@@ -2,12 +2,13 @@ import { Style } from '~/utils/style';
 
 export const style = Style({
   appBar: {
+    height: '60px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexShrink: 0,
     backgroundColor: 'backgroundColor.main',
-    padding: '12px 16px'
+    padding: '0px 16px'
   },
   left: {
     display: 'flex',

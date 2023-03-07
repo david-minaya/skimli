@@ -10,7 +10,7 @@ export const style = Style({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#F6F6F6',
-    padding: '16px 0px'
+    padding: '12px 0px'
   },
   options: {
     width: '100%',
@@ -19,9 +19,14 @@ export const style = Style({
     alignItems: 'center'
   },
   logo: {
+    display: 'block',
     width: '40px',
     height: '40px',
     cursor: 'pointer'
+  },
+  linkOption: {
+    display: 'block',
+    width: '100%'
   },
   option: {
     width: '100%',

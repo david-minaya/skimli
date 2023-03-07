@@ -1,12 +1,14 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import { Box, Tooltip } from '@mui/material';
+import { Box, styled, Tooltip } from '@mui/material';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { HomeIcon } from '~/icons/homeIcon';
 import { Profile } from '../profile/profile.component';
 import { style } from './nav-bar.style';
 import { useAccount } from '~/store/account.slice';
+
+const Link = styled(NextLink)``;
 
 export function NavBar() {
 
@@ -25,7 +27,9 @@ export function NavBar() {
             component='img' 
             src='/logo.svg'/>
         </Link>
-        <Link href={`/organizations/${account?.org}/library`}>
+        <Link
+          sx={style.linkOption}
+          href={`/organizations/${account?.org}/library`}>
           <Box sx={style.option}>
             <HomeIcon sx={style.optionIcon}/>
           </Box>
