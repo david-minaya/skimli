@@ -13,6 +13,11 @@ import {
 import { ArgsType, Field, InputType, Int } from "type-graphql";
 import { IsValidFilename } from "../common/filename.validator";
 import { IsValidCategory } from "../common/category.validator";
+import {
+  AcitivityStatus,
+  AssetStatus,
+  ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
+} from "../types/videos.types";
 
 @ArgsType()
 export class StartUploadArgs {
@@ -132,4 +137,25 @@ export class ConvertToClipsWorkflowStatusArgs {
   @IsNotEmpty()
   @IsString()
   assetId: string;
+}
+
+// TODO: remove once convert to workflow integrated on web-app client
+@ArgsType()
+export class TestConvertToClipsWorkflowStatusArgs
+  implements IConvertToClipsWorkflowStatus
+{
+  @Field(() => AcitivityStatus)
+  activityStatus: AcitivityStatus;
+
+  @Field(() => String)
+  assetId: string;
+
+  @Field(() => Int)
+  org: number;
+
+  @Field(() => String)
+  startTime: string;
+
+  @Field(() => AssetStatus)
+  status: AssetStatus;
 }

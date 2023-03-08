@@ -26,6 +26,7 @@ import {
   GetAssetsArgs,
   GetPartUploadURLArgs,
   StartUploadArgs,
+  TestConvertToClipsWorkflowStatusArgs,
 } from "./videos.args";
 import { ASSET_UPLOAD_EVENT, CONVERT_TO_CLIPS_TOPIC } from "./videos.constants";
 import { VideosService } from "./videos.service";
@@ -187,6 +188,15 @@ export class VideosResolver {
     @Args() args: ConvertToClipsWorkflowStatusArgs
   ) {
     return workflowStatus;
+  }
+
+  // TODO: remove once integrated, added for easily testing the workflow
+  @Mutation(() => Boolean)
+  async testConvertToClipsWorkflowStatus(
+    @Args() args: TestConvertToClipsWorkflowStatusArgs
+  ): Promise<Boolean> {
+    await pubSub.publish(CONVERT_TO_CLIPS_TOPIC, args);
+    return true;
   }
 }
 
