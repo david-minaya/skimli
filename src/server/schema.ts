@@ -1,19 +1,21 @@
-import "reflect-metadata";
+import { Request, Response } from "express";
+import { GraphQLError } from "graphql";
 import { NextApiRequest, NextApiResponse } from "next";
+import "reflect-metadata";
 import { buildSchemaSync } from "type-graphql";
 import Container from "typedi";
-import { Auth0Resolver } from "./auth0/auth0.resolver";
-import { validateInput } from "./format-error";
-import { GraphQLError } from "graphql";
-import { ApiResolver } from "./api.resolver";
 import { AccountsResolver } from "./accounts/accounts.resolver";
+import { ApiResolver } from "./api.resolver";
+import { Auth0Resolver } from "./auth0/auth0.resolver";
 import { BillingResolver } from "./billing/billing.resolver";
-import { VideosResolver } from "./videos/videos.resolver";
-import pubSub from "./common/pubsub";
-import { MuxResolver } from "./mux/mux.resolver";
-import { Request, Response } from "express";
 import { CategoriesResolver } from "./categories/categories.resolver";
-import { decodeToken } from "./auth";
+import pubSub from "./common/pubsub";
+import { validateInput } from "./format-error";
+import { MuxResolver } from "./mux/mux.resolver";
+import {
+  ConvertToClipsWorkflowStatusResolver,
+  VideosResolver,
+} from "./videos/videos.resolver";
 
 export const UnAuthorizedError = new GraphQLError(
   "Access denied! You need to be authorized to perform this action!"
@@ -28,6 +30,7 @@ export const schema = buildSchemaSync({
     VideosResolver,
     MuxResolver,
     CategoriesResolver,
+    ConvertToClipsWorkflowStatusResolver,
   ],
   container: Container,
   validate: validateInput,

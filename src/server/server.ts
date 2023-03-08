@@ -48,6 +48,7 @@ const serverCleanup = useServer(
       }
       const payload = await decodeToken(token);
       ctx["auth0"] = payload;
+      ctx["token"] = token;
       return ctx;
     },
   },
@@ -118,7 +119,7 @@ async function bootstrap() {
   // to make hmr work
   httpServer.on("upgrade", (req, socket, head) => {
     const { pathname } = parse(req.url!, true);
-    if (pathname !== "/_next/webpack-hmr") {
+    if (!pathname?.includes("webpack-hmr")) {
       wsServer.handleUpgrade(req, socket, head, function done(ws) {
         wsServer.emit("connection", ws, req);
       });

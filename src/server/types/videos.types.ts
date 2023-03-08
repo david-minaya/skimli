@@ -25,6 +25,7 @@ export interface Asset {
   activityStatus?: AcitivityStatus;
   medias?: object;
   inferenceData?: InferenceData;
+  metadata?: AssetMetadata;
 }
 
 export interface CreateAssetRequest {
@@ -77,6 +78,7 @@ export interface Clip {
   model: string;
   moment: string;
   createdAt?: string;
+  title?: string;
 }
 
 export interface InferenceDataAnalysis {
@@ -129,4 +131,18 @@ export interface DeleteAssetArgs {
   assetIds: string[];
   userId: string;
   token: string;
+}
+
+export interface AssetMetadataResolution {
+  name: string;
+}
+
+export interface AssetMetadataAspectRatio {
+  decimal: string;
+  dimension: string;
+}
+
+export interface AssetMetadata {
+  resolution: AssetMetadataResolution;
+  aspectRatio: AssetMetadataAspectRatio;
 }

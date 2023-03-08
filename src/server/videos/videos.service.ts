@@ -206,6 +206,14 @@ export class VideosService {
     return this.videosAPI.getAssets(args, authInfo.token);
   }
 
+  async getAsset(authInfo: AuthInfo, assetId: string): Promise<Asset> {
+    const assetsList = await this.videosAPI.getAssets(
+      { uuid: assetId },
+      authInfo.token
+    );
+    return assetsList.pop()!;
+  }
+
   async getMuxDataForAsset(assetId: string): Promise<MuxData | null> {
     try {
       const muxData = await this.muxService.getMuxAsset(assetId);

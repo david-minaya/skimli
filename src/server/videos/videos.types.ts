@@ -20,6 +20,9 @@ import {
   SourceMuxInputFile as ISourceMuxInputFile,
   SourceMuxInputSettings as ISourceMuxInputSettings,
   SourceMuxInputTrack as ISourceMuxInputTrack,
+  AssetMetadataResolution as IAssetMetadataResolution,
+  AssetMetadataAspectRatio as IAssetMetadataAspectRatio,
+  AssetMetadata as IAssetMetadata,
 } from "../types/videos.types";
 
 @ObjectType()
@@ -97,6 +100,9 @@ export class Clip implements IClip {
 
   @Field(() => String, { nullable: true })
   createdAt?: string;
+
+  @Field(() => String, { nullable: true })
+  title?: string;
 }
 
 @ObjectType()
@@ -109,6 +115,30 @@ export class InferenceDataAnalysis {
 export class InferenceData implements IInferenceData {
   @Field(() => InferenceDataAnalysis)
   analysis: InferenceDataAnalysis;
+}
+
+@ObjectType()
+export class AssetMetadataResolution implements IAssetMetadataResolution {
+  @Field(() => String)
+  name: string;
+}
+
+@ObjectType()
+export class AssetMetadataAspectRatio implements IAssetMetadataAspectRatio {
+  @Field(() => String)
+  decimal: string;
+
+  @Field(() => String)
+  dimension: string;
+}
+
+@ObjectType()
+export class AssetMetadata implements IAssetMetadata {
+  @Field(() => AssetMetadataResolution)
+  resolution: AssetMetadataResolution;
+
+  @Field(() => AssetMetadataAspectRatio)
+  aspectRatio: AssetMetadataAspectRatio;
 }
 
 @ObjectType()
@@ -159,6 +189,9 @@ export class Asset implements IAsset {
 
   @Field(() => InferenceData, { nullable: true })
   inferenceData?: InferenceData;
+
+  @Field(() => AssetMetadata, { nullable: true })
+  metadata?: AssetMetadata;
 }
 
 @ObjectType()

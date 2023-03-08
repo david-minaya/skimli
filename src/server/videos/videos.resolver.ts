@@ -16,6 +16,7 @@ import pubSub from "../common/pubsub";
 import { IsAppUserGuard } from "../middlewares/app-user.guard";
 import type { GraphQLContext } from "../schema";
 import { AuthInfo } from "../types/base.types";
+import { AssetStatus } from "../types/videos.types";
 import {
   AbortUploadArgs,
   CompleteUploadArgs,
@@ -38,7 +39,6 @@ import {
   MuxData,
   StartUploadResponse,
 } from "./videos.types";
-import { AssetStatus } from "../types/videos.types";
 
 @Service()
 @Resolver(() => Asset)
@@ -187,5 +187,33 @@ export class VideosResolver {
     @Args() args: ConvertToClipsWorkflowStatusArgs
   ) {
     return workflowStatus;
+  }
+}
+
+@Resolver(() => ConvertToClipsWorkflowStatus)
+@Service()
+export class ConvertToClipsWorkflowStatusResolver {
+  constructor(private readonly videosService: VideosService) {}
+
+  @Authorized()
+  @FieldResolver(() => Asset, { nullable: true })
+  async asset(
+    @Root() root: ConvertToClipsWorkflowStatus,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<Asset | null> {
+    try {
+      const authInfo: AuthInfo = {
+        auth0: ctx?.auth0,
+        token: ctx?.token,
+      };
+      const asset = await this.videosService.getAsset(authInfo, root.assetId);
+      return asset;
+    } catch (e) {
+      console.error(
+        "unable to resolve asset field in convertToClipsWorkflow response",
+        e
+      );
+      return null;
+    }
   }
 }
