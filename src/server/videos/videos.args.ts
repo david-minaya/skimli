@@ -159,3 +159,10 @@ export class TestConvertToClipsWorkflowStatusArgs
   @Field(() => AssetStatus)
   status: AssetStatus;
 }
+
+@ArgsType()
+export class GetAssetArgs {
+  @Field(() => String)
+  @IsUUID()
+  uuid: string;
+}
