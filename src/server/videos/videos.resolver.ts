@@ -21,7 +21,6 @@ import {
   AbortUploadArgs,
   CompleteUploadArgs,
   ConvertToClipsArgs,
-  ConvertToClipsWorkflowStatusArgs,
   DeleteAssetsArgs,
   GetAssetArgs,
   GetAssetsArgs,
@@ -171,22 +170,16 @@ export class VideosResolver {
     topics: CONVERT_TO_CLIPS_TOPIC,
     filter: ({
       payload,
-      args,
       context,
     }: {
-      args: ConvertToClipsWorkflowStatusArgs;
       payload: ConvertToClipsWorkflowStatus;
       context: GraphQLContext;
     }) => {
-      return (
-        args.assetId === payload.assetId &&
-        Number(context.auth0!.organization_id) == payload.org
-      );
+      return Number(context.auth0!.organization_id) == payload.org;
     },
   })
   async convertToClipsWorkflowStatus(
-    @Root() workflowStatus: ConvertToClipsWorkflowStatus,
-    @Args() args: ConvertToClipsWorkflowStatusArgs
+    @Root() workflowStatus: ConvertToClipsWorkflowStatus
   ) {
     return workflowStatus;
   }

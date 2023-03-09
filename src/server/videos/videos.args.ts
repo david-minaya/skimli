@@ -130,15 +130,6 @@ export class ConvertToClipsArgs {
   category: string;
 }
 
-@ArgsType()
-export class ConvertToClipsWorkflowStatusArgs {
-  @Field(() => String, { description: "asset uuid" })
-  @IsUUID()
-  @IsNotEmpty()
-  @IsString()
-  assetId: string;
-}
-
 // TODO: remove once convert to workflow integrated on web-app client
 @ArgsType()
 export class TestConvertToClipsWorkflowStatusArgs
