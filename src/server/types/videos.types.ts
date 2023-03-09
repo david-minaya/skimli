@@ -143,6 +143,7 @@ export interface AssetMetadataAspectRatio {
 }
 
 export interface AssetMetadata {
-  resolution: AssetMetadataResolution;
-  aspectRatio: AssetMetadataAspectRatio;
+  size?: number;
+  resolution?: AssetMetadataResolution;
+  aspectRatio?: AssetMetadataAspectRatio;
 }

@@ -23,6 +23,7 @@ import {
   ConvertToClipsArgs,
   ConvertToClipsWorkflowStatusArgs,
   DeleteAssetsArgs,
+  GetAssetArgs,
   GetAssetsArgs,
   GetPartUploadURLArgs,
   StartUploadArgs,
@@ -188,6 +189,20 @@ export class VideosResolver {
     @Args() args: ConvertToClipsWorkflowStatusArgs
   ) {
     return workflowStatus;
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => Asset)
+  async getAsset(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: GetAssetArgs
+  ): Promise<Asset> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.getAsset(authInfo, args.uuid);
   }
 
   // TODO: remove once integrated, added for easily testing the workflow

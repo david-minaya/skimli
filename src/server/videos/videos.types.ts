@@ -134,11 +134,18 @@ export class AssetMetadataAspectRatio implements IAssetMetadataAspectRatio {
 
 @ObjectType()
 export class AssetMetadata implements IAssetMetadata {
-  @Field(() => AssetMetadataResolution)
-  resolution: AssetMetadataResolution;
+  @Field(() => Float, {
+    nullable: true,
+    name: "filesize",
+    description: "filesize in bytes",
+  })
+  size?: number;
 
-  @Field(() => AssetMetadataAspectRatio)
-  aspectRatio: AssetMetadataAspectRatio;
+  @Field(() => AssetMetadataResolution, { nullable: true })
+  resolution?: AssetMetadataResolution;
+
+  @Field(() => AssetMetadataAspectRatio, { nullable: true })
+  aspectRatio?: AssetMetadataAspectRatio;
 }
 
 @ObjectType()
