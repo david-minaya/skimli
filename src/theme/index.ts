@@ -1,8 +1,9 @@
-import { Inter } from '@next/font/google';
+import { Inter } from 'next/font/google';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { ErrorIcon } from '~/icons/errorIcon';
 import { SuccessIcon } from '~/icons/successIcon';
 import { WarningIcon } from '~/icons/warningIcon';
+import { ChevronDownIcon } from '~/icons/chevronDownIcon';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -191,6 +192,24 @@ export const theme = responsiveFontSizes(createTheme({
             borderBottom: '1px solid #E6E8F0',
           }
         }
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          fontSize: '15px',
+          borderRadius: '8px',
+          borderColor: '#CCCCCC',
+        },
+        select: {
+          padding: '8px 32px 6px 12px'
+        },
+        icon: {
+          padding: '2px'
+        }
+      } as any,
+      defaultProps: {
+        IconComponent: ChevronDownIcon
       }
     }
   },

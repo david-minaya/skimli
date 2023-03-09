@@ -30,14 +30,14 @@ export const style = Style({
     fontWeight: 500,
     fontSize: '15px'
   },
-  videoContainer: {
+  assetsContainer: {
     display: 'flex',
     flexDirection: 'column',
     marginTop: '24px',
     height: '100%',
     overflow: 'hidden'
   },
-  videoTitle: {
+  assetTitle: {
     flexShrink: 0,
     fontSize: '12px',
     fontWeight: '600',
@@ -45,7 +45,7 @@ export const style = Style({
     backgroundColor: '#F3F4F6',
     padding: '8px 12px'
   },
-  videos: {
+  assets: {
     height: '100%',
     flexGrow: 1,
     overflow: 'auto',

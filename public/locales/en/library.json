@@ -9,7 +9,7 @@
   "newButton": "New",
   "uploadOption": "Upload",
   "dropAreaTitle": "Drag your video files here to upload.",
-  "videoTitle": "Videos",
+  "assetTitle": "Videos",
   "searchTitle": "Search Results",
   "searchResults_one": "{{count}} result",
   "searchResults_other": "{{count}} results",
@@ -18,15 +18,27 @@
     "counter": "{{count}} selected",
     "errorToast": "Error deleting assets"
   },
-  "videoItem": {
-    "processingTag": "Processing",
-    "unconvertedTag": "Convert to clips",
-    "deletingTag": "Deleting",
+  "assetItem": {
     "errorToast": "Error deleting asset",
+    "tags": {
+      "processing": "Processing",
+      "unconverted": "Convert to clips",
+      "converting": "Converting to clips",
+      "converted": "Converted to clips",
+      "deleting": "Deleting"
+    },
     "menu": {
       "convert": "Convert to clips",
+      "edit": "Edit",
       "delete": "Delete"
     }
+  },
+  "convertToClipsModal": {
+    "title": "Select options",
+    "selectTitle": "Video category",
+    "tooltip": "Choose other if your video does not fit any category.",
+    "error": "Select a category",
+    "button": "Submit"
   },
   "deleteDialog": {
     "title": "Are you sure you want to do that?",

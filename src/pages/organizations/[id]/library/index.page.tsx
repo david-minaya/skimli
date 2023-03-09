@@ -12,7 +12,7 @@ import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { EmptyLibrary } from './components/empty-library/empty-library.component';
 import { DropArea } from './components/drop-area/drop-area.component';
 import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
-import { VideoItem } from './components/video-item/video-item.component';
+import { AssetItem } from './components/asset-item/asset-item.component';
 import { VideoModal } from './components/video-modal/video-modal.component';
 import { NoResultsFound } from './components/no-results-found/no-results-found.component';
 import { AppBar } from './components/app-bar/app-bar.component';
@@ -113,12 +113,12 @@ function Library() {
             </Box>
           }
           {(assets.loading || assets.entities.length > 0 || isSearching) &&
-            <Box sx={style.videoContainer}>
-              <Box sx={style.videoTitle}>{t('videoTitle')}</Box>
+            <Box sx={style.assetsContainer}>
+              <Box sx={style.assetTitle}>{t('assetTitle')}</Box>
               {assets.entities.length > 0 &&
-                <Box sx={style.videos}>
+                <Box sx={style.assets}>
                   {assets.entities.map(asset =>
-                    <VideoItem 
+                    <AssetItem 
                       key={asset.uuid}
                       asset={asset}
                       showCheckBox={areAssetsSelected}

@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { Close } from '@mui/icons-material';
-import { style } from './delete-dialog.syle';
+import { style } from './delete-dialog.style';
 
 import { 
   Dialog, 

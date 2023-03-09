@@ -103,6 +103,10 @@ export function useAssets() {
     unSelectAll() {
       dispatch(assetsSlice.actions.unSelectedAll())
     },
+
+    update(id: string, changes: Partial<Asset>) {
+      dispatch(assetsSlice.actions.update({ id, changes }))
+    },
     
     async fetchAll(name?: string) {
       try {

@@ -1,18 +1,15 @@
-import { useCallback } from 'react';
-import { gql, useApolloClient } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { useQuery } from '~/hooks/useQuery';
 import { Account } from './schema/account.type';
-
-interface Response {
-  checkUserExists?: Account;
-}
 
 export function useCheckUserExists() {
 
-  const client = useApolloClient();
+  const query = useQuery<Account>();
 
-  return useCallback(async () => {
-
-    const response = await client.query<Response>({
+  return () => {
+    return query({
+      name: 'checkUserExists',
+      fetchPolicy: 'network-only',
       query: gql`
         query CheckUserExists {
           checkUserExists {
@@ -29,14 +26,7 @@ export function useCheckUserExists() {
             settings
           }
         }
-      `,
-      fetchPolicy: 'network-only'
+      `
     });
-
-    if (response.error || response.errors || !response.data) {
-      throw response.errors;
-    }
-
-    return response.data.checkUserExists;
-  }, [client]);
+  }
 }

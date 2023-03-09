@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { MoreHoriz } from '@mui/icons-material';
-import { Fragment, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Box, Checkbox, IconButton, Menu, MenuItem } from '@mui/material';
 import { formatDate } from '~/utils/formatDate';
 import { RefreshIcon } from '~/icons/refreshIcon';
@@ -8,10 +8,13 @@ import { formatSeconds } from '~/utils/formatSeconds';
 import { PlayIcon } from '~/icons/playIcon';
 import { Asset } from '~/types/assets.type';
 import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
+import { ConvertToClipsModal } from '../convert-to-clips-modal/convert-to-clips-modal.component';
+import { useConvertToClipsSubscription } from '~/graphqls/useConvertToClipsSubscription';
 import { useAssets } from '~/store/assets.slice';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { Toast } from '~/components/toast/toast.component';
-import { style } from './video-item.style';
+import { StatusTag } from '../status-tag/status-tag.component';
+import { style } from './asset-item.style';
 
 interface Props {
   asset: Asset;
@@ -19,7 +22,7 @@ interface Props {
   onClick: (asset: Asset) => void;
 }
 
-export function VideoItem(props: Props) {
+export function AssetItem(props: Props) {
 
   const { 
     asset,
@@ -36,6 +39,7 @@ export function VideoItem(props: Props) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [thumbnail, setThumbnail] = useState('');
   const [openErrorToast, setOpenErrorToast] = useState(false);
+  const [openConvertToClipsModal, setOpenConvertToClipsModal] = useState(false);
 
   const getThumbnail = useGetThumbnail();
 
@@ -45,7 +49,16 @@ export function VideoItem(props: Props) {
         setThumbnail(await getThumbnail(asset.mux.asset.playback_ids[0].id, 170, 100))
       }
     })();
-  }, [asset.mux, getThumbnail])
+  }, [asset.mux, getThumbnail]);
+
+  useConvertToClipsSubscription(asset.uuid, (assetId, status) => {
+    assetsStore.update(assetId, { status });
+  });
+
+  function handleConvertToClips() {
+    setOpenConvertToClipsModal(true);
+    setOpenMenu(false);
+  }
 
   function handleOpenDeleteDialog() {
     setOpenDeleteDialog(true);
@@ -123,43 +136,54 @@ export function VideoItem(props: Props) {
       </Box>
       <Box sx={style.status}>
         {asset.status === 'PROCESSING' &&
-          <Fragment>
-            <RefreshIcon sx={style.processingTagIcon}/>
-            <Box sx={style.processingTag}>{t('videoItem.processingTag')}</Box>
-          </Fragment>
+          <RefreshIcon sx={style.processingTagIcon}/>
         }
-        {asset.status === 'UNCONVERTED' &&
-          <Fragment>
-            <Box sx={style.unconvertedTag}>{t('videoItem.unconvertedTag')}</Box>
-            <IconButton 
-              sx={style.menuOption} 
-              size='small'
-              ref={menuOptionRef}
-              onClick={() => setOpenMenu(true)}>
-              <MoreHoriz/>
-            </IconButton>
-          </Fragment>
-        }
-        {asset.status === 'DELETING' &&
-          <Box sx={style.deletingTag}>{t('videoItem.deletingTag')}</Box>
+        <StatusTag status={asset.status}/>
+        {asset.status !== 'PROCESSING' &&
+          <IconButton 
+            sx={style.menuOption} 
+            size='small'
+            ref={menuOptionRef}
+            onClick={() => setOpenMenu(true)}>
+            <MoreHoriz/>
+          </IconButton>
         }
       </Box>
       <Menu
         open={openMenu}
         anchorEl={menuOptionRef.current}
         onClose={() => setOpenMenu(false)}>
-        <MenuItem>{t('videoItem.menu.convert')}</MenuItem>
-        <MenuItem onClick={handleOpenDeleteDialog}>{t('videoItem.menu.delete')}</MenuItem>
+        {asset.status !== 'CONVERTED' &&
+          <MenuItem 
+            disabled={asset.status === 'CONVERTING'} 
+            onClick={handleConvertToClips}>
+            {t('assetItem.menu.convert')}
+          </MenuItem>
+        }
+        {asset.status === 'CONVERTED' &&
+          <MenuItem>
+            {t('assetItem.menu.edit')}
+          </MenuItem>
+        }
+        <MenuItem
+          disabled={asset.status === 'CONVERTING'} 
+          onClick={handleOpenDeleteDialog}>
+          {t('assetItem.menu.delete')}
+        </MenuItem>
       </Menu>
+      <Toast
+        open={openErrorToast}
+        severity='error'
+        description={t('assetItem.errorToast')}
+        onClose={() => setOpenErrorToast(false)}/>
       <DeleteDialog
         open={openDeleteDialog}
         onConfirm={handleDelete}
         onClose={() => setOpenDeleteDialog(false)}/>
-      <Toast
-        open={openErrorToast}
-        severity='error'
-        description={t('videoItem.errorToast')}
-        onClose={() => setOpenErrorToast(false)}/>
+      <ConvertToClipsModal
+        open={openConvertToClipsModal}
+        asset={asset}
+        onClose={() => setOpenConvertToClipsModal(false)}/>
     </Box>
   )
 }
