@@ -24,7 +24,7 @@ export interface Asset {
   activityStartTime?: string;
   activityStatus?: AcitivityStatus;
   medias?: object;
-  inferenceData?: InferenceData;
+  inferenceData?: IInferenceData;
   metadata?: AssetMetadata;
 }
 
@@ -66,27 +66,31 @@ export interface ConvertToClipsArgs {
   userId?: string;
 }
 
-export interface Clip {
-  // int
-  startFrame: number;
-  // int
-  endFrame: number;
+export enum ClipSourceType {
+  MODEL = "MODEL",
+  HUMAN = "HUMAN",
+  AUTOMATIC = "AUTOMATIC",
+}
+
+export interface IClip {
+  uuid: string;
+  caption?: string;
   startTime: string;
   endTime: string;
   duration: string;
-  source: string;
+  startFrame: number;
+  endFrame: number;
+  source: ClipSourceType;
+}
+
+export interface IInferenceDataAnalysis {
+  clips: IClip[];
   model: string;
-  moment: string;
-  createdAt?: string;
-  title?: string;
+  createdAt: string;
 }
 
-export interface InferenceDataAnalysis {
-  clips: Clip[];
-}
-
-export interface InferenceData {
-  analysis: InferenceDataAnalysis;
+export interface IInferenceData {
+  analysis: IInferenceDataAnalysis;
 }
 
 export interface SourceMuxInput {
