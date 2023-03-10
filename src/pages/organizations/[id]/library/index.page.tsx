@@ -44,8 +44,8 @@ function Library() {
     assetsStore.fetchAll();
   });
 
-  useConvertToClipsSubscription((assetId, status) => {
-    assetsStore.update(assetId, { status });
+  useConvertToClipsSubscription(asset => {
+    assetsStore.update(asset.uuid, asset);
   });
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {

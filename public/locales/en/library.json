@@ -46,6 +46,30 @@
     "cancelButton": "Cancel",
     "confirmButton": "Confirm"
   },
+  "workflowStatusModal": {
+    "assetIdTitle": "Asset ID",
+    "workflowDetails": "Workflow Details",
+    "id": "ID",
+    "status": "Status",
+    "convertingStatus": "Converting to clips",
+    "convertedStatus": "Converted to clips",
+    "errorStatus": "Error",
+    "activity": "Activity",
+    "timeSubmitted": "Time Submitted",
+    "timeStarted": "Time Started",
+    "timeElapsed": "Time Elapsed",
+    "sourceVideoDetails": "Source Video Details",
+    "container": "Container",
+    "width": "Width",
+    "height": "Height",
+    "frameRate": "Frame Rate",
+    "encoding": "Encoding",
+    "duration": "Duration",
+    "size": "Size",
+    "audioTrackTitle": "Main Audio Track",
+    "sampleRatio": "Sample ratio",
+    "channels": "Channels"
+  },
   "searchField": {
     "placeholder": "Search"
   },

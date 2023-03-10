@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { gql, useApolloClient } from '@apollo/client';
 import { Asset } from '~/types/assets.type';
+import { useQuery } from '~/hooks/useQuery';
 
 interface Response {
   getAssets: Asset[];
@@ -8,11 +9,11 @@ interface Response {
 
 export function useGetAssets() {
 
-  const client = useApolloClient();
+  const query = useQuery();
 
   return useCallback(async (name?: string) => {
-
-    const response = await client.query<Response>({
+    return query<Response>({
+      name: 'getAssets',
       query: gql`
         query GetAssets($name: String) {
           getAssets(name: $name) {
@@ -22,7 +23,12 @@ export function useGetAssets() {
             org
             name
             status
+            activityStartTime
+            activityStatus
             sourceMuxAssetId
+            metadata {
+              filesize
+            }
             mux {
               asset {
                 created_at
@@ -38,17 +44,33 @@ export function useGetAssets() {
                 storyboard
               }
             }
+            sourceMuxInputInfo {
+              file {
+                container_format
+                tracks {
+                  ... on SourceMuxInputAudioTrack {
+                    type
+                    duration
+                    encoding
+                    channels
+                    sample_rate
+                  }
+                  ... on SourceMuxInputVideoTrack {
+                    type
+                    width
+                    height
+                    duration
+                    encoding
+                    frame_rate
+                  }
+                }
+              }
+            }
           }
         }
       `,
       variables: { name },
       fetchPolicy: 'network-only'
     });
-
-    if (response.error || response.errors || !response.data) {
-      throw response.errors;
-    }
-
-    return response.data.getAssets;
-  }, [client]);
+  }, [query]);
 }

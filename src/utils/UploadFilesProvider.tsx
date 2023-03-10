@@ -7,6 +7,7 @@ import { useGetChunkUploadUrl } from '~/graphqls/useGetPartChunkUrl';
 import { useStartUpload } from '~/graphqls/useStartUpload';
 import { useUploadChunk } from '~/graphqls/useUploadChunk';
 import { UploadFile } from './uploadFile';
+import { toMb } from './toMb';
 
 interface Props {
   children: ReactNode;
@@ -74,10 +75,9 @@ export function UploadFilesProvider(props: Props) {
     const startTime = Date.now();
     const files = Array.from(fileList);
     const total = files.reduce((total, file) => total + file.size, 0);
-    const mb = (bytes: number) => parseFloat((bytes / (1024 * 1024)).toFixed(2));
 
     setInProgress(true);
-    setTotalSize(mb(total));
+    setTotalSize(toMb(total));
     setTotalFiles(files.length);
 
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -101,7 +101,7 @@ export function UploadFilesProvider(props: Props) {
 
         setDuration(remainingTime);
         setPercent(Math.trunc((uploadedProgress * 100) / total));
-        setProgress(mb(uploadedProgress));
+        setProgress(toMb(uploadedProgress));
       });
 
       uploadFile.onCancelled(() => {

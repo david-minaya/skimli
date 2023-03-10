@@ -5,11 +5,12 @@ import { style } from './status-tag.style';
 
 interface Props {
   status: Asset['status'];
+  onClick: () => void;
 }
 
 export function StatusTag(props: Props) {
 
-  const { status } = props;
+  const { status, onClick } = props;
   const { t } = useTranslation('library');
 
   return (
@@ -21,7 +22,8 @@ export function StatusTag(props: Props) {
         status === 'CONVERTING' && style.converting,
         status === 'CONVERTED' && style.converted,
         status === 'DELETING' && style.deleting as any
-      ]}>
+      ]}
+      onClick={onClick}>
       {status === 'PROCESSING' && t('assetItem.tags.processing')}
       {status === 'UNCONVERTED' && t('assetItem.tags.unconverted')}
       {status === 'CONVERTING' && t('assetItem.tags.converting')}

@@ -5,6 +5,7 @@ export const style = Style({
     color: 'white',
     fontSize: '11px',
     fontWeight: 500,
+    cursor: 'default',
     borderRadius: '100px',
     padding: '2px 8px'
   },
@@ -15,7 +16,8 @@ export const style = Style({
     backgroundColor: '#3551BD'
   },
   converting: {
-    backgroundColor: '#FD6B35'
+    backgroundColor: '#FD6B35',
+    cursor: 'pointer'
   },
   converted: {
     backgroundColor: 'green.main'

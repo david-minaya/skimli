@@ -9,6 +9,7 @@ import { PlayIcon } from '~/icons/playIcon';
 import { Asset } from '~/types/assets.type';
 import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
 import { ConvertToClipsModal } from '../convert-to-clips-modal/convert-to-clips-modal.component';
+import { WorkflowStatusModal } from '../workflow-status-modal/workflow-status-modal.component';
 import { useAssets } from '~/store/assets.slice';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { Toast } from '~/components/toast/toast.component';
@@ -39,7 +40,13 @@ export function AssetItem(props: Props) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openErrorToast, setOpenErrorToast] = useState(false);
   const [openConvertToClipsModal, setOpenConvertToClipsModal] = useState(false);
+  const [openWorkflowStatusModal, setOpenWorkflowStatusModal] = useState(false);
 
+  function handleStatusTagClick() {
+    if (asset.status === 'CONVERTING') {
+      setOpenWorkflowStatusModal(true);
+    }
+  }
 
   function handleConvertToClips() {
     setOpenConvertToClipsModal(true);
@@ -64,7 +71,6 @@ export function AssetItem(props: Props) {
       await assetsStore.fetchAll();
       setOpenErrorToast(true);
     }
-
   }
 
   if (asset.status !== 'PROCESSING' && !asset.mux || !thumbnail) {
@@ -124,7 +130,9 @@ export function AssetItem(props: Props) {
         {asset.status === 'PROCESSING' &&
           <RefreshIcon sx={style.processingTagIcon}/>
         }
-        <StatusTag status={asset.status}/>
+        <StatusTag 
+          status={asset.status}
+          onClick={handleStatusTagClick}/>
         {asset.status !== 'PROCESSING' &&
           <IconButton 
             sx={style.menuOption} 
@@ -170,6 +178,10 @@ export function AssetItem(props: Props) {
         open={openConvertToClipsModal}
         asset={asset}
         onClose={() => setOpenConvertToClipsModal(false)}/>
+      <WorkflowStatusModal
+        open={openWorkflowStatusModal}
+        asset={asset}
+        onClose={() => setOpenWorkflowStatusModal(false)}/>
     </Box>
   )
 }

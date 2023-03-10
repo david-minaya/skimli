@@ -4,13 +4,11 @@ import { Asset } from '~/types/assets.type';
 
 interface Response {
   convertToClipsWorkflowStatus: {
-    activityStatus: string;
-    assetId: string;
-    status: Asset['status'];
+    asset: Asset;
   }
 }
 
-export function useConvertToClipsSubscription(cb: (assetId: string, status: Asset['status']) => void) {
+export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
 
   const client = useApolloClient();
 
@@ -20,18 +18,66 @@ export function useConvertToClipsSubscription(cb: (assetId: string, status: Asse
       query: gql`
         subscription {
           convertToClipsWorkflowStatus {
-            activityStatus
-            status
-            assetId
+            asset {
+              uuid
+              createdAt
+              updatedAt
+              org
+              name
+              status
+              activityStartTime
+              activityStatus
+              sourceMuxAssetId
+              metadata {
+                filesize
+              }
+              mux {
+                asset {
+                  created_at
+                  duration
+                  playback_ids {
+                    id
+                    policy
+                  }
+                }
+                tokens {
+                  video
+                  thumbnail
+                  storyboard
+                }
+              }
+              sourceMuxInputInfo {
+                file {
+                  container_format
+                  tracks {
+                    ... on SourceMuxInputAudioTrack {
+                      type
+                      duration
+                      encoding
+                      channels
+                      sample_rate
+                    }
+                    ... on SourceMuxInputVideoTrack {
+                      type
+                      width
+                      height
+                      duration
+                      encoding
+                      frame_rate
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       `
     });
 
     const subscription = observable.subscribe(observer => {
-      const data = observer.data?.convertToClipsWorkflowStatus;
-      if (data) {
-        cb(data.assetId, data.status)
+      const asset = observer.data?.convertToClipsWorkflowStatus.asset;
+      if (asset) {
+        cb(asset)
       }
     });
 
