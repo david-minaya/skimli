@@ -1,18 +1,14 @@
 import { useCallback } from 'react';
-import { gql, useApolloClient } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { Asset } from '~/types/assets.type';
 import { useQuery } from '~/hooks/useQuery';
-
-interface Response {
-  getAssets: Asset[];
-}
 
 export function useGetAssets() {
 
   const query = useQuery();
 
   return useCallback(async (name?: string) => {
-    return query<Response>({
+    return query<Asset[]>({
       name: 'getAssets',
       query: gql`
         query GetAssets($name: String) {
