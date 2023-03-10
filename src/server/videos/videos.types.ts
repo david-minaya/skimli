@@ -11,19 +11,33 @@ import { MuxAsset, MuxTokens } from "../mux/mux.types";
 import {
   AcitivityStatus,
   AssetStatus,
+  ClipSourceType,
   Asset as IAsset,
-  Clip as IClip,
+  AssetMetadata as IAssetMetadata,
+  AssetMetadataAspectRatio as IAssetMetadataAspectRatio,
+  AssetMetadataResolution as IAssetMetadataResolution,
+  IClip,
   ConvertToClipsWorkflowResponse as IConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
-  InferenceData as IInferenceData,
+  IInferenceData,
+  IInferenceDataAnalysis,
   SourceMuxInput as ISourceMuxInput,
   SourceMuxInputFile as ISourceMuxInputFile,
   SourceMuxInputSettings as ISourceMuxInputSettings,
   SourceMuxInputTrack as ISourceMuxInputTrack,
-  AssetMetadataResolution as IAssetMetadataResolution,
-  AssetMetadataAspectRatio as IAssetMetadataAspectRatio,
-  AssetMetadata as IAssetMetadata,
 } from "../types/videos.types";
+
+registerEnumType(AssetStatus, {
+  name: "AssetStatus",
+});
+
+registerEnumType(AcitivityStatus, {
+  name: "AcitivityStatus",
+});
+
+registerEnumType(ClipSourceType, {
+  name: "ClipSourceType",
+});
 
 @ObjectType()
 export class StartUploadResponse {
@@ -49,10 +63,6 @@ export class AssetUploadResponse {
   assetId?: string;
 }
 
-registerEnumType(AssetStatus, {
-  name: "AssetStatus",
-});
-
 export interface AssetUploads {
   status: AssetStatus;
   assetId?: string;
@@ -68,17 +78,13 @@ export class MuxData {
   tokens?: MuxTokens;
 }
 
-registerEnumType(AcitivityStatus, {
-  name: "AcitivityStatus",
-});
-
 @ObjectType()
 export class Clip implements IClip {
-  @Field(() => Int)
-  startFrame: number;
+  @Field(() => String)
+  uuid: string;
 
-  @Field(() => Int)
-  endFrame: number;
+  @Field(() => String, { nullable: true })
+  caption?: string | undefined;
 
   @Field(() => String)
   startTime: string;
@@ -89,26 +95,26 @@ export class Clip implements IClip {
   @Field(() => String)
   duration: string;
 
-  @Field(() => String)
-  source: string;
+  @Field(() => Int)
+  startFrame: number;
+
+  @Field(() => Int)
+  endFrame: number;
+
+  @Field(() => ClipSourceType)
+  source: ClipSourceType;
+}
+
+@ObjectType()
+export class InferenceDataAnalysis implements IInferenceDataAnalysis {
+  @Field(() => [Clip!]!)
+  clips: Clip[];
 
   @Field(() => String)
   model: string;
 
   @Field(() => String)
-  moment: string;
-
-  @Field(() => String, { nullable: true })
-  createdAt?: string;
-
-  @Field(() => String, { nullable: true })
-  title?: string;
-}
-
-@ObjectType()
-export class InferenceDataAnalysis {
-  @Field(() => [Clip!]!)
-  clips: Clip[];
+  createdAt: string;
 }
 
 @ObjectType()
