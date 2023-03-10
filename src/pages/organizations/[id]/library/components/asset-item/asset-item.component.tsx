@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { MoreHoriz } from '@mui/icons-material';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { Box, Checkbox, IconButton, Menu, MenuItem } from '@mui/material';
 import { formatDate } from '~/utils/formatDate';
 import { RefreshIcon } from '~/icons/refreshIcon';
@@ -9,7 +9,6 @@ import { PlayIcon } from '~/icons/playIcon';
 import { Asset } from '~/types/assets.type';
 import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
 import { ConvertToClipsModal } from '../convert-to-clips-modal/convert-to-clips-modal.component';
-import { useConvertToClipsSubscription } from '~/graphqls/useConvertToClipsSubscription';
 import { useAssets } from '~/store/assets.slice';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { Toast } from '~/components/toast/toast.component';
@@ -33,27 +32,14 @@ export function AssetItem(props: Props) {
   const { t } = useTranslation('library');
   const assetsStore = useAssets();
   const menuOptionRef = useRef<HTMLButtonElement>(null);
+  const thumbnail = useGetThumbnail(170, 100, asset.mux?.asset.playback_ids[0].id);
   const [hover, setHover] = useState(false);
   const [hoverImage, setHoverImage] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [thumbnail, setThumbnail] = useState('');
   const [openErrorToast, setOpenErrorToast] = useState(false);
   const [openConvertToClipsModal, setOpenConvertToClipsModal] = useState(false);
 
-  const getThumbnail = useGetThumbnail();
-
-  useEffect(() => {
-    (async () => {
-      if (asset.mux) {
-        setThumbnail(await getThumbnail(asset.mux.asset.playback_ids[0].id, 170, 100))
-      }
-    })();
-  }, [asset.mux, getThumbnail]);
-
-  useConvertToClipsSubscription(asset.uuid, (assetId, status) => {
-    assetsStore.update(assetId, { status });
-  });
 
   function handleConvertToClips() {
     setOpenConvertToClipsModal(true);

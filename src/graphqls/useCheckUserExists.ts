@@ -4,10 +4,10 @@ import { Account } from './schema/account.type';
 
 export function useCheckUserExists() {
 
-  const query = useQuery<Account>();
+  const query = useQuery();
 
   return () => {
-    return query({
+    return query<Account>({
       name: 'checkUserExists',
       fetchPolicy: 'network-only',
       query: gql`

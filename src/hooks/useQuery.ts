@@ -5,11 +5,11 @@ interface Options extends QueryOptions {
   name: string;
 }
 
-export function useQuery<R = any>() {
+export function useQuery() {
 
   const client = useApolloClient();
 
-  return useCallback(async (options: Options) => {
+  return useCallback(async <R = any>(options: Options) => {
 
     const response = await client.query(options);
 

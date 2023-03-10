@@ -12,6 +12,7 @@ import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { EmptyLibrary } from './components/empty-library/empty-library.component';
 import { DropArea } from './components/drop-area/drop-area.component';
 import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
+import { useConvertToClipsSubscription } from '~/graphqls/useConvertToClipsSubscription';
 import { AssetItem } from './components/asset-item/asset-item.component';
 import { VideoModal } from './components/video-modal/video-modal.component';
 import { NoResultsFound } from './components/no-results-found/no-results-found.component';
@@ -41,6 +42,10 @@ function Library() {
 
   useAseetsUploaded(() => {
     assetsStore.fetchAll();
+  });
+
+  useConvertToClipsSubscription((assetId, status) => {
+    assetsStore.update(assetId, { status });
   });
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {

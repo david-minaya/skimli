@@ -10,7 +10,7 @@ interface Response {
   }
 }
 
-export function useConvertToClipsSubscription(assetId: string, cb: (assetId: string, status: Asset['status']) => void) {
+export function useConvertToClipsSubscription(cb: (assetId: string, status: Asset['status']) => void) {
 
   const client = useApolloClient();
 
@@ -18,17 +18,14 @@ export function useConvertToClipsSubscription(assetId: string, cb: (assetId: str
 
     const observable = client.subscribe<Response>({
       query: gql`
-        subscription ConvertToClipsWorkflowStatus($assetId: String!) {
-          convertToClipsWorkflowStatus(assetId: $assetId) {
+        subscription {
+          convertToClipsWorkflowStatus {
             activityStatus
             status
             assetId
           }
         }
-      `,
-      variables: {
-        assetId
-      }
+      `
     });
 
     const subscription = observable.subscribe(observer => {
