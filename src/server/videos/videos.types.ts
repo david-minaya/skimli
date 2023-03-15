@@ -4,9 +4,11 @@ import {
   Float,
   Int,
   ObjectType,
+  UseMiddleware,
   createUnionType,
   registerEnumType,
 } from "type-graphql";
+import { TransformClipsCaption } from "../middlewares/transform-clips-caption";
 import { MuxAsset, MuxTokens } from "../mux/mux.types";
 import {
   AcitivityStatus,
@@ -113,6 +115,7 @@ export class Clip implements IClip {
 @ObjectType()
 export class InferenceDataAnalysis implements IInferenceDataAnalysis {
   @Field(() => [Clip!]!)
+  @UseMiddleware(TransformClipsCaption())
   clips: Clip[];
 
   @Field(() => String)
