@@ -51,6 +51,14 @@ export interface GetAssetsArgs {
   uuid?: string;
 }
 
+export interface IAdminGetAssetsArgs {
+  take?: number;
+  skip?: number;
+  name?: string;
+  uuid?: string;
+  org: number;
+}
+
 export enum AcitivityStatus {
   QUEUED = "QUEUED",
   DOWNLOADING = "DOWNLOADING",
@@ -150,4 +158,61 @@ export interface AssetMetadata {
   size?: number;
   resolution?: AssetMetadataResolution;
   aspectRatio?: AssetMetadataAspectRatio;
+}
+
+export enum MediaType {
+  AUDIO = "AUDIO",
+  SUBTITLE = "SUBTITLE",
+}
+
+export enum MediaStatus {
+  PROCSESSING = "PROCSESSING",
+  READY = "READY",
+  ARCHIVED = "ARCHIVED",
+  DELETED = "DELETED",
+  ERRORED = "ERRORED",
+}
+
+export interface IMediaDetails {
+  sourceUrl: string;
+}
+
+export interface IMediaAssets {
+  ids?: string[];
+  count: number;
+}
+
+export interface IMedia {
+  uuid: string;
+  org: number;
+  name: string;
+  details: IMediaDetails;
+  type: MediaType;
+  status: MediaStatus;
+  createdAt: string;
+  updatedAt: string;
+  assets?: IMediaAssets;
+}
+
+export interface IStartMediaUploadArgs {
+  filename: string;
+  assetId: string;
+  type: MediaType;
+  languageCode?: string;
+}
+
+export interface ICreateMediaArgs {
+  name: string;
+  type: MediaType;
+  details: IMediaDetails;
+  status: MediaStatus;
+  assets?: { ids: string[]; count: number };
+  org: number;
+}
+
+export interface IGetAssetMediasArgs {
+  // is the video asset id
+  assetId?: string;
+  // uuid of the media to get media by id
+  uuid?: string;
 }

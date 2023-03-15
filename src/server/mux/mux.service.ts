@@ -1,4 +1,9 @@
-import Mux, { CreateAssetParams, InputInfo } from "@mux/mux-node";
+import Mux, {
+  CreateAssetParams,
+  CreateTrackParams,
+  InputInfo,
+  Track,
+} from "@mux/mux-node";
 import { Service } from "typedi";
 import config from "../../config";
 import { MuxError } from "../types/base.types";
@@ -15,7 +20,7 @@ const MUX_THUMBNAIL_BASE_URL = "https://image.mux.com";
 
 @Service()
 export class MuxService {
-  muxClient: Mux;
+  private muxClient: Mux;
 
   constructor() {
     this.muxClient = new Mux(config.mux.muxToken, config.mux.muxSecretKey);
@@ -52,6 +57,7 @@ export class MuxService {
 
       return { asset: asset, tokens: tokens };
     } catch (e) {
+      console.error(e);
       throw new MuxError(e);
     }
   }
@@ -60,15 +66,22 @@ export class MuxService {
     params: CreateAssetParams
   ): Promise<MuxCreateClipResponse> {
     try {
-      const asset = await this.muxClient.Video.Assets.create(params);
+      const asset = await this.muxClient.Video.Assets.create({ ...params });
       return asset as MuxCreateClipResponse;
     } catch (e) {
+      console.error(e);
       throw new MuxError(e);
     }
   }
 
   async getAssetInput(assetId: string): Promise<InputInfo[]> {
-    return this.muxClient.Video.Assets.inputInfo(assetId);
+    try {
+      const input = await this.muxClient.Video.Assets.inputInfo(assetId);
+      return input;
+    } catch (e) {
+      console.error(e);
+      throw new MuxError(e);
+    }
   }
 
   async getThumbnail(playbackId: string, params: IGetMuxThumbnailArgs) {
@@ -79,5 +92,21 @@ export class MuxService {
       params: params as any,
     });
     return `${MUX_THUMBNAIL_BASE_URL}/${playbackId}/thumbnail.png?token=${token}`;
+  }
+
+  async createTextTrack(
+    assetId: string,
+    params: CreateTrackParams
+  ): Promise<Track> {
+    try {
+      const track = await this.muxClient.Video.Assets.createTrack(
+        assetId,
+        params
+      );
+      return track;
+    } catch (e) {
+      console.error(e);
+      throw new MuxError(e);
+    }
   }
 }

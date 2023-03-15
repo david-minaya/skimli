@@ -3,7 +3,8 @@ import config from "../../config";
 import Container from "typedi";
 import { VideosService } from "../videos/videos.service";
 
-const ASSETS_PREFIX = "/assets/";
+const VIDEO_ASSETS_PREFIX = "/assets/";
+const MEDIA_ASSETS_PREFIX = "/media/";
 
 type SQSMessageBody = {
   Records: Array<{
@@ -56,9 +57,11 @@ export const assetUploadProcessor = Consumer.create({
       const key = decodeURIComponent(
         record?.s3?.object?.key.replace(/\+/g, " ")
       );
-      if (key.includes(ASSETS_PREFIX)) {
-        console.log(`s3 asset uploaded: ${bucket}/${key}`);
-        await videosService.handleS3AssetUploadEvent(bucket, key);
+      console.log(`s3 asset uploaded: ${bucket}/${key}`);
+      if (key.includes(VIDEO_ASSETS_PREFIX)) {
+        await videosService.onS3VideoUpload(bucket, key);
+      } else if (key.includes(MEDIA_ASSETS_PREFIX)) {
+        await videosService.onS3MediaUpload(bucket, key);
       }
     }
   },

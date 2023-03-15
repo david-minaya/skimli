@@ -23,12 +23,18 @@ import {
   ConvertToClipsArgs,
   DeleteAssetsArgs,
   GetAssetArgs,
+  GetAssetMediasArgs,
   GetAssetsArgs,
   GetPartUploadURLArgs,
+  StartMediaUploadArgs,
   StartUploadArgs,
   TestConvertToClipsWorkflowStatusArgs,
 } from "./videos.args";
-import { ASSET_UPLOAD_EVENT, CONVERT_TO_CLIPS_TOPIC } from "./videos.constants";
+import {
+  ASSET_UPLOAD_EVENT,
+  CONVERT_TO_CLIPS_TOPIC,
+  MEDIA_UPLOADED_EVENT,
+} from "./videos.constants";
 import { VideosService } from "./videos.service";
 import {
   Asset,
@@ -37,14 +43,57 @@ import {
   ConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus,
   GetPartUploadResponse,
+  Media,
   MuxData,
   StartUploadResponse,
 } from "./videos.types";
+
+@Resolver(() => ConvertToClipsWorkflowStatus)
+@Service()
+export class ConvertToClipsWorkflowStatusResolver {
+  constructor(private readonly videosService: VideosService) {}
+
+  @Authorized()
+  @FieldResolver(() => Asset, { nullable: true })
+  async asset(
+    @Root() root: ConvertToClipsWorkflowStatus,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<Asset | null> {
+    try {
+      const authInfo: AuthInfo = {
+        auth0: ctx?.auth0,
+        token: ctx?.token,
+      };
+      const asset = await this.videosService.getAsset(authInfo, root.assetId);
+      return asset;
+    } catch (e) {
+      console.error(
+        "unable to resolve asset field in convertToClipsWorkflow response",
+        e
+      );
+      return null;
+    }
+  }
+}
 
 @Service()
 @Resolver(() => Asset)
 export class VideosResolver {
   constructor(private readonly videosService: VideosService) {}
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => StartUploadResponse)
+  async startMediaUpload(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: StartMediaUploadArgs
+  ): Promise<StartUploadResponse> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.startMediaUpload(authInfo, args);
+  }
 
   @UseMiddleware(IsAppUserGuard)
   @Authorized()
@@ -206,32 +255,37 @@ export class VideosResolver {
     await pubSub.publish(CONVERT_TO_CLIPS_TOPIC, args);
     return true;
   }
-}
 
-@Resolver(() => ConvertToClipsWorkflowStatus)
-@Service()
-export class ConvertToClipsWorkflowStatusResolver {
-  constructor(private readonly videosService: VideosService) {}
-
+  @UseMiddleware(IsAppUserGuard)
   @Authorized()
-  @FieldResolver(() => Asset, { nullable: true })
-  async asset(
-    @Root() root: ConvertToClipsWorkflowStatus,
-    @Ctx() ctx: GraphQLContext
-  ): Promise<Asset | null> {
-    try {
-      const authInfo: AuthInfo = {
-        auth0: ctx?.auth0,
-        token: ctx?.token,
-      };
-      const asset = await this.videosService.getAsset(authInfo, root.assetId);
-      return asset;
-    } catch (e) {
-      console.error(
-        "unable to resolve asset field in convertToClipsWorkflow response",
-        e
-      );
-      return null;
-    }
+  @Subscription(() => Media, {
+    topics: MEDIA_UPLOADED_EVENT,
+    filter: ({
+      payload,
+      context,
+    }: {
+      payload: Media;
+      context: GraphQLContext;
+    }) => {
+      return Number(context.auth0!.organization_id) == payload.org;
+    },
+  })
+  async mediaUploads(@Root() media: Media): Promise<Media> {
+    return media;
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => [Media])
+  async getAssetMedias(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: GetAssetMediasArgs
+  ): Promise<Media[]> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+
+    return this.videosService.getAssetMedias(authInfo, args);
   }
 }

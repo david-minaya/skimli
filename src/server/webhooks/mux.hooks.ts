@@ -4,11 +4,9 @@ import Container from "typedi";
 import { VideosService } from "../videos/videos.service";
 import Mux from "@mux/mux-node";
 import AppConfig from "../../config";
+import { events } from "../mux/mux.constants";
 
 const videosService = Container.get<VideosService>(VideosService);
-
-const ASSET_READY_EVENT = "video.asset.ready";
-const ASSET_ERRED_EVENT = "video.asset.errored";
 
 const MUX_SIGNATURE_HEADER = "mux-signature";
 
@@ -41,7 +39,8 @@ export function verifyMuxWebhookMiddleware(
 export async function muxWebhook(req: Request, res: Response) {
   try {
     const { data, type } = req.body;
-    if (!(type == ASSET_READY_EVENT || type == ASSET_ERRED_EVENT)) {
+    if (!events.includes(type)) {
+      console.log("new mux event", type);
       return res.status(200).send("ok");
     }
 
@@ -50,28 +49,7 @@ export async function muxWebhook(req: Request, res: Response) {
       return res.status(200).send("ok");
     }
 
-    const passthrough = data.passthrough;
-    let payload: {
-      status: string;
-      passthrough: string;
-      playbackIds?: any;
-      assetId?: string;
-    };
-    if (type == ASSET_ERRED_EVENT) {
-      payload = {
-        status: data.status,
-        passthrough: passthrough,
-      };
-    } else {
-      payload = {
-        status: data.status,
-        playbackIds: data.playback_ids,
-        assetId: data.id,
-        passthrough: data.passthrough,
-      };
-    }
-
-    await videosService.handleMuxAssetReadyEvent(payload);
+    await videosService.onMuxWebhookEvent(type, data);
     return res.status(200).send("ok");
   } catch (e) {
     return res.status(200).send("ok");
