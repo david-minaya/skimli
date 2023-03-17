@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { useQuery } from '~/hooks/useQuery';
 
-export function useGetThumbnail(width: number, height: number, playbackId?: string) {
+export function useGetThumbnail(playbackId?: string, width?: number, height?: number, time?: number) {
 
   const query = useQuery();
   const [state, setState] = useState<string>();
@@ -12,15 +12,15 @@ export function useGetThumbnail(width: number, height: number, playbackId?: stri
       query<string>({
         name: 'getThumbnail',
         fetchPolicy: 'cache-first',
-        variables: { playbackId, width, height },
+        variables: { playbackId, width, height, time },
         query: gql`
-          query Query($playbackId: String!, $height: Int, $width: Int) {
-            getThumbnail(playbackId: $playbackId, width: $width, height: $height)
+          query Query($playbackId: String!, $width: Int, $height: Int, $time: Float) {
+            getThumbnail(playbackId: $playbackId, width: $width, height: $height, time: $time)
           }
         `
       }).then(value => setState(value));
     }
-  }, [query, width, height, playbackId])
+  }, [query, playbackId, width, height, time])
 
   return state;
 }

@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { Box, InputBase } from '@mui/material';
 import { style } from './text-field.style';
 
@@ -22,6 +22,13 @@ export function TextField(props: Props) {
     onBlur
   } = props;
 
+  const [focus, setFocus] = useState(false);
+
+  function handleBlur() {
+    setFocus(false);
+    onBlur?.();
+  }
+
   return (
     <Box 
       sx={[style.container, sx?.container as any]}>
@@ -32,11 +39,12 @@ export function TextField(props: Props) {
         </Box>
       }
       <InputBase
-        sx={[style.input, sx?.input as any]} 
+        sx={[style.input, sx?.input, focus && style.focus as any]} 
         value={value}
         disabled={disabled}
         onChange={onChange}
-        onBlur={onBlur}/>
+        onFocus={() => setFocus(true)}
+        onBlur={handleBlur}/>
     </Box>
   );
 }

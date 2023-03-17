@@ -8,17 +8,21 @@ export const style = Style({
   title: {
     display: 'flex',
     justifyContent: 'space-between',
-    fontSize: '12px'
+    fontSize: '12px',
+    marginBottom: '4px',
   },
   input: {
     width: '100%',
     fontSize: '15px',
+    backgroundColor: 'white',
     border: '1px solid #CCCCCC',
     borderRadius: '8px',
     padding: '4px 8px',
-    marginTop: '4px',
     '& .MuiInputBase-input': {
       padding: '0px'
-    }
+    },
+  },
+  focus: {
+    borderColor: 'primary.main'
   }
 });

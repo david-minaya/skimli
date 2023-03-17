@@ -12,5 +12,5 @@ export function formatSeconds(time: number) {
 }
 
 function format(time: number) {
-  return Math.trunc(time).toString().padStart(2, '0');
+  return Math.round(time).toString().padStart(2, '0');
 }

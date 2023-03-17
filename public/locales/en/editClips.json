@@ -1,0 +1,11 @@
+{
+  "title": "Edit Clips",
+  "account": "Personal Account - {{email}}",
+  "addButton": "Add a clip",
+  "stitchButton": "Stitch clips",
+  "dateTitle": "Created",
+  "resetButton": "Reset to AI version",
+  "adjustButton": "Adjust this clip",
+  "noCaptionFound": "No caption found",
+  "clipListTitle": "Clips"
+}

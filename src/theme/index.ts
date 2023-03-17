@@ -71,6 +71,27 @@ export const theme = responsiveFontSizes(createTheme({
       styleOverrides: {
         "*": {
           boxSizing: "border-box",
+          '&::-webkit-scrollbar': {
+            width: '12px',
+            backgroundColor: 'white',
+            padding: '0px 8px'
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: '#D9D9D9',
+            borderRadius: '8px'
+          },
+          '&::-webkit-scrollbar-button:single-button:start': {
+            backgroundImage: 'url("/images/scrollbar-up-arrow.svg")',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'contain',
+            backgroundPosition: 'center'
+          },
+          '&::-webkit-scrollbar-button:single-button:end': {
+            backgroundImage: 'url("/images/scrollbar-down-arrow.svg")',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'contain',
+            backgroundPosition: 'center'
+          }
         },
         body: {
           height: '100vh',

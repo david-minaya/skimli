@@ -15,6 +15,8 @@ import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { Toast } from '~/components/toast/toast.component';
 import { StatusTag } from '../status-tag/status-tag.component';
 import { style } from './asset-item.style';
+import { useRouter } from 'next/router';
+import { useAccount } from '~/store/account.slice';
 
 interface Props {
   asset: Asset;
@@ -30,10 +32,13 @@ export function AssetItem(props: Props) {
     onClick,
   } = props;
 
-  const { t } = useTranslation('library');
+  const router = useRouter();
   const assetsStore = useAssets();
+  const accountStore = useAccount();
+  const account = accountStore.get();
   const menuOptionRef = useRef<HTMLButtonElement>(null);
-  const thumbnail = useGetThumbnail(170, 100, asset.mux?.asset.playback_ids[0].id);
+  const thumbnail = useGetThumbnail(asset.mux?.asset.playback_ids[0].id, 170, 100);
+  const { t } = useTranslation('library');
   const [hover, setHover] = useState(false);
   const [hoverImage, setHoverImage] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -50,6 +55,11 @@ export function AssetItem(props: Props) {
 
   function handleConvertToClips() {
     setOpenConvertToClipsModal(true);
+    setOpenMenu(false);
+  }
+
+  function handleEdit() {
+    router.push(`/organizations/${account?.org}/assets/${asset.uuid}/clips`)
     setOpenMenu(false);
   }
 
@@ -155,7 +165,8 @@ export function AssetItem(props: Props) {
           </MenuItem>
         }
         {asset.status === 'CONVERTED' &&
-          <MenuItem>
+          <MenuItem
+            onClick={handleEdit}>
             {t('assetItem.menu.edit')}
           </MenuItem>
         }

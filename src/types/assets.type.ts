@@ -1,3 +1,4 @@
+import { Clip } from './clips.type';
 import { MuxAsset } from './muxAsset.type';
 
 export interface AudioTrack {
@@ -37,5 +38,12 @@ export interface Asset {
       container_format: string;
       tracks: (AudioTrack | VideoTrack)[]
     }
-  }[]
+  }[],
+  inferenceData?: {
+    analysis: {
+      clips: Clip[];
+      model: string;
+      createdAt: string;
+    }
+  }
 }

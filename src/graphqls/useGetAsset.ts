@@ -3,16 +3,16 @@ import { gql } from '@apollo/client';
 import { Asset } from '~/types/assets.type';
 import { useQuery } from '~/hooks/useQuery';
 
-export function useGetAssets() {
+export function useGetAsset() {
 
   const query = useQuery();
 
-  return useCallback(async (name?: string) => {
-    return query<Asset[]>({
-      name: 'getAssets',
+  return useCallback(async (id: string) => {
+    return query<Asset>({
+      name: 'getAsset',
       query: gql`
-        query GetAssets($name: String) {
-          getAssets(name: $name) {
+        query GetAsset($id: String!) {
+          getAsset(uuid: $id) {
             uuid
             createdAt
             updatedAt
@@ -81,7 +81,7 @@ export function useGetAssets() {
           }
         }
       `,
-      variables: { name },
+      variables: { id },
       fetchPolicy: 'network-only'
     });
   }, [query]);

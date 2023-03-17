@@ -68,6 +68,22 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
                   }
                 }
               }
+              inferenceData {
+                analysis {
+                  clips {
+                    uuid
+                    caption
+                    startTime
+                    endTime
+                    duration
+                    startFrame
+                    endFrame
+                    source
+                  }
+                  model
+                  createdAt
+                }
+              }
             }
           }
         }
