@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import {
   IsArray,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -17,6 +18,8 @@ import {
   AcitivityStatus,
   AssetStatus,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
+  IStartMediaUploadArgs,
+  MediaType,
 } from "../types/videos.types";
 
 @ArgsType()
@@ -156,4 +159,36 @@ export class GetAssetArgs {
   @Field(() => String)
   @IsUUID()
   uuid: string;
+}
+
+@ArgsType()
+export class StartMediaUploadArgs implements IStartMediaUploadArgs {
+  @Field(() => String)
+  @Validate(IsValidFilename)
+  @IsString()
+  @IsNotEmpty()
+  filename: string;
+
+  @Field(() => String)
+  @IsUUID()
+  @IsString()
+  @IsNotEmpty()
+  assetId: string;
+
+  @Field(() => MediaType)
+  @IsEnum(MediaType)
+  type: MediaType;
+
+  @Field(() => String)
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  languageCode?: string = "en";
+}
+
+@ArgsType()
+export class GetAssetMediasArgs {
+  @Field(() => String, { description: "video asset's uuid" })
+  @IsUUID()
+  assetId: string;
 }

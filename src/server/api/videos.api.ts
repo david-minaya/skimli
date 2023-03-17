@@ -9,6 +9,7 @@ import { Service } from "typedi";
 import config from "../../config";
 import { APIError } from "../types/base.types";
 import {
+  IAdminGetAssetsArgs,
   Asset,
   ConvertToClipsArgs,
   ConvertToClipsWorkflowResponse,
@@ -18,6 +19,9 @@ import {
   GetAssetsArgs,
   UpdateAssetRequest,
   UpdateAssetResponse,
+  ICreateMediaArgs,
+  IMedia,
+  IGetAssetMediasArgs,
 } from "../types/videos.types";
 import {
   axiosRequestErrorLoggerInterceptor,
@@ -164,6 +168,57 @@ export class VideosAPI {
           },
         });
       } else throw new APIError(e);
+    }
+  }
+
+  async adminGetAssets(params: IAdminGetAssetsArgs): Promise<Asset[]> {
+    const { org, ...rest } = params;
+    try {
+      const response = await this.api.get(`/video/v1/admin/assets/${org}`, {
+        params: rest,
+      });
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adminCreateMedia(params: ICreateMediaArgs): Promise<IMedia> {
+    try {
+      const response = await this.api.post("/video/v1/admin/media", params);
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adminUpdateMedia(
+    mediaId: string,
+    params: Partial<ICreateMediaArgs>
+  ): Promise<IMedia> {
+    try {
+      const response = await this.api.put(
+        `/video/v1/admin/media/${mediaId}`,
+        params
+      );
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async getAssetMedias(
+    params: IGetAssetMediasArgs,
+    token: string
+  ): Promise<IMedia[]> {
+    try {
+      const response = await this.api.get("/video/v1/media", {
+        headers: { ...generateAuthHeaders(token) },
+        params: params,
+      });
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
     }
   }
 }

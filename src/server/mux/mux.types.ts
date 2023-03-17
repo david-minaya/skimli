@@ -8,12 +8,11 @@ import {
 } from "class-validator";
 import {
   ArgsType,
-  createUnionType,
   Field,
   Float,
-  InputType,
   Int,
   ObjectType,
+  createUnionType,
   registerEnumType,
 } from "type-graphql";
 
@@ -62,7 +61,11 @@ export interface MuxAssetErredEvent {
   };
 }
 
-export type MuxAssetReadyEventPayload = {
+export interface MuxBaseEvent {
+  passthrough: string;
+}
+
+export interface MuxAssetReadyEventPayload extends MuxBaseEvent {
   status: string;
   playbackIds?: Array<{
     policy: string;
@@ -70,7 +73,7 @@ export type MuxAssetReadyEventPayload = {
   }>;
   assetId?: string;
   passthrough: string;
-};
+}
 
 export type TrackStatus = "preparing" | "ready" | "errored";
 
@@ -309,4 +312,34 @@ export class GetMuxThumbnailArgs implements IGetMuxThumbnailArgs {
   @IsBoolean()
   @IsOptional()
   flip_h?: boolean;
+}
+
+export interface MuxTrackReadyEvent extends MuxBaseEvent {
+  type: string;
+  text_type: string;
+  text_source: string;
+  status: string;
+  passthrough: string;
+  name: string;
+  language_code: string;
+  id: string;
+  asset_id: string;
+}
+
+export interface MuxTrackErrorEvent extends MuxBaseEvent {}
+
+export interface MuxAssetUpdatedEvent extends MuxBaseEvent {
+  id: string;
+  status: string;
+  tracks?: typeof Track[];
+  static_renditions?: StaticRenditions;
+  playback_ids?: PlaybackId[];
+  passthrough: string;
+  mp4_support?: string;
+  max_stored_resolution?: string;
+  max_stored_frame_rate?: number;
+  master_access?: string;
+  duration?: number;
+  created_at?: number;
+  aspect_ratio?: string;
 }

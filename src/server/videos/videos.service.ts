@@ -12,13 +12,24 @@ import { AccountsService } from "../accounts/accounts.service";
 import { VideosAPI } from "../api/videos.api";
 import pubSub from "../common/pubsub";
 import { MuxService } from "../mux/mux.service";
-import { MuxAssetReadyEventPayload } from "../mux/mux.types";
+import {
+  MuxAssetErredEvent,
+  MuxAssetReadyEvent,
+  MuxAssetReadyEventPayload,
+  MuxAssetUpdatedEvent,
+  MuxTrackErrorEvent,
+  MuxTrackReadyEvent,
+} from "../mux/mux.types";
 import { AuthInfo, InternalGraphQLError } from "../types/base.types";
 import {
   AssetStatus,
   ConvertToClipsArgs,
   ConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus,
+  IGetAssetMediasArgs,
+  IMedia,
+  IStartMediaUploadArgs,
+  MediaStatus,
 } from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
 import {
@@ -28,7 +39,11 @@ import {
   GetPartUploadURLArgs as GetPartUploadArgs,
   StartUploadArgs,
 } from "./videos.args";
-import { ASSET_UPLOAD_EVENT, CONVERT_TO_CLIPS_TOPIC } from "./videos.constants";
+import {
+  ASSET_UPLOAD_EVENT,
+  CONVERT_TO_CLIPS_TOPIC,
+  MEDIA_UPLOADED_EVENT,
+} from "./videos.constants";
 import {
   Asset,
   AssetUploads,
@@ -36,6 +51,14 @@ import {
   MuxData,
   StartUploadResponse,
 } from "./videos.types";
+import { v4 } from "uuid";
+import {
+  ASSET_ERRED_EVENT,
+  ASSET_READY_EVENT,
+  ASSET_UPDATED_EVENT,
+  TRACK_ERRED_EVENT,
+  TRACK_READY_EVENT,
+} from "../mux/mux.constants";
 
 @Service()
 export class VideosService {
@@ -134,7 +157,7 @@ export class VideosService {
     return path.parse(key).name;
   }
 
-  async handleS3AssetUploadEvent(bucket: string, key: string): Promise<void> {
+  async onS3VideoUpload(bucket: string, key: string): Promise<void> {
     const signedObjectURL = await this.s3Service.getObjectSignedURL({
       Bucket: bucket,
       Key: key,
@@ -159,47 +182,136 @@ export class VideosService {
       input: [{ url: signedObjectURL }],
       mp4_support: "standard",
       playback_policy: "signed",
-      passthrough: `${org}#${createdAsset?.uuid}`,
+      passthrough: `video#${org}#${createdAsset?.uuid}`,
     });
     console.log("mux asset uploaded: ", asset.id);
   }
 
-  async handleMuxAssetReadyEvent(
-    event: MuxAssetReadyEventPayload
-  ): Promise<void> {
-    const [org, videoAssetId] = event.passthrough.split("#");
-    if (!videoAssetId || !org) return;
-    console.log(
-      `received mux webhook org: ${org} videoId: ${videoAssetId} and event: `,
-      event
+  async onS3MediaUpload(bucket: string, key: string): Promise<void> {
+    const object = await this.s3Service.getObject({
+      Bucket: bucket,
+      Key: key,
+    });
+    const metadata: IStartMediaUploadArgs = JSON.parse(
+      object.Metadata?.metadata || "null"
     );
-    const organizationId = Number(org);
+    if (!metadata) {
+      console.warn(`metadata not found for: ${bucket}/${key}`);
+      return;
+    }
 
-    const assetInput = await this.muxService.getAssetInput(event.assetId!);
-    const assetInfo = await this.muxService.getMuxAsset(event.assetId!);
-    const [_, error] = await this.videosAPI.adminUpdateAsset(videoAssetId, {
+    const org = this.getOrgFromKey(key);
+    const filename = this.getFilenameFromKey(key);
+    const signedObjectURL = await this.s3Service.getObjectSignedURL({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    const [video] = await this.videosAPI.adminGetAssets({
+      org: org,
+      uuid: metadata.assetId,
+    });
+    const media = await this.videosAPI.adminCreateMedia({
+      name: filename,
+      details: { sourceUrl: `s3://${bucket}/${key}` },
+      type: metadata.type,
+      assets: { ids: [video.uuid], count: 1 },
+      status: MediaStatus.PROCSESSING,
+      org: org,
+    });
+
+    const track = await this.muxService.createTextTrack(
+      video?.sourceMuxAssetId,
+      {
+        name: filename,
+        url: signedObjectURL,
+        language_code: metadata.languageCode!,
+        text_type: "subtitles" as const,
+        type: "text" as const,
+        passthrough: `media#${org}#${media.uuid}`,
+      }
+    );
+
+    console.log(`track ${track.id} added for mux asset ${metadata.assetId}`);
+  }
+
+  async updateAssetInfo(videoId: string, assetId: string): Promise<void> {
+    const assetInput = await this.muxService.getAssetInput(assetId);
+    const assetInfo = await this.muxService.getMuxAsset(assetId);
+    const [_, error] = await this.videosAPI.adminUpdateAsset(videoId, {
       status: AssetStatus.UNCONVERTED,
-      sourceMuxAssetId: event?.assetId,
+      sourceMuxAssetId: assetId,
       sourceMuxInputInfo: assetInput,
       sourceMuxAssetData: assetInfo!.asset,
     });
     if (error != null) {
+      console.error("error", error);
       Sentry.captureException(error);
     }
+  }
 
-    if (event?.assetId) {
-      const payload: AssetUploads = {
-        status: AssetStatus.CONVERTING,
-        assetId: event.assetId,
-        org: organizationId,
+  async handleMuxEvent({
+    event,
+    payload,
+    org,
+    passthrough,
+  }: {
+    org: number;
+    event: string;
+    passthrough: string;
+    payload:
+      | MuxAssetReadyEventPayload
+      | MuxAssetErredEvent
+      | MuxTrackReadyEvent
+      | MuxTrackErrorEvent;
+  }) {
+    if (event == ASSET_READY_EVENT || event == ASSET_ERRED_EVENT) {
+      const data = payload as MuxAssetReadyEvent;
+      await this.updateAssetInfo(passthrough, data.id);
+      const eventPayload: AssetUploads = {
+        status:
+          data?.status == "ready"
+            ? AssetStatus.UNCONVERTED
+            : AssetStatus.ERRORED,
+        assetId: data.id,
+        org: org,
       };
-      await pubSub.publish(ASSET_UPLOAD_EVENT, payload);
-    } else {
-      await pubSub.publish(ASSET_UPLOAD_EVENT, {
-        status: AssetStatus.ERRORED,
-        org: organizationId,
+      await pubSub.publish(ASSET_UPLOAD_EVENT, eventPayload);
+    } else if (event == TRACK_READY_EVENT || event == TRACK_ERRED_EVENT) {
+      const data = payload as MuxTrackReadyEvent;
+      const media = await this.videosAPI.adminUpdateMedia(passthrough, {
+        status: data?.asset_id ? MediaStatus.READY : MediaStatus.ERRORED,
+        org: org,
       });
+      await pubSub.publish(MEDIA_UPLOADED_EVENT, media);
+    } else if (event == ASSET_UPDATED_EVENT) {
+      const data = payload as MuxAssetUpdatedEvent;
+      await this.updateAssetInfo(passthrough, data.id);
     }
+  }
+
+  async onMuxWebhookEvent(
+    event: string,
+    payload:
+      | MuxAssetReadyEventPayload
+      | MuxTrackReadyEvent
+      | MuxAssetErredEvent
+      | MuxTrackErrorEvent
+  ): Promise<void> {
+    if (payload.passthrough.split("#").length < 3) return;
+
+    const [_type, org, passthroughId] = payload.passthrough.split("#");
+    if (!_type || !org || !passthroughId) return;
+    console.log(
+      `received mux webhook ${_type} org: ${org} passthroughId: ${passthroughId}`
+    );
+
+    await this.handleMuxEvent({
+      event: event,
+      passthrough: passthroughId,
+      org: Number(org),
+      payload: payload,
+    });
   }
 
   async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<Asset[]> {
@@ -245,5 +357,52 @@ export class VideosService {
     workflowStatus: ConvertToClipsWorkflowStatus
   ): Promise<void> {
     await pubSub.publish(CONVERT_TO_CLIPS_TOPIC, workflowStatus);
+  }
+
+  async startMediaUpload(
+    authInfo: AuthInfo,
+    args: IStartMediaUploadArgs
+  ): Promise<StartUploadResponse> {
+    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
+    const key = `org/${user?.org}/media/${args.assetId}/${args.filename}`;
+
+    let asset: GetObjectOutput | null = null;
+    try {
+      asset = await this.s3Service.getObject({
+        Bucket: config.aws.assetsS3Bucket,
+        Key: key,
+      });
+    } catch (e) {
+      if ((e as any).code == "NotFound") {
+      } else {
+        console.error(e);
+        throw new InternalGraphQLError(e);
+      }
+    }
+
+    if (asset) {
+      throw new GraphQLError("Media already exists in library");
+    }
+
+    try {
+      const uploaded = await this.s3Service.startMultiPartUpload({
+        Bucket: config.aws.assetsS3Bucket,
+        Key: key,
+        Metadata: {
+          metadata: JSON.stringify(args),
+        },
+      });
+      return { key: uploaded.Key!, uploadId: uploaded!.UploadId! };
+    } catch (e) {
+      console.error(e);
+      throw new InternalGraphQLError(e);
+    }
+  }
+
+  async getAssetMedias(
+    authInfo: AuthInfo,
+    args: IGetAssetMediasArgs
+  ): Promise<IMedia[]> {
+    return this.videosAPI.getAssetMedias(args, authInfo.token);
   }
 }

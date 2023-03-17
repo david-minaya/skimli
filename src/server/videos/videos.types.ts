@@ -4,9 +4,11 @@ import {
   Float,
   Int,
   ObjectType,
+  UseMiddleware,
   createUnionType,
   registerEnumType,
 } from "type-graphql";
+import { TransformClipsCaption } from "../middlewares/transform-clips-caption";
 import { MuxAsset, MuxTokens } from "../mux/mux.types";
 import {
   AcitivityStatus,
@@ -21,10 +23,15 @@ import {
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
   IInferenceData,
   IInferenceDataAnalysis,
+  IMedia,
+  IMediaAssets,
+  IMediaDetails,
   SourceMuxInput as ISourceMuxInput,
   SourceMuxInputFile as ISourceMuxInputFile,
   SourceMuxInputSettings as ISourceMuxInputSettings,
   SourceMuxInputTrack as ISourceMuxInputTrack,
+  MediaStatus,
+  MediaType,
 } from "../types/videos.types";
 
 registerEnumType(AssetStatus, {
@@ -108,6 +115,7 @@ export class Clip implements IClip {
 @ObjectType()
 export class InferenceDataAnalysis implements IInferenceDataAnalysis {
   @Field(() => [Clip!]!)
+  @UseMiddleware(TransformClipsCaption())
   clips: Clip[];
 
   @Field(() => String)
@@ -209,7 +217,7 @@ export class Asset implements IAsset {
 
 @ObjectType()
 export class SourceMuxInputFile implements ISourceMuxInputFile {
-  @Field(() => [SourceMuxInputTrackType])
+  @Field(() => [SourceMuxInputTrackType], { nullable: true })
   tracks: SourceMuxInputTrack[];
 
   @Field(() => String)
@@ -344,4 +352,52 @@ export class ConvertToClipsWorkflowResponse
 
   @Field(() => String, { description: "asset's uuid" })
   asset: string;
+}
+
+registerEnumType(MediaType, { name: "MediaType" });
+registerEnumType(MediaStatus, { name: "MediaStatus" });
+
+@ObjectType()
+export class MediaDetails implements IMediaDetails {
+  @Field(() => String)
+  sourceUrl: string;
+}
+
+@ObjectType()
+export class MediaAssets implements IMediaAssets {
+  @Field(() => [String], { nullable: true })
+  ids?: string[];
+
+  @Field(() => Int)
+  count: number;
+}
+
+@ObjectType()
+export class Media implements IMedia {
+  @Field(() => String)
+  uuid: string;
+
+  @Field(() => Int)
+  org: number;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => MediaDetails, { nullable: true })
+  details: MediaDetails;
+
+  @Field(() => MediaType)
+  type: MediaType;
+
+  @Field(() => MediaStatus)
+  status: MediaStatus;
+
+  @Field(() => String)
+  createdAt: string;
+
+  @Field(() => String)
+  updatedAt: string;
+
+  @Field(() => MediaAssets, { nullable: true })
+  assets?: MediaAssets;
 }
