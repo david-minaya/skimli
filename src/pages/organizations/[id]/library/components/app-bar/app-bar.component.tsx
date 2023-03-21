@@ -5,7 +5,7 @@ import { Toast } from '~/components/toast/toast.component';
 import { ClearSelectionIcon } from '~/icons/clearSelectionIcon';
 import { DeleteIcon } from '~/icons/deleteIcon';
 import { useAssets } from '~/store/assets.slice';
-import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
+import { DeleteDialog } from '~/components/delete-dialog/delete-dialog.component';
 import { DropDownButton } from '../drop-down-button/drop-down-button.component';
 import { SearchField } from '../../../../../../components/search-field/search-field.component';
 import { style } from './app-bar.style';

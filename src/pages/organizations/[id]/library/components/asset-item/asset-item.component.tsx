@@ -7,7 +7,7 @@ import { RefreshIcon } from '~/icons/refreshIcon';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { PlayIcon } from '~/icons/playIcon';
 import { Asset } from '~/types/assets.type';
-import { DeleteDialog } from '../delete-dialog/delete-dialog.component';
+import { DeleteDialog } from '~/components/delete-dialog/delete-dialog.component';
 import { ConvertToClipsModal } from '../convert-to-clips-modal/convert-to-clips-modal.component';
 import { WorkflowStatusModal } from '../workflow-status-modal/workflow-status-modal.component';
 import { useAssets } from '~/store/assets.slice';
