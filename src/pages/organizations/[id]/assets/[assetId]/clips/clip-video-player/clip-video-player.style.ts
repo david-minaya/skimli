@@ -12,10 +12,6 @@ export const style = Style({
     flexGrow: 1,
     backgroundColor: 'black'
   },
-  videoFullScreen: {
-    width: 'initial',
-    height: 0
-  },
   controls: {
     height: '40px',
     display: 'flex',

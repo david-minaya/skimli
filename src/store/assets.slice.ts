@@ -36,7 +36,7 @@ export const assetsSlice = createSlice({
         id: action.payload.uuid!,
         changes: {
           ...action.payload,
-          inferenceData: processInferenceData(action.payload.inferenceData)
+          ...processInferenceData(action.payload.inferenceData)
         }
       })
     },
@@ -44,16 +44,16 @@ export const assetsSlice = createSlice({
     add(state, action: PayloadAction<Asset>) {
       adapter.upsertOne(state, {
         ...action.payload,
+        ...processInferenceData(action.payload.inferenceData),
         selected: false,
-        inferenceData: processInferenceData(action.payload.inferenceData)
       });
     },
 
     addAll(state, action: PayloadAction<Asset[]>) {
       adapter.setAll(state, action.payload.map(asset => ({
         ...asset, 
+        ...processInferenceData(asset.inferenceData),
         selected: state.selectedIds.find(id => id === asset.uuid) !== undefined,
-        inferenceData: processInferenceData(asset.inferenceData)
       })));
     },
     
@@ -208,20 +208,22 @@ export function useAssets() {
   }), []);
 }
 
-function processInferenceData(inferenceData: Asset['inferenceData']): Asset['inferenceData'] {
+function processInferenceData(inferenceData: Asset['inferenceData']) {
   if (inferenceData) {
     return {
-      analysis: {
-        ...inferenceData.analysis,
-        clips: inferenceData.analysis.clips.map(clip => {
-          return {
-            ...clip,
-            startTime: toSeconds(clip.startTime as any),
-            endTime: toSeconds(clip.endTime as any),
-            duration: toSeconds(clip.duration as any),
-            selected: false
-          }
-        })
+      inferenceData: {
+        analysis: {
+          ...inferenceData.analysis,
+          clips: inferenceData.analysis.clips.map(clip => {
+            return {
+              ...clip,
+              startTime: toSeconds(clip.startTime as any),
+              endTime: toSeconds(clip.endTime as any),
+              duration: toSeconds(clip.duration as any),
+              selected: false
+            }
+          })
+        }
       }
     }
   }

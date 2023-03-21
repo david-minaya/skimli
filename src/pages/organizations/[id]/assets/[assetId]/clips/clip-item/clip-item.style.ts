@@ -41,9 +41,9 @@ export const style = Style({
     marginTop: '8px'
   },
   title: {
-    color: '#111827',
+    color: 'black',
     fontWeight: 500,
-    fontSize: '15px'
+    fontSize: '14px'
   },
   time: {
     color: '#6B7280',

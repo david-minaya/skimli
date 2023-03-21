@@ -7,7 +7,6 @@ import { Clip } from '~/types/clips.type';
 import { PlayIcon } from '~/icons/playIcon';
 import { PauseIcon } from '~/icons/pauseIcon';
 import { formatSeconds } from '~/utils/formatSeconds';
-import { FullscreenIcon } from '~/icons/fullscreenIcon';
 import { VolumeIcon } from '~/icons/volumeIcon';
 import { MuteIcon } from '~/icons/muteIcon';
 
@@ -30,7 +29,6 @@ export function ClipVideoPlayer(props: Props) {
   const volumeRef = useRef<HTMLButtonElement>(null);
   const [play, setPlay] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [fullscreen, setFullscreen] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(0);
@@ -78,16 +76,6 @@ export function ClipVideoPlayer(props: Props) {
       videoRef.current!.pause();   
     }
   }
-
-  function handleFullScreen() {
-    if (!fullscreen) {
-      containerRef.current!.requestFullscreen();
-      setFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setFullscreen(false);
-    }
-  }
   
   function handleUpdateVolume(event: Event, value: number | number[]) {
     videoRef.current!.volume = (value as number) / 100;
@@ -104,10 +92,7 @@ export function ClipVideoPlayer(props: Props) {
       ref={containerRef}>
       {/* @ts-ignore */}
       <Video
-        sx={[
-          style.video,
-          fullscreen && style.videoFullScreen as any
-        ]}
+        sx={style.video}
         ref={videoRef}
         playsInline={true}
         playbackId={`${asset.mux?.asset.playback_ids[0].id}?token=${asset.mux?.tokens.video}`}
@@ -165,11 +150,6 @@ export function ClipVideoPlayer(props: Props) {
             </Popper>
           </Box>
         </ClickAwayListener>
-        <IconButton
-          size='small'
-          onClick={handleFullScreen}>
-          <FullscreenIcon/>
-        </IconButton>
       </Box>
     </Box>
   )

@@ -40,12 +40,6 @@
     "error": "Select a category",
     "button": "Submit"
   },
-  "deleteDialog": {
-    "title": "Are you sure you want to do that?",
-    "description": "Your video(s) will be removed from your library, and cannot be recovered after you click delete. Your conversions will not appear in any places where they are embedded, and anyone you previously shared the link with will not be able to access your content.",
-    "cancelButton": "Cancel",
-    "confirmButton": "Confirm"
-  },
   "workflowStatusModal": {
     "assetIdTitle": "Asset ID",
     "workflowDetails": "Workflow Details",
@@ -69,9 +63,6 @@
     "audioTrackTitle": "Main Audio Track",
     "sampleRatio": "Sample ratio",
     "channels": "Channels"
-  },
-  "searchField": {
-    "placeholder": "Search"
   },
   "noResultsFound": {
     "description": "No search results found for “{{search}}”"

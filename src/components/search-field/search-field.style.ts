@@ -17,6 +17,7 @@ export const style = Style({
   icon: {
     width: '20px',
     height: '20px',
+    flexShrink: 0,
     color: '#555555'
   },
   input: {

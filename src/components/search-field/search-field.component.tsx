@@ -4,16 +4,18 @@ import { useTranslation } from 'next-i18next';
 import { CloseIcon } from '~/icons/closeIcon';
 import { SearchIcon } from '~/icons/searchIcon';
 import { style } from './search-field.style';
+import { mergeSx } from '~/utils/style';
 
 interface Props {
+  sx?: Partial<typeof style>;
   onChange: (value?: string) => void;
 }
 
 export function SearchField(props: Props) {
 
-  const { onChange } = props;
+  const { sx, onChange } = props;
 
-  const { t } = useTranslation('library');
+  const { t } = useTranslation('components');
   const [value, setValue] = useState('');
   const [focus, setFocus] = useState(false);
 
@@ -39,10 +41,11 @@ export function SearchField(props: Props) {
   }
 
   return (
-    <Box sx={[style.container, focus && style.focus as any]}>
-      <SearchIcon sx={style.icon}/>
+    <Box 
+      sx={mergeSx(style.container, focus && style.focus, sx?.container)}>
+      <SearchIcon sx={mergeSx(style.icon, sx?.icon)}/>
       <InputBase 
-        sx={style.input}
+        sx={mergeSx(style.input, sx?.input)}
         value={value}
         placeholder={t('searchField.placeholder')}
         onChange={handleChange}
@@ -52,7 +55,7 @@ export function SearchField(props: Props) {
         <IconButton 
           size='small'
           onClick={handleClear}>
-          <CloseIcon sx={style.icon}/>
+          <CloseIcon sx={mergeSx(style.icon, sx?.icon)}/>
         </IconButton>
       }
     </Box>

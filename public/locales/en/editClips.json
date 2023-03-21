@@ -1,11 +1,21 @@
 {
   "title": "Edit Clips",
   "account": "Personal Account - {{email}}",
+  "deleteOption": "Delete",
   "addButton": "Add a clip",
   "stitchButton": "Stitch clips",
   "dateTitle": "Created",
   "resetButton": "Reset to AI version",
   "adjustButton": "Adjust this clip",
   "noCaptionFound": "No caption found",
-  "clipListTitle": "Clips"
+  "clipListTitle": "Clips",
+  "errorToast": "Error deleting asset",
+  "clips": {
+    "menu": {
+      "clips": "Clips",
+      "sourceView": "Source view"
+    },
+    "counter_one": "{{count}} Clip",
+    "counter_other": "{{count}} Clips"
+  }
 }
