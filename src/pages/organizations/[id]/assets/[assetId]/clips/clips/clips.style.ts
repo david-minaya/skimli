@@ -7,11 +7,6 @@ export const style = Style({
     flexDirection: 'column',
     padding: '8px 4px 8px 8px'
   },
-  title: {
-    flexShrink: 0,
-    fontWeight: 600,
-    color: 'black'
-  },
   select: {
     flexShrink: 0,
     fontWeight: 600,

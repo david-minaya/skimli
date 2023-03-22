@@ -8,6 +8,7 @@ import { useAssets } from '~/store/assets.slice';
 import { useAsyncEffect } from '~/hooks/useAsyncEffect';
 import { Clips } from './clips/clips.component';
 import { ClipDetails } from './clip-details/clip-details.component';
+import { Sidebar } from './sidebar/sidebar.component';
 import { style } from './index.style';
 
 function EditClips() {
@@ -32,6 +33,7 @@ function EditClips() {
         <Box sx={style.content}>
           <Clips asset={asset}/>
           <ClipDetails asset={asset}/>
+          <Sidebar/>
         </Box>
       </Box>
     </Main>

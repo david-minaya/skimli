@@ -22,33 +22,33 @@ export function ClipDetails(props: Props) {
     return new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(Date.parse(date));
   }
 
-  if (!clip) return null;
-
   return (
     <Box sx={style.container}>
       <Box sx={style.toolbar}>
         <OutlinedButton sx={style.addButton} title={t('addButton')}/>
         <OutlinedButton title={t('stitchButton')}/>
       </Box>
-      <Box sx={style.content}>
-        <TextField
-          sx={style.titleInput as any}
-          value={clip.caption}/>
-        <ClipVideoPlayer
-          asset={asset}
-          clip={clip}/>
-        <Box sx={style.info}>
-          <Box sx={style.dateContainer}>
-            <Box sx={style.dateTitle}>{t('dateTitle')}</Box>
-            <Box sx={style.date}>{formatDate(asset.inferenceData!.analysis.createdAt)}</Box>
+      {clip &&
+        <Box sx={style.content}>
+          <TextField
+            sx={style.titleInput as any}
+            value={clip.caption}/>
+          <ClipVideoPlayer
+            asset={asset}
+            clip={clip}/>
+          <Box sx={style.info}>
+            <Box sx={style.dateContainer}>
+              <Box sx={style.dateTitle}>{t('dateTitle')}</Box>
+              <Box sx={style.date}>{formatDate(asset.inferenceData!.analysis.createdAt)}</Box>
+            </Box>
+            <OutlinedButton
+              sx={style.resetButton} 
+              title={t('resetButton')}/>
+            <OutlinedButton 
+              title={t('adjustButton')}/>
           </Box>
-          <OutlinedButton
-            sx={style.resetButton} 
-            title={t('resetButton')}/>
-          <OutlinedButton 
-            title={t('adjustButton')}/>
         </Box>
-      </Box>
+      }
     </Box>
   )
 }

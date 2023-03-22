@@ -17,5 +17,27 @@
     },
     "counter_one": "{{count}} Clip",
     "counter_other": "{{count}} Clips"
+  },
+  "shareTab": {
+    "share": "Social share",
+    "download": "Download",
+    "aspectRatioItems": {
+      "original": {
+        "title": "16:9 - Original",
+        "description": "Same as source"
+      },
+      "square": {
+        "title": "1:1 - Square",
+        "description": "Facebook Post"
+      },
+      "portrait": {
+        "title": "9:16 - Portrait",
+        "description": "IG Reel, TkTok, YT Shorts"
+      },
+      "rect": {
+        "title": "4:5",
+        "description": "Facebook Post"
+      }
+    }
   }
 }
