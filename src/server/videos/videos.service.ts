@@ -4,28 +4,45 @@ import {
   CompleteMultipartUploadRequest,
   GetObjectOutput,
 } from "aws-sdk/clients/s3";
-import { GraphQLError } from "graphql";
+import { isNumber } from "class-validator";
 import * as path from "path";
 import { Service } from "typedi";
 import config from "../../config";
 import { AccountsService } from "../accounts/accounts.service";
 import { VideosAPI } from "../api/videos.api";
 import pubSub from "../common/pubsub";
+import {
+  ASSET_ERRED_EVENT,
+  ASSET_READY_EVENT,
+  ASSET_UPDATED_EVENT,
+  TRACK_ERRED_EVENT,
+  TRACK_READY_EVENT,
+} from "../mux/mux.constants";
 import { MuxService } from "../mux/mux.service";
 import {
   MuxAssetErredEvent,
   MuxAssetReadyEvent,
   MuxAssetReadyEventPayload,
   MuxAssetUpdatedEvent,
+  MuxSignedAsset,
   MuxTrackErrorEvent,
   MuxTrackReadyEvent,
+  VideoTrack,
 } from "../mux/mux.types";
-import { AuthInfo, InternalGraphQLError } from "../types/base.types";
+import {
+  AuthInfo,
+  BadInputError,
+  InternalGraphQLError,
+  MuxError,
+} from "../types/base.types";
 import {
   AssetStatus,
   ConvertToClipsArgs,
   ConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus,
+  IAdjustClipArgs,
+  IClip,
+  ICreateClipArgs,
   IGetAssetMediasArgs,
   IMedia,
   IStartMediaUploadArgs,
@@ -42,7 +59,11 @@ import {
 import {
   ASSET_UPLOAD_EVENT,
   CONVERT_TO_CLIPS_TOPIC,
+  MAX_CLIP_DURATION_ERROR,
+  MAX_CLIP_DURATION_IN_MS,
   MEDIA_UPLOADED_EVENT,
+  MIN_CLIP_DURATION_ERROR,
+  MIN_CLIP_DURATION_IN_MS,
 } from "./videos.constants";
 import {
   Asset,
@@ -51,14 +72,7 @@ import {
   MuxData,
   StartUploadResponse,
 } from "./videos.types";
-import { v4 } from "uuid";
-import {
-  ASSET_ERRED_EVENT,
-  ASSET_READY_EVENT,
-  ASSET_UPDATED_EVENT,
-  TRACK_ERRED_EVENT,
-  TRACK_READY_EVENT,
-} from "../mux/mux.constants";
+import Timecode from "typescript-timecode";
 
 @Service()
 export class VideosService {
@@ -91,7 +105,7 @@ export class VideosService {
     }
 
     if (asset) {
-      throw new GraphQLError("Video already exists in library");
+      throw new BadInputError("Video already exists in library");
     }
 
     try {
@@ -381,7 +395,7 @@ export class VideosService {
     }
 
     if (asset) {
-      throw new GraphQLError("Media already exists in library");
+      throw new BadInputError("Media already exists in library");
     }
 
     try {
@@ -404,5 +418,112 @@ export class VideosService {
     args: IGetAssetMediasArgs
   ): Promise<IMedia[]> {
     return this.videosAPI.getAssetMedias(args, authInfo.token);
+  }
+
+  async validateClip(args: {
+    videoAsset: { clips: IClip[]; sourceMuxAssetId: string };
+    newOrUpdatedClip: { uuid?: string; startTime: string; endTime: string };
+  }) {
+    const clip = args.newOrUpdatedClip;
+    const clips = args.videoAsset.clips;
+    if (clips == null) throw new BadInputError("Clips not found");
+
+    const duplicateClip = clips.find((c) => {
+      if (clip?.uuid && clip.uuid == c.uuid) {
+        return false;
+      }
+      return c.startTime == clip.startTime && c.endTime == clip.endTime;
+    });
+    if (duplicateClip) {
+      throw new BadInputError("Duplicate Clip");
+    }
+
+    const duplicateClipWithMatchingStartTime = clips.find((c) => {
+      if (clip?.uuid && clip.uuid === c.uuid) {
+        return false;
+      }
+      return c.startTime == clip.startTime;
+    });
+    if (duplicateClipWithMatchingStartTime)
+      throw new BadInputError(`Clip start time must be unique.`);
+
+    let muxAsset: MuxSignedAsset | null;
+    try {
+      muxAsset = await this.muxService.getMuxAsset(
+        args.videoAsset.sourceMuxAssetId
+      );
+    } catch (e) {
+      throw new MuxError(e);
+    }
+    if (!muxAsset) throw new InternalGraphQLError(`Mux asset not found`);
+
+    const videoTrack = muxAsset.asset?.tracks?.find(
+      (track) => track.type == "video"
+    ) as VideoTrack;
+    if (!videoTrack || !isNumber(videoTrack?.duration)) {
+      throw new InternalGraphQLError(`Unable to get video duration`);
+    }
+
+    let errors: string[] = [];
+    const originalVideoDurationInMS = videoTrack.duration * 1000;
+    const startTimeInMS = Timecode.TimetoMilliseconds(clip.startTime);
+    const endTimeInMS = Timecode.TimetoMilliseconds(clip.endTime);
+
+    if (startTimeInMS < 0) {
+      errors.push("start time cannot be less than 0");
+    }
+
+    if (endTimeInMS > originalVideoDurationInMS) {
+      errors.push(`end time cannot be more than original video duration`);
+    }
+
+    const clipDuration = endTimeInMS - startTimeInMS;
+    if (clipDuration < MIN_CLIP_DURATION_IN_MS) {
+      errors.push(MIN_CLIP_DURATION_ERROR);
+    }
+
+    if (clipDuration > MAX_CLIP_DURATION_IN_MS) {
+      errors.push(MAX_CLIP_DURATION_ERROR);
+    }
+
+    if (errors.length > 0) {
+      throw new BadInputError(`Invalid clip times`, errors);
+    }
+  }
+
+  async createClip(authInfo: AuthInfo, args: ICreateClipArgs): Promise<IClip> {
+    const asset = await this.getAsset(authInfo, args.assetId);
+    const clips = await this.videosAPI.getClips(
+      {
+        uuids: asset?.inferenceData?.human?.clips,
+        take: asset?.inferenceData?.human?.clips?.length,
+      },
+      authInfo.token
+    );
+
+    await this.validateClip({
+      videoAsset: { clips, sourceMuxAssetId: asset.sourceMuxAssetId },
+      newOrUpdatedClip: args,
+    });
+    const clip = await this.videosAPI.createClip(args, authInfo.token);
+    return clip;
+  }
+
+  async adjustClip(authInfo: AuthInfo, args: IAdjustClipArgs): Promise<IClip> {
+    const asset = await this.getAsset(authInfo, args.assetId);
+    const clips = await this.videosAPI.getClips(
+      {
+        uuids: asset?.inferenceData?.human?.clips,
+        take: asset?.inferenceData?.human?.clips?.length,
+      },
+      authInfo.token
+    );
+
+    await this.validateClip({
+      videoAsset: { clips, sourceMuxAssetId: asset.sourceMuxAssetId },
+      newOrUpdatedClip: args,
+    });
+    const clip = await this.videosAPI.adjustClip(args, authInfo.token);
+    return clip;
   }
 }

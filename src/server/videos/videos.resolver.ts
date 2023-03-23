@@ -19,8 +19,10 @@ import { AuthInfo } from "../types/base.types";
 import { AssetStatus } from "../types/videos.types";
 import {
   AbortUploadArgs,
+  AdjustClipArgs,
   CompleteUploadArgs,
   ConvertToClipsArgs,
+  CreateClipArgs,
   DeleteAssetsArgs,
   GetAssetArgs,
   GetAssetMediasArgs,
@@ -40,6 +42,7 @@ import {
   Asset,
   AssetUploadResponse,
   AssetUploads,
+  Clip,
   ConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus,
   GetPartUploadResponse,
@@ -287,5 +290,17 @@ export class VideosResolver {
     };
 
     return this.videosService.getAssetMedias(authInfo, args);
+  }
+
+  @Mutation(() => Clip)
+  async createClip(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: CreateClipArgs
+  ): Promise<Clip> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.createClip(authInfo, args);
   }
 }

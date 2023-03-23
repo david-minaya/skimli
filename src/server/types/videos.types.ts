@@ -89,6 +89,9 @@ export interface IClip {
   startFrame: number;
   endFrame: number;
   source: ClipSourceType;
+  createdAt: string;
+  editedAt: string;
+  assetId?: string;
 }
 
 export interface IInferenceDataAnalysis {
@@ -97,7 +100,12 @@ export interface IInferenceDataAnalysis {
   createdAt: string;
 }
 
+export interface IHumanInferenceData {
+  clips?: string[];
+}
+
 export interface IInferenceData {
+  human: IHumanInferenceData;
   analysis: IInferenceDataAnalysis;
 }
 
@@ -215,4 +223,32 @@ export interface IGetAssetMediasArgs {
   assetId?: string;
   // uuid of the media to get media by id
   uuid?: string;
+}
+
+export interface ICreateClipArgs {
+  caption: string;
+  startTime: string;
+  endTime: string;
+  assetId: string;
+  duration: string;
+  startFrame: number;
+  endFrame: number;
+  source: ClipSourceType;
+}
+
+export interface IAdjustClipArgs {
+  uuid: string;
+  assetId: string;
+  caption?: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface IGetClipsArgs {
+  uuid?: string;
+  skip?: number;
+  take?: number;
+  caption?: string;
+  source?: ClipSourceType;
+  uuids?: string[];
 }

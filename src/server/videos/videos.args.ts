@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   Validate,
   ValidateNested,
 } from "class-validator";
@@ -17,10 +18,14 @@ import { IsValidCategory } from "../common/category.validator";
 import {
   AcitivityStatus,
   AssetStatus,
+  ClipSourceType,
+  IAdjustClipArgs,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
+  ICreateClipArgs,
   IStartMediaUploadArgs,
   MediaType,
 } from "../types/videos.types";
+import { IsValidClipTitle } from "../common/clip-title.validator";
 
 @ArgsType()
 export class StartUploadArgs {
@@ -191,4 +196,67 @@ export class GetAssetMediasArgs {
   @Field(() => String, { description: "video asset's uuid" })
   @IsUUID()
   assetId: string;
+}
+
+// TODO: update when app-services is ready with the changes
+@ArgsType()
+export class CreateClipArgs implements ICreateClipArgs {
+  @Field(() => String)
+  @IsValidClipTitle
+  @MaxLength(140)
+  @IsString()
+  @IsNotEmpty()
+  caption: string;
+
+  @Field(() => String)
+  @IsString()
+  @IsNotEmpty()
+  startTime: string;
+
+  @Field(() => String)
+  @IsString()
+  @IsNotEmpty()
+  endTime: string;
+
+  @Field(() => String)
+  @IsUUID()
+  assetId: string;
+
+  // @Field(() => String)
+  // @IsString()
+  // @IsNotEmpty()
+  duration: string = "";
+
+  // @Field(() => Int)
+  // @IsInt()
+  startFrame: number = 0;
+
+  // @Field(() => Int)
+  // @IsInt()
+  endFrame: number = 0;
+
+  // @Field(() => ClipSourceType)
+  source: ClipSourceType = ClipSourceType.HUMAN;
+}
+
+@ArgsType()
+export class AdjustClipArgs implements IAdjustClipArgs {
+  @Field(() => String)
+  @IsUUID()
+  uuid: string;
+
+  @Field(() => String)
+  @IsUUID()
+  assetId: string;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  caption?: string;
+
+  @Field(() => String)
+  startTime: string;
+
+  @Field(() => String)
+  endTime: string;
 }

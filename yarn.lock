@@ -8205,6 +8205,11 @@ typedi@^0.10.0:
   resolved "https://registry.yarnpkg.com/typedi/-/typedi-0.10.0.tgz#e8f9a5ee100b84addbdfb57fe90d8d9ed2a21dea"
   integrity sha512-v3UJF8xm68BBj6AF4oQML3ikrfK2c9EmZUyLOfShpJuItAqVBHWP/KtpGinkSsIiP6EZyyb6Z3NXyW9dgS9X1w==
 
+typescript-timecode@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/typescript-timecode/-/typescript-timecode-0.0.5.tgz#8dec141c8def77c00abaf7a394095b4927ac1fa8"
+  integrity sha512-tnf/1h6pE8eURDF94UO5i6Dtxj+6LakLOXnNJECDdKNAMLIr2QiySwgkpQVGVnfO53B5ZseTj7ka7mk85QD4pw==
+
 typescript@4.9.3:
   version "4.9.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.3.tgz#3aea307c1746b8c384435d8ac36b8a2e580d85db"

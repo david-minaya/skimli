@@ -22,6 +22,9 @@ import {
   ICreateMediaArgs,
   IMedia,
   IGetAssetMediasArgs,
+  ICreateClipArgs,
+  IClip,
+  IGetClipsArgs,
 } from "../types/videos.types";
 import {
   axiosRequestErrorLoggerInterceptor,
@@ -215,6 +218,44 @@ export class VideosAPI {
       const response = await this.api.get("/video/v1/media", {
         headers: { ...generateAuthHeaders(token) },
         params: params,
+      });
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async createClip(args: ICreateClipArgs, token: string): Promise<IClip> {
+    try {
+      const response = await this.api.post("/video/v1/clips", args, {
+        headers: { ...generateAuthHeaders(token) },
+      });
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adjustClip(
+    args: Partial<ICreateClipArgs> & { uuid: string },
+    token: string
+  ): Promise<IClip> {
+    try {
+      const { uuid, ...rest } = args;
+      const response = await this.api.put(`/video/v1/clips/${uuid}`, rest, {
+        headers: { ...generateAuthHeaders(token) },
+      });
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async getClips(args: IGetClipsArgs, token: string): Promise<IClip[]> {
+    try {
+      const response = await this.api.get(`/video/v1/clips`, {
+        params: args,
+        headers: { ...generateAuthHeaders(token) },
       });
       return response?.data;
     } catch (e) {

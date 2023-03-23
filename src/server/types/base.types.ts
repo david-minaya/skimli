@@ -60,3 +60,14 @@ export class MuxError extends GraphQLError {
     });
   }
 }
+
+export class BadInputError extends GraphQLError {
+  constructor(error: string, errors: undefined | string[] = undefined) {
+    super(error, {
+      extensions: {
+        errors: errors,
+        code: "BAD_USER_INPUT",
+      },
+    });
+  }
+}

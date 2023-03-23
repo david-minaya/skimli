@@ -21,6 +21,7 @@ import {
   IClip,
   ConvertToClipsWorkflowResponse as IConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
+  IHumanInferenceData,
   IInferenceData,
   IInferenceDataAnalysis,
   IMedia,
@@ -110,6 +111,15 @@ export class Clip implements IClip {
 
   @Field(() => ClipSourceType)
   source: ClipSourceType;
+
+  @Field(() => String)
+  createdAt: string;
+
+  @Field(() => String)
+  editedAt: string;
+
+  @Field(() => String, { nullable: true })
+  assetId?: string;
 }
 
 @ObjectType()
@@ -126,7 +136,16 @@ export class InferenceDataAnalysis implements IInferenceDataAnalysis {
 }
 
 @ObjectType()
+export class HumanInferenceData {
+  @Field(() => [String], { nullable: true })
+  clips?: string[];
+}
+
+@ObjectType()
 export class InferenceData implements IInferenceData {
+  @Field(() => HumanInferenceData)
+  human: HumanInferenceData;
+
   @Field(() => InferenceDataAnalysis)
   analysis: InferenceDataAnalysis;
 }
