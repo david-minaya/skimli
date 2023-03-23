@@ -22,6 +22,7 @@ import {
   IAdjustClipArgs,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
   ICreateClipArgs,
+  IGetClipsArgs,
   IStartMediaUploadArgs,
   MediaType,
 } from "../types/videos.types";
@@ -259,4 +260,36 @@ export class AdjustClipArgs implements IAdjustClipArgs {
 
   @Field(() => String)
   endTime: string;
+}
+
+@ArgsType()
+export class GetClipsArgs implements IGetClipsArgs {
+  @Field(() => String, { nullable: true })
+  @IsUUID()
+  @IsOptional()
+  uuid?: string;
+
+  @Field(() => Int, { nullable: true })
+  @IsInt()
+  @IsOptional()
+  skip?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsInt()
+  @IsOptional()
+  take?: number;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  caption?: string;
+
+  @Field(() => ClipSourceType, { nullable: true })
+  @IsOptional()
+  source?: ClipSourceType;
+
+  @Field(() => [String], { nullable: true })
+  @IsString({ each: true })
+  @IsOptional()
+  uuids?: string[];
 }

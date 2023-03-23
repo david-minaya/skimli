@@ -44,6 +44,7 @@ import {
   IClip,
   ICreateClipArgs,
   IGetAssetMediasArgs,
+  IGetClipsArgs,
   IMedia,
   IStartMediaUploadArgs,
   MediaStatus,
@@ -525,5 +526,16 @@ export class VideosService {
     });
     const clip = await this.videosAPI.adjustClip(args, authInfo.token);
     return clip;
+  }
+
+  async getClips(authInfo: AuthInfo, args: IGetClipsArgs): Promise<IClip[]> {
+    let clips = await this.videosAPI.getClips(args, authInfo.token);
+    clips = clips.map((c) => {
+      return {
+        ...c,
+        caption: c.caption != null ? c.caption : `No caption detected`,
+      };
+    });
+    return clips;
   }
 }

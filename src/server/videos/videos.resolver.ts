@@ -27,6 +27,7 @@ import {
   GetAssetArgs,
   GetAssetMediasArgs,
   GetAssetsArgs,
+  GetClipsArgs,
   GetPartUploadURLArgs,
   StartMediaUploadArgs,
   StartUploadArgs,
@@ -292,6 +293,8 @@ export class VideosResolver {
     return this.videosService.getAssetMedias(authInfo, args);
   }
 
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
   @Mutation(() => Clip)
   async createClip(
     @Ctx() ctx: GraphQLContext,
@@ -302,5 +305,19 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.createClip(authInfo, args);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => [Clip])
+  async getClips(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: GetClipsArgs
+  ): Promise<Clip[]> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.getClips(authInfo, args);
   }
 }
