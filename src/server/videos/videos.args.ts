@@ -162,7 +162,7 @@ export class TestConvertToClipsWorkflowStatusArgs
 
 @ArgsType()
 export class GetAssetArgs {
-  @Field(() => String)
+  @Field(() => String, { description: "Video asset's uuid" })
   @IsUUID()
   uuid: string;
 }
@@ -194,7 +194,7 @@ export class StartMediaUploadArgs implements IStartMediaUploadArgs {
 
 @ArgsType()
 export class GetAssetMediasArgs {
-  @Field(() => String, { description: "video asset's uuid" })
+  @Field(() => String, { description: "Video asset's uuid" })
   @IsUUID()
   assetId: string;
 }
@@ -246,7 +246,7 @@ export class AdjustClipArgs implements IAdjustClipArgs {
   @IsUUID()
   uuid: string;
 
-  @Field(() => String)
+  @Field(() => String, { description: "Video asset's uuid" })
   @IsUUID()
   assetId: string;
 
@@ -264,7 +264,10 @@ export class AdjustClipArgs implements IAdjustClipArgs {
 
 @ArgsType()
 export class GetClipsArgs implements IGetClipsArgs {
-  @Field(() => String, { nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: "uuid of the particular clip",
+  })
   @IsUUID()
   @IsOptional()
   uuid?: string;
@@ -288,7 +291,10 @@ export class GetClipsArgs implements IGetClipsArgs {
   @IsOptional()
   source?: ClipSourceType;
 
-  @Field(() => [String], { nullable: true })
+  @Field(() => [String], {
+    nullable: true,
+    description: "uuid's of the clips to get",
+  })
   @IsString({ each: true })
   @IsOptional()
   uuids?: string[];

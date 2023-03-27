@@ -309,6 +309,20 @@ export class VideosResolver {
 
   @UseMiddleware(IsAppUserGuard)
   @Authorized()
+  @Mutation(() => Clip)
+  async adjustClip(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: AdjustClipArgs
+  ): Promise<Clip> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.adjustClip(authInfo, args);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
   @Query(() => [Clip])
   async getClips(
     @Ctx() ctx: GraphQLContext,

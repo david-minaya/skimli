@@ -66,6 +66,7 @@ export enum AcitivityStatus {
   ASSEMBLING = "ASSEMBLING",
   PUBLISHING = "PUBLISHING",
   FINISHED = "FINISHED",
+  NO_CLIPS_FOUND = "NO_CLIPS_FOUND",
 }
 
 export interface ConvertToClipsArgs {
@@ -101,7 +102,7 @@ export interface IInferenceDataAnalysis {
 }
 
 export interface IHumanInferenceData {
-  clips?: string[];
+  clips?: IClip[];
 }
 
 export interface IInferenceData {

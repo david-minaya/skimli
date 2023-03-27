@@ -137,8 +137,8 @@ export class InferenceDataAnalysis implements IInferenceDataAnalysis {
 
 @ObjectType()
 export class HumanInferenceData {
-  @Field(() => [String], { nullable: true })
-  clips?: string[];
+  @Field(() => [Clip], { nullable: true })
+  clips?: Clip[];
 }
 
 @ObjectType()

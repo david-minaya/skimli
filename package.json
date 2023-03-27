@@ -12,6 +12,7 @@
     "docker:build": "cross-conf-env docker image build . -t webapp:latest",
     "docker:buildx": "docker buildx build --platform linux/amd64 -t webapp:latest",
     "dev": "nodemon",
+    "dev:client": "next dev -p 3001",
     "build": "next build && tsc --project tsconfig.server.json",
     "start:prod": "NODE_ENV=production node dist/src/server/server.js"
   },

@@ -74,6 +74,10 @@ import {
   StartUploadResponse,
 } from "./videos.types";
 import Timecode from "typescript-timecode";
+import {
+  AssetNotFoundException,
+  ClipsNotFoundException,
+} from "./videos.exceptions";
 
 @Service()
 export class VideosService {
@@ -338,7 +342,9 @@ export class VideosService {
       { uuid: assetId },
       authInfo.token
     );
-    return assetsList.pop()!;
+    const asset = assetsList.pop();
+    if (!asset) throw AssetNotFoundException;
+    return asset;
   }
 
   async getMuxDataForAsset(assetId: string): Promise<MuxData | null> {
@@ -427,7 +433,7 @@ export class VideosService {
   }) {
     const clip = args.newOrUpdatedClip;
     const clips = args.videoAsset.clips;
-    if (clips == null) throw new BadInputError("Clips not found");
+    if (clips?.length == 0) throw new BadInputError("Clips not found");
 
     const duplicateClip = clips.find((c) => {
       if (clip?.uuid && clip.uuid == c.uuid) {
@@ -494,14 +500,9 @@ export class VideosService {
 
   async createClip(authInfo: AuthInfo, args: ICreateClipArgs): Promise<IClip> {
     const asset = await this.getAsset(authInfo, args.assetId);
-    const clips = await this.videosAPI.getClips(
-      {
-        uuids: asset?.inferenceData?.human?.clips,
-        take: asset?.inferenceData?.human?.clips?.length,
-      },
-      authInfo.token
-    );
+    if (!asset) throw AssetNotFoundException;
 
+    const clips = asset.inferenceData?.human.clips || [];
     await this.validateClip({
       videoAsset: { clips, sourceMuxAssetId: asset.sourceMuxAssetId },
       newOrUpdatedClip: args,
@@ -512,16 +513,11 @@ export class VideosService {
 
   async adjustClip(authInfo: AuthInfo, args: IAdjustClipArgs): Promise<IClip> {
     const asset = await this.getAsset(authInfo, args.assetId);
-    const clips = await this.videosAPI.getClips(
-      {
-        uuids: asset?.inferenceData?.human?.clips,
-        take: asset?.inferenceData?.human?.clips?.length,
-      },
-      authInfo.token
-    );
+    if (!asset) throw new BadInputError(`Asset not found`);
 
+    const clips = asset.inferenceData?.human.clips || [];
     await this.validateClip({
-      videoAsset: { clips, sourceMuxAssetId: asset.sourceMuxAssetId },
+      videoAsset: { clips: clips, sourceMuxAssetId: asset.sourceMuxAssetId },
       newOrUpdatedClip: args,
     });
     const clip = await this.videosAPI.adjustClip(args, authInfo.token);
@@ -530,6 +526,7 @@ export class VideosService {
 
   async getClips(authInfo: AuthInfo, args: IGetClipsArgs): Promise<IClip[]> {
     let clips = await this.videosAPI.getClips(args, authInfo.token);
+    if (!clips) throw ClipsNotFoundException;
     clips = clips.map((c) => {
       return {
         ...c,
