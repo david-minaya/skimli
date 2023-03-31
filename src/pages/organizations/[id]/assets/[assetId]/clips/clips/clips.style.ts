@@ -4,11 +4,14 @@ export const style = Style({
   container: {
     width: 'min-content',
     display: 'flex',
-    flexDirection: 'column',
-    padding: '8px 4px 8px 8px'
+    flexDirection: 'column'
+  },
+  top: {
+    padding: '8px 8px 0px',
+    flexShrink: 0
   },
   select: {
-    flexShrink: 0,
+    width: '100%',
     fontWeight: 600,
     color: 'black',
     border: 'none',
@@ -34,12 +37,12 @@ export const style = Style({
     fontWeight: 500,
     fontSize: '15px',
     textAlign: 'center',
-    margin: '4px'
+    margin: '12px 4px 4px'
   },
   clips: {
     width: 'fit-content',
     flexGrow: 1,
     overflowY: 'auto',
-    paddingRight: '4px'
+    padding: '8px 0px 8px 8px'
   }
 });

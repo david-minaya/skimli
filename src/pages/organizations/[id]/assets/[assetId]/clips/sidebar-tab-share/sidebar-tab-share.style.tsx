@@ -33,7 +33,6 @@ export const style = Style({
   aspectRatios: {
     flexGrow: 1,
     overflow: 'auto',
-    paddingLeft: '8px',
-    marginRight: '4px'
+    paddingLeft: '8px'
   }
 });

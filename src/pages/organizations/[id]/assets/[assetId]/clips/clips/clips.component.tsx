@@ -23,19 +23,21 @@ export function Clips(props: Props) {
 
   return (
     <Box sx={style.container}>
-      <Select 
-        sx={style.select} 
-        required={true}
-        value={section}
-        onChange={handleChange}>
-        <MenuItem value='clips'>{t('clips.menu.clips')}</MenuItem>
-        <MenuItem value='source-view'>{t('clips.menu.sourceView')}</MenuItem>
-      </Select>
-      <SearchField
-        sx={style.searchField}
-        onChange={text => {}}/>
-      <Box sx={style.counter}>
-        {t('clips.counter', { count: asset.inferenceData?.analysis.clips.length })}
+      <Box sx={style.top}>
+        <Select 
+          sx={style.select} 
+          required={true}
+          value={section}
+          onChange={handleChange}>
+          <MenuItem value='clips'>{t('clips.menu.clips')}</MenuItem>
+          <MenuItem value='source-view'>{t('clips.menu.sourceView')}</MenuItem>
+        </Select>
+        <SearchField
+          sx={style.searchField}
+          onChange={text => {}}/>
+        <Box sx={style.counter}>
+          {t('clips.counter', { count: asset.inferenceData?.analysis.clips.length })}
+        </Box>
       </Box>
       <Box sx={style.clips}>
         {asset.inferenceData?.analysis.clips.map(clip => 

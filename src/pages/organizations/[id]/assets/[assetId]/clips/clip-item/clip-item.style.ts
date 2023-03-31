@@ -4,7 +4,7 @@ export const style = Style({
   container: {
     width: 'fit-content',
     padding: '2px',
-    transition: '0.2s',
+    transition: '0.1s',
     border: '3px solid transparent',
     borderRadius: '8px',
     margin: '8px 0px 20px'

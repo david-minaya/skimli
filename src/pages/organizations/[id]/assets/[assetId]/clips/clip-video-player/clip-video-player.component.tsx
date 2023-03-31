@@ -1,5 +1,5 @@
 import MuxVideo from '@mux/mux-video-react';
-import { useRef, useEffect, useState, SyntheticEvent } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Box, ClickAwayListener, IconButton, LinearProgress, Popper, Slider, styled } from '@mui/material';
 import { style } from './clip-video-player.style';
 import { Asset } from '~/types/assets.type';
@@ -9,6 +9,7 @@ import { PauseIcon } from '~/icons/pauseIcon';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { VolumeIcon } from '~/icons/volumeIcon';
 import { MuteIcon } from '~/icons/muteIcon';
+import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 
 const Video = styled(MuxVideo)``;
 
@@ -24,66 +25,60 @@ export function ClipVideoPlayer(props: Props) {
     clip
   } = props;
 
+  const videoPlayer = useVideoPlayer();
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const volumeRef = useRef<HTMLButtonElement>(null);
-  const [play, setPlay] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [showVolume, setShowVolume] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [volume, setVolume] = useState(0);
+  const currentTime = videoPlayer.currentTime - clip.startTime;
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.currentTime = clip.startTime;
+      videoPlayer.setVideo(videoRef.current);
+      videoPlayer.updateProgress(clip.startTime);
     }
-  }, [clip])
+  }, [clip]);
 
   function handlePlayed() {
-    setPlay(true);
-  }
-
-  function handlePaused() {
-    setPlay(false);
-  }
-
-  function handleWaiting() {
-    setPlay(false);
+    videoPlayer.setIsPlaying(true);
   }
 
   function handlePlaying() {
-    setPlay(true);
+    videoPlayer.setIsPlaying(true);
   }
 
-  function handleVolumeChange() {
-    setVolume(videoRef.current!.volume * 100);
-    setMuted(videoRef.current!.volume <= 0 || videoRef.current!.muted);
+  function handlePaused() {
+    videoPlayer.setIsPlaying(false);
   }
 
-  function handleTimeUpdate(event: SyntheticEvent<HTMLVideoElement>) {
+  function handleWaiting() {
+    videoPlayer.setIsPlaying(false);
+  }
 
-    if (videoRef.current!.currentTime >= clip.endTime) {
-      videoRef.current!.currentTime = clip.startTime;
+  function handleTimeUpdate() {
+
+    if (videoPlayer.video && videoPlayer.video.currentTime > clip.endTime) {
+      videoPlayer.updateProgress(clip.startTime);
+      return;
     }
-
-    setProgress(videoRef.current!.currentTime - clip.startTime);
+    
+    videoPlayer.setCurrentTime(videoPlayer.video!.currentTime);
   }
 
   function handlePlay() {
-    if (videoRef.current!.paused) {
-      videoRef.current!.play();
+    if (videoPlayer.video?.paused) {
+      videoPlayer.play();
     } else {
-      videoRef.current!.pause();   
+      videoPlayer.pause();   
     }
   }
   
   function handleUpdateVolume(event: Event, value: number | number[]) {
-    videoRef.current!.volume = (value as number) / 100;
-    videoRef.current!.muted = value <= 0;
+    videoPlayer.updateVolume(value as number);
   }
   
   function handleMute() {
-    videoRef.current!.muted = !videoRef.current!.muted;
+    videoPlayer.mute();
   }
 
   return (
@@ -101,20 +96,19 @@ export function ClipVideoPlayer(props: Props) {
         onPause={handlePaused}
         onWaiting={handleWaiting}
         onPlaying={handlePlaying}
-        onTimeUpdate={handleTimeUpdate}
-        onVolumeChange={handleVolumeChange}/>
+        onTimeUpdate={handleTimeUpdate}/>
       <LinearProgress
         variant='determinate'
-        value={progress * 100 / clip.duration}/>
+        value={currentTime * 100 / clip.duration}/>
       <Box sx={style.controls}>
         <IconButton
           sx={style.playButton} 
           size='small'
           onClick={handlePlay}>
-          {play ? <PauseIcon/> : <PlayIcon/>}
+          {videoPlayer.isPlaying ? <PauseIcon/> : <PlayIcon/>}
         </IconButton>
         <Box sx={style.time}>
-          {formatSeconds(progress)} / {formatSeconds(clip.duration)}
+          {formatSeconds(currentTime)} / {formatSeconds(clip.duration)}
         </Box>
         <ClickAwayListener
           mouseEvent='onMouseDown' 
@@ -125,7 +119,7 @@ export function ClipVideoPlayer(props: Props) {
               size='small'
               ref={volumeRef}
               onClick={() => setShowVolume(show => !show)}>
-              {muted ? <MuteIcon/> : <VolumeIcon/>}
+              {videoPlayer.muted ? <MuteIcon/> : <VolumeIcon/>}
             </IconButton>
             {/* @ts-ignore */}
             <Popper
@@ -141,16 +135,16 @@ export function ClipVideoPlayer(props: Props) {
               <Slider
                 sx={style.slider}
                 orientation='vertical'
-                value={!muted ? volume : 0}
+                value={!videoPlayer.muted ? videoPlayer.volume : 0}
                 onChange={handleUpdateVolume}/>
               <IconButton 
                 onClick={handleMute}>
-                {muted ? <MuteIcon/> : <VolumeIcon/>}
+                {videoPlayer.muted ? <MuteIcon/> : <VolumeIcon/>}
               </IconButton>
             </Popper>
           </Box>
         </ClickAwayListener>
       </Box>
     </Box>
-  )
+  );
 }

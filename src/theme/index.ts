@@ -72,25 +72,29 @@ export const theme = responsiveFontSizes(createTheme({
         "*": {
           boxSizing: "border-box",
           '&::-webkit-scrollbar': {
-            width: '12px',
-            backgroundColor: 'white',
-            padding: '0px 8px'
+            width: '20px'
           },
           '&::-webkit-scrollbar-thumb': {
             backgroundColor: '#D9D9D9',
-            borderRadius: '8px'
+            borderRadius: '10px',
+            border: '4px solid transparent',
+            backgroundClip: 'padding-box'
           },
           '&::-webkit-scrollbar-button:single-button:start': {
             backgroundImage: 'url("/images/scrollbar-up-arrow.svg")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'contain',
-            backgroundPosition: 'center'
+            backgroundPosition: 'center',
+            border: '4px solid transparent',
+            backgroundClip: 'padding-box'
           },
           '&::-webkit-scrollbar-button:single-button:end': {
             backgroundImage: 'url("/images/scrollbar-down-arrow.svg")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'contain',
-            backgroundPosition: 'center'
+            backgroundPosition: 'center',
+            border: '4px solid transparent',
+            backgroundClip: 'padding-box'
           }
         },
         body: {

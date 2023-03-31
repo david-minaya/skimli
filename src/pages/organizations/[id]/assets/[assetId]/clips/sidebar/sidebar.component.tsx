@@ -6,7 +6,7 @@ import { ShareIcon } from '~/icons/shareIcon';
 import { StitchIcon } from '~/icons/stitchIcon';
 import { TextIcon } from '~/icons/textIcon';
 import { TranscriptIcon } from '~/icons/transcriptIcon';
-import { ShareTab } from '../share-tab/share-tab.component';
+import { SidebarTabShare } from '../sidebar-tab-share/sidebar-tab-share.component';
 import { SidebarTab } from '../sidebar-tab/sidebar-tab.component';
 import { style } from './sidebar.style';
 
@@ -21,7 +21,7 @@ export function Sidebar() {
   return (
     <Box sx={style.container}>
       <Box sx={style.content}>
-        <ShareTab id={tab}/>
+        <SidebarTabShare id={tab}/>
         <Box sx={{ width: '200px', padding: '8px', fontWeight: 600, fontSize: '15px' }}>
           {tab === 'audio' && 'Audio'}
           {tab === 'text' && 'Text'}

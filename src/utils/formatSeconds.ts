@@ -1,4 +1,4 @@
-export function formatSeconds(time: number) {
+export function formatSeconds(time: number, withMilliseconds = false) {
 
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time - hours * 3600) / 60);
@@ -7,10 +7,12 @@ export function formatSeconds(time: number) {
   return (
     `${hours ? `${format(hours)}:` : ''}` +
     `${format(minutes)}:` +
-    `${format(seconds)}`
+    `${format(seconds, withMilliseconds)}`
   )
 }
 
-function format(time: number) {
-  return Math.round(time).toString().padStart(2, '0');
+function format(time: number, withMilliseconds = false) {
+  return !withMilliseconds
+    ? Math.round(time).toString().padStart(2, '0')
+    : time.toFixed(3).padStart(6, '0');
 }

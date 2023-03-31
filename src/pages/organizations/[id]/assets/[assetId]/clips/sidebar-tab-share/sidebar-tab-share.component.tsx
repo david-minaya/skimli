@@ -6,14 +6,14 @@ import { Facebook } from '~/icons/facebook';
 import { Twitter } from '~/icons/twitter';
 import { Instagram } from '~/icons/instagram';
 import { Tiktok } from '~/icons/tiktok';
-import { style } from './share-tab.style';
+import { style } from './sidebar-tab-share.style';
 import { AspectRatioItem } from '../aspect-ratio-item/aspect-ratio-item.component';
 
 interface Props {
   id: string;
 }
 
-export function ShareTab(props: Props) {
+export function SidebarTabShare(props: Props) {
 
   const { id } = props;
   const { t } = useTranslation('editClips');

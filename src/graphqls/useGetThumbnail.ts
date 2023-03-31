@@ -1,26 +1,16 @@
-import { gql } from '@apollo/client';
-import { useEffect, useState } from 'react';
-import { useQuery } from '~/hooks/useQuery';
+import { useEffect, useMemo, useState } from 'react';
+import { useGetThumbnailQuery } from './useGetThumbnailQuery';
 
-export function useGetThumbnail(playbackId?: string, width?: number, height?: number, time?: number) {
+export function useGetThumbnail(playbackId?: string, width?: number, height?: number, time?: number, fitMode?: string) {
 
-  const query = useQuery();
+  const query = useGetThumbnailQuery();
   const [state, setState] = useState<string>();
 
   useEffect(() => {
     if (playbackId) {
-      query<string>({
-        name: 'getThumbnail',
-        fetchPolicy: 'cache-first',
-        variables: { playbackId, width, height, time },
-        query: gql`
-          query Query($playbackId: String!, $width: Int, $height: Int, $time: Float) {
-            getThumbnail(playbackId: $playbackId, width: $width, height: $height, time: $time)
-          }
-        `
-      }).then(value => setState(value));
+      query(playbackId, width, height, time, fitMode).then(value => setState(value));
     }
-  }, [query, playbackId, width, height, time])
+  }, [query, playbackId, width, height, time, fitMode])
 
-  return state;
+  return useMemo(() => state, [state]);
 }

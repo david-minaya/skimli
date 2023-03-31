@@ -2,6 +2,8 @@ import { Style } from '~/utils/style';
 
 export const style = Style({
   container: {
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
     backgroundColor: 'backgroundColor.main'
   },
@@ -9,6 +11,7 @@ export const style = Style({
     height: '52px',
     display: 'flex',
     alignItems: 'center',
+    flexShrink: 0,
     backgroundColor: 'white',
     padding: '0px 12px'
   },
@@ -16,8 +19,13 @@ export const style = Style({
     marginRight: '8px'
   },
   content: {
+    flexGrow: 1,
+    overflow: 'auto'
+  },
+  center: {
     maxWidth: '680px',
-    margin: '24px auto'
+    margin: '24px auto 0px',
+    padding: '0px 24px 24px'
   },
   titleInput: {
     container: {
