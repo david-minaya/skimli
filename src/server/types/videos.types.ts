@@ -72,6 +72,7 @@ export enum AcitivityStatus {
 export interface ConvertToClipsArgs {
   assetId: string;
   category: string;
+  model: string;
   userId?: string;
 }
 

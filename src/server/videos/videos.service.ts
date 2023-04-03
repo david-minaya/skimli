@@ -7,6 +7,8 @@ import {
 import { isNumber } from "class-validator";
 import * as path from "path";
 import { Service } from "typedi";
+import Timecode from "typescript-timecode";
+import * as categoriesData from "../../../video-categories.json";
 import config from "../../config";
 import { AccountsService } from "../accounts/accounts.service";
 import { VideosAPI } from "../api/videos.api";
@@ -67,18 +69,16 @@ import {
   MIN_CLIP_DURATION_IN_MS,
 } from "./videos.constants";
 import {
+  AssetNotFoundException,
+  ClipsNotFoundException,
+} from "./videos.exceptions";
+import {
   Asset,
   AssetUploads,
   GetPartUploadResponse,
   MuxData,
   StartUploadResponse,
 } from "./videos.types";
-import Timecode from "typescript-timecode";
-import {
-  AssetNotFoundException,
-  ClipsNotFoundException,
-} from "./videos.exceptions";
-
 @Service()
 export class VideosService {
   constructor(
@@ -363,6 +363,13 @@ export class VideosService {
       userId: user!.uuid,
       token: authInfo.token,
     });
+  }
+
+  getModelFromCategory(categoryCode: string): string {
+    const category = categoriesData.categories.find(
+      (c) => c.code == categoryCode
+    );
+    return category!.model;
   }
 
   async convertToClips(

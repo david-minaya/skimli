@@ -214,7 +214,8 @@ export class VideosResolver {
       auth0: ctx?.auth0,
       token: ctx?.token,
     };
-    return this.videosService.convertToClips(authInfo, args);
+    const model = this.videosService.getModelFromCategory(args.category);
+    return this.videosService.convertToClips(authInfo, { ...args, model });
   }
 
   @UseMiddleware(IsAppUserGuard)

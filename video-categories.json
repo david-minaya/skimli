@@ -1,16 +1,37 @@
 {
   "version": 1.0,
-  "releaseDate": "2022-12-18",
+  "releaseDate": "2023-04-03",
   "categories": [
     {
       "code": "VIDEO-CATEGORY-OTHER",
       "archived": false,
-      "label": "Other"
+      "label": "Other",
+      "model": "default"
     },
     {
       "code": "VIDEO-CATEGORY-TRAVEL-EVENTS",
       "archived": false,
-      "label": "Travel & Events"
+      "label": "Travel & Events",
+      "model": "travel-and-events"
+    },
+    {
+      "code": "VIDEO-CATEGORY-ENTERTAINMENT",
+      "archived": false,
+      "label": "Entertainment",
+      "model": "entertainment"
+    },
+    {
+      "code": "VIDEO-CATEGORY-AUTOS-VEHICLES",
+      "archived": false,
+      "label": "Autos & Vehicles",
+      "model": "autos-and-vehicles"
+    },
+    {
+      "code": "VIDEO-CATEGORY-UFC",
+      "archived": false,
+      "label": "UFC",
+      "model": "ufc",
+      "skimliOnly": true
     }
   ]
 }
