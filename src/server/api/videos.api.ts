@@ -155,6 +155,7 @@ export class VideosAPI {
           assetsId: [args.assetId],
           userId: args.userId,
           category: args.category,
+          model: args.model,
         },
         { headers: { ...generateAuthHeaders(token) } }
       );
