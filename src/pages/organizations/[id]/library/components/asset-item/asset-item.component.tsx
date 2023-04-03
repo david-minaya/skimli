@@ -48,7 +48,7 @@ export function AssetItem(props: Props) {
   const [openWorkflowStatusModal, setOpenWorkflowStatusModal] = useState(false);
 
   function handleStatusTagClick() {
-    if (asset.status === 'CONVERTING') {
+    if (asset.status === 'CONVERTING' || asset.status === 'CONVERTED') {
       setOpenWorkflowStatusModal(true);
     }
   }

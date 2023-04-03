@@ -20,7 +20,8 @@ export const style = Style({
     cursor: 'pointer'
   },
   converted: {
-    backgroundColor: 'green.main'
+    backgroundColor: 'green.main',
+    cursor: 'pointer'
   },
   deleting: {
     backgroundColor: '#D14343'

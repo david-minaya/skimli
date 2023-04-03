@@ -46,7 +46,7 @@ export function WorkflowStatusModal(props: Props) {
     const get = (type: string) => format.find(v => v.type === type)?.value;
 
     return (
-      `${get('weekday')?.toLocaleLowerCase()}, ` +
+      `${get('weekday')}, ` +
       `${get('day')} ` +
       `${get('month')} ` +
       `${get('year')} ` +
