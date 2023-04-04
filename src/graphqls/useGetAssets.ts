@@ -63,7 +63,7 @@ export function useGetAssets() {
               }
             }
             inferenceData {
-              analysis {
+              human {
                 clips {
                   uuid
                   caption
@@ -73,9 +73,8 @@ export function useGetAssets() {
                   startFrame
                   endFrame
                   source
+                  createdAt
                 }
-                model
-                createdAt
               }
             }
           }

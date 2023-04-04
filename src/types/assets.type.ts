@@ -1,4 +1,4 @@
-import { Clip } from './clips.type';
+import { Clip } from './clip.type';
 import { MuxAsset } from './muxAsset.type';
 
 export interface AudioTrack {
@@ -40,10 +40,8 @@ export interface Asset {
     }
   }[],
   inferenceData?: {
-    analysis: {
+    human: {
       clips: Clip[];
-      model: string;
-      createdAt: string;
     }
   }
 }

@@ -3,7 +3,7 @@ import { useRef, useEffect, useState } from 'react';
 import { Box, ClickAwayListener, IconButton, LinearProgress, Popper, Slider, styled } from '@mui/material';
 import { style } from './clip-video-player.style';
 import { Asset } from '~/types/assets.type';
-import { Clip } from '~/types/clips.type';
+import { Clip } from '~/types/clip.type';
 import { PlayIcon } from '~/icons/playIcon';
 import { PauseIcon } from '~/icons/pauseIcon';
 import { formatSeconds } from '~/utils/formatSeconds';

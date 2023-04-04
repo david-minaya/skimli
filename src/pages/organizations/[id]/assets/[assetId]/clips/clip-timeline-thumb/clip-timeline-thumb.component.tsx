@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { ClipTimelineThumbIcon } from '~/icons/clipTimelineThumbIcon';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { formatSeconds } from '~/utils/formatSeconds';
-import { Clip } from '~/types/clips.type';
+import { Clip } from '~/types/clip.type';
 import { style } from './clip-timeline-thumb.style';
 
 interface Props {

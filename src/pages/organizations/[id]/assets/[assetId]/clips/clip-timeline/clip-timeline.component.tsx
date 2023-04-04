@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Box } from '@mui/material';
-import { Clip } from '~/types/clips.type';
+import { Clip } from '~/types/clip.type';
 import { style } from './clip-timeline.style';
 import { ClipTimelineFrame } from '../clip-timeline-frame/clip-timeline-frame.component';
 import { ClipTimelineThumb } from '../clip-timeline-thumb/clip-timeline-thumb.component';

@@ -69,7 +69,7 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
                 }
               }
               inferenceData {
-                analysis {
+                human {
                   clips {
                     uuid
                     caption
@@ -79,9 +79,8 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
                     startFrame
                     endFrame
                     source
+                    createdAt
                   }
-                  model
-                  createdAt
                 }
               }
             }

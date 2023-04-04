@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { useAssets } from '~/store/assets.slice';
-import { Clip } from '~/types/clips.type';
+import { Clip } from '~/types/clip.type';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { style } from './clip-item.style';
 

@@ -1,5 +1,6 @@
 export interface Clip {
   uuid: string;
+  assetId: string;
   caption: string;
   startTime: number;
   endTime: number;
@@ -8,5 +9,5 @@ export interface Clip {
   endFrame: number;
   source: 'MODEL' | 'HUMAN' | 'AUTOMATIC';
   selected: boolean;
+  createdAt: string;
 }
-

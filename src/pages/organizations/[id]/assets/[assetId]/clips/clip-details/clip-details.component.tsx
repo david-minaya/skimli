@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import { useState } from 'react';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
 import { TextField } from '~/components/text-field/text-field.component';
 import { VideoPlayerProvider } from '~/providers/VideoPlayerProvider';
@@ -44,7 +43,7 @@ export function ClipDetails(props: Props) {
               <Box sx={style.info}>
                 <Box sx={style.dateContainer}>
                   <Box sx={style.dateTitle}>{t('dateTitle')}</Box>
-                  <Box sx={style.date}>{formatDate(asset.inferenceData!.analysis.createdAt)}</Box>
+                  <Box sx={style.date}>{formatDate(clip.createdAt)}</Box>
                 </Box>
                 <OutlinedButton
                   sx={style.resetButton} 

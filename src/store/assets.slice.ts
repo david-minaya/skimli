@@ -8,6 +8,8 @@ import { Asset } from '~/types/assets.type';
 import { useDeleteAssets } from '~/graphqls/useDeleteAssets';
 import { useGetAsset } from '~/graphqls/useGetAsset';
 import { toSeconds } from '~/utils/toSeconds';
+import { Clip } from '~/types/clip.type';
+import { useGetClips } from '~/graphqls/useGetClips';
 
 const adapter = createEntityAdapter<Asset>({ selectId: (asset) => asset.uuid });
 const selectors = adapter.getSelectors<RootState>(state => state.assets);
@@ -56,6 +58,13 @@ export const assetsSlice = createSlice({
         selected: state.selectedIds.find(id => id === asset.uuid) !== undefined,
       })));
     },
+
+    replaceClips(state, action: PayloadAction<Clip[]>) {
+      const asset = state.entities[action.payload[0].assetId];
+      if (asset?.inferenceData) {
+        asset.inferenceData.human.clips = processClips(action.payload);
+      }
+    },
     
     setLoading(state) {
       state.loading = true;
@@ -100,20 +109,20 @@ export const assetsSlice = createSlice({
     
     selectClip(state, action: PayloadAction<{ assetId: string, clipId: string }>) {
       const asset = state.entities[action.payload.assetId];
-      const clips = asset?.inferenceData?.analysis.clips;
+      const clips = asset?.inferenceData?.human.clips;
       const clip = clips?.find(clip => clip.uuid === action.payload.clipId);
       if (clip) clip.selected = true;
     },
 
     selectFirstClip(state, action: PayloadAction<string>) {
       const asset = state.entities[action.payload];
-      const clip = asset?.inferenceData?.analysis.clips[0];
+      const clip = asset?.inferenceData?.human.clips[0];
       if (clip) clip.selected = true;
     },
     
     unSelectClip(state, action: PayloadAction<string>) {
       const asset = state.entities[action.payload];
-      const clips = asset?.inferenceData?.analysis.clips;
+      const clips = asset?.inferenceData?.human.clips;
       const clip = clips?.find(clip => clip.selected);
       if (clip) clip.selected = false;
     }
@@ -125,6 +134,7 @@ export function useAssets() {
   const dispatch = useAppDispatch();
   const getAssets = useGetAssets();
   const getAsset = useGetAsset();
+  const getClips = useGetClips();
   const deleteAssets = useDeleteAssets();
   
   return useMemo(() => ({
@@ -150,7 +160,7 @@ export function useAssets() {
     getClip(assetId: string) {
       return useAppSelector(state => {
         const asset = state.assets.entities[assetId];
-        const clips = asset?.inferenceData?.analysis.clips;
+        const clips = asset?.inferenceData?.human.clips;
         return clips?.find(clip => clip.selected);
       });
     },
@@ -195,6 +205,11 @@ export function useAssets() {
       dispatch(assetsSlice.actions.add(await getAsset(id)));
     },
 
+    async fetchClips(assetId: string, caption?: string) {
+      const clips = await getClips({ caption });
+      dispatch(assetsSlice.actions.replaceClips(clips));
+    },
+
     async deleteOne(id: string) {
       dispatch(assetsSlice.actions.update({ uuid: id, status: 'DELETING' }));
       await deleteAssets([id]);
@@ -212,19 +227,22 @@ function processInferenceData(inferenceData: Asset['inferenceData']) {
   if (inferenceData) {
     return {
       inferenceData: {
-        analysis: {
-          ...inferenceData.analysis,
-          clips: inferenceData.analysis.clips.map(clip => {
-            return {
-              ...clip,
-              startTime: toSeconds(clip.startTime as any),
-              endTime: toSeconds(clip.endTime as any),
-              duration: toSeconds(clip.duration as any),
-              selected: false
-            }
-          })
+        human: {
+          clips: processClips(inferenceData.human.clips)
         }
       }
     }
   }
+}
+
+function processClips(clips: Clip[]) {
+  return clips.map(clip => {
+    return {
+      ...clip,
+      startTime: toSeconds(clip.startTime as any),
+      endTime: toSeconds(clip.endTime as any),
+      duration: toSeconds(clip.duration as any),
+      selected: false
+    }
+  });
 }
