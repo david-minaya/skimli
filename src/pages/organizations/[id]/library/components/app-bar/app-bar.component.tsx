@@ -9,6 +9,7 @@ import { DeleteDialog } from '~/components/delete-dialog/delete-dialog.component
 import { DropDownButton } from '../drop-down-button/drop-down-button.component';
 import { SearchField } from '../../../../../../components/search-field/search-field.component';
 import { style } from './app-bar.style';
+import { useConversions } from '~/store/conversions.slice';
 
 interface Props {
   onSearchChange: (value?: string) => void;
@@ -23,6 +24,7 @@ export function AppBar(props: Props) {
   } = props;
 
   const { t } = useTranslation('library');
+  const Conversions = useConversions();
   const assetsStore = useAssets();
   const areAssetsSelected = assetsStore.areSelected();
   const selectedIds = assetsStore.getSelectedIds();
@@ -41,6 +43,7 @@ export function AppBar(props: Props) {
 
       await assetsStore.deleteMany(selectedIds);
       await assetsStore.fetchAll();
+      await Conversions.fetch();
     
     } catch (err: any) {
 

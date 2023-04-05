@@ -17,6 +17,7 @@ import { StatusTag } from '../status-tag/status-tag.component';
 import { style } from './asset-item.style';
 import { useRouter } from 'next/router';
 import { useAccount } from '~/store/account.slice';
+import { useConversions } from '~/store/conversions.slice';
 
 interface Props {
   asset: Asset;
@@ -33,6 +34,7 @@ export function AssetItem(props: Props) {
   } = props;
 
   const router = useRouter();
+  const Conversions = useConversions();
   const assetsStore = useAssets();
   const accountStore = useAccount();
   const account = accountStore.get();
@@ -48,7 +50,7 @@ export function AssetItem(props: Props) {
   const [openWorkflowStatusModal, setOpenWorkflowStatusModal] = useState(false);
 
   function handleStatusTagClick() {
-    if (asset.status === 'CONVERTING' || asset.status === 'CONVERTED') {
+    if (asset.status === 'CONVERTING' || asset.status === 'CONVERTED' || asset.status === 'ERRORED') {
       setOpenWorkflowStatusModal(true);
     }
   }
@@ -75,6 +77,7 @@ export function AssetItem(props: Props) {
       setOpenDeleteDialog(false);
       await assetsStore.deleteOne(asset.uuid);
       await assetsStore.fetchAll();
+      await Conversions.fetch();
     
     } catch (err: any) {
 
@@ -159,7 +162,7 @@ export function AssetItem(props: Props) {
         onClose={() => setOpenMenu(false)}>
         {asset.status !== 'CONVERTED' &&
           <MenuItem 
-            disabled={asset.status === 'CONVERTING'} 
+            disabled={asset.status === 'CONVERTING' || asset.status === 'ERRORED'} 
             onClick={handleConvertToClips}>
             {t('assetItem.menu.convert')}
           </MenuItem>
@@ -167,7 +170,7 @@ export function AssetItem(props: Props) {
         {asset.status === 'CONVERTED' &&
           <MenuItem
             onClick={handleEdit}>
-            {t('assetItem.menu.edit')}
+            {t('assetItem.menu.seeClips')}
           </MenuItem>
         }
         <MenuItem

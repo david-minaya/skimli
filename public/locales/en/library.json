@@ -25,11 +25,12 @@
       "unconverted": "Convert to clips",
       "converting": "Converting to clips",
       "converted": "Converted to clips",
-      "deleting": "Deleting"
+      "deleting": "Deleting",
+      "error": "Error"
     },
     "menu": {
       "convert": "Convert to clips",
-      "edit": "Edit",
+      "seeClips": "See clips",
       "delete": "Delete"
     }
   },
@@ -44,6 +45,7 @@
     "assetIdTitle": "Asset ID",
     "workflowDetails": "Workflow Details",
     "id": "ID",
+    "videoCategory": "Video Category",
     "status": "Status",
     "convertingStatus": "Converting to clips",
     "convertedStatus": "Converted to clips",

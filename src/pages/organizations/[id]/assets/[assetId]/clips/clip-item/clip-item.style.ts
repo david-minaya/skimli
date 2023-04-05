@@ -41,9 +41,13 @@ export const style = Style({
     marginTop: '8px'
   },
   title: {
+    display: '-webkit-box',
     color: 'black',
     fontWeight: 500,
-    fontSize: '14px'
+    fontSize: '14px',
+    overflow: 'hidden',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical'
   },
   time: {
     color: '#6B7280',

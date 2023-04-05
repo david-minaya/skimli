@@ -39,10 +39,23 @@ export const style = Style({
     textAlign: 'center',
     margin: '12px 4px 4px'
   },
+  searchResultsTitle: {
+    color: 'black',
+    fontWeight: 500,
+    fontSize: '15px',
+    textAlign: 'center',
+    margin: '12px 4px 4px'
+  },
+  searchResultsCounter: {
+    color: 'black',
+    fontSize: '15px',
+    textAlign: 'center',
+    margin: '8px 4px 4px'
+  },
   clips: {
-    width: 'fit-content',
+    width: '208.8px',
     flexGrow: 1,
-    overflowY: 'auto',
+    overflowY: 'scroll',
     padding: '8px 0px 8px 8px'
   }
 });

@@ -25,5 +25,9 @@ export const style = Style({
   },
   deleting: {
     backgroundColor: '#D14343'
+  },
+  error: {
+    backgroundColor: '#D14343',
+    cursor: 'pointer'
   }
 });

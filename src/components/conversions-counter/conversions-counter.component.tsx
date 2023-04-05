@@ -1,7 +1,8 @@
 import { Box, IconButton, SxProps, Theme, Tooltip } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import { useGetConversions } from '~/graphqls/useGetConversions';
 import { InfoIcon } from '~/icons/infoIcon';
+import { useConversions } from '~/store/conversions.slice';
+import { useEffect } from 'react';
 import { style } from './conversions-counter.style';
 
 interface Props {
@@ -10,8 +11,13 @@ interface Props {
 
 export function ConversionsCounter(props: Props) {
 
-  const conversions = useGetConversions();
+  const Conversions = useConversions();
+  const conversions = Conversions.get();
   const { t } = useTranslation('components');
+
+  useEffect(() => {
+    Conversions.fetch();
+  }, []);
 
   if (!conversions) {
     return null;

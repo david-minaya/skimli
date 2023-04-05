@@ -10,6 +10,7 @@ import { formatSeconds } from '~/utils/formatSeconds';
 import { VolumeIcon } from '~/icons/volumeIcon';
 import { MuteIcon } from '~/icons/muteIcon';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
+import { LoopIcon } from '~/icons/loopIcon';
 
 const Video = styled(MuxVideo)``;
 
@@ -58,7 +59,15 @@ export function ClipVideoPlayer(props: Props) {
   function handleTimeUpdate() {
 
     if (videoPlayer.video && videoPlayer.video.currentTime > clip.endTime) {
+      
       videoPlayer.updateProgress(clip.startTime);
+
+      if (videoPlayer.loop) {
+        videoPlayer.play();
+      } else {
+        videoPlayer.pause();
+      }
+
       return;
     }
     
@@ -75,6 +84,18 @@ export function ClipVideoPlayer(props: Props) {
   
   function handleUpdateVolume(event: Event, value: number | number[]) {
     videoPlayer.updateVolume(value as number);
+  }
+
+  function handleLoop() {
+    videoPlayer.setLoop(loop => {
+      if (loop) {
+        videoPlayer.pause();
+        return false;
+      } else {
+        videoPlayer.play();
+        return true;
+      }
+    })
   }
   
   function handleMute() {
@@ -110,6 +131,11 @@ export function ClipVideoPlayer(props: Props) {
         <Box sx={style.time}>
           {formatSeconds(currentTime)} / {formatSeconds(clip.duration)}
         </Box>
+        <IconButton 
+          size='small'
+          onClick={handleLoop}>
+          <LoopIcon/>
+        </IconButton>
         <ClickAwayListener
           mouseEvent='onMouseDown' 
           onClickAway={() => setShowVolume(false)}>

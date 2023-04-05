@@ -5,7 +5,6 @@ import { useTranslation } from 'next-i18next';
 import { SearchField } from '~/components/search-field/search-field.component';
 import { Asset } from '~/types/assets.type';
 import { ClipItem } from '../clip-item/clip-item.component';
-import { useAssets } from '~/store/assets.slice';
 import { style } from './clips.style';
 
 interface Props {
@@ -15,18 +14,19 @@ interface Props {
 export function Clips(props: Props) {
 
   const { asset } = props;
-  const Assets = useAssets();
   const { t } = useTranslation('editClips');
   const [section, setSection] = useState('clips');
+  const [caption, setCaption] = useState('');
 
   function handleChange(e: SelectChangeEvent<string>) {
     setSection(e.target.value);
   }
 
   async function handleSearchChange(value?: string) {
-    // console.log('handleSearchChange -> value: ', value);
-    // await Assets.fetchClips(value);
+    setCaption(value || '');
   }
+
+  const clips = asset.inferenceData?.human.clips.filter(clip => clip.caption.includes(caption))
 
   return (
     <Box sx={style.container}>
@@ -42,12 +42,34 @@ export function Clips(props: Props) {
         <SearchField
           sx={style.searchField}
           onChange={handleSearchChange}/>
-        <Box sx={style.counter}>
-          {t('clips.counter', { count: asset.inferenceData?.human.clips.length })}
-        </Box>
+        {caption === '' &&
+          <Box sx={style.counter}>
+            {t('clips.counter', { count: clips?.length })}
+          </Box>
+        }
+        {caption !== '' &&
+          <Box>
+            <Box 
+              sx={style.searchResultsTitle}>
+              {t('clips.searchResultsTitle')}
+            </Box>
+            {clips && clips.length > 0 &&
+              <Box 
+                sx={style.searchResultsCounter}>
+                {t('clips.searchResultsCounter', { count: clips.length })}
+              </Box>
+            }
+            {clips && clips.length <= 0 &&
+              <Box 
+                sx={style.searchResultsCounter}>
+                {t('clips.notFoundResults', { caption })}
+              </Box>
+            }
+          </Box>
+        }
       </Box>
       <Box sx={style.clips}>
-        {asset.inferenceData?.human.clips.map(clip => 
+        {clips?.map(clip => 
           <ClipItem
             key={clip.uuid}
             clip={clip}

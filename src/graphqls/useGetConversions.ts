@@ -1,25 +1,27 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { useQuery } from '~/hooks/useQuery';
 
 interface Response {
-  getConversions: {
-    conversions: number;
-    grantedConversions: number;
-  };
+  conversions: number;
+  grantedConversions: number;
 }
 
 export function useGetConversions() {
 
-  const { data } = useQuery<Response>(gql`{
-    getConversions {
-      conversions
-      grantedConversions
-    }
-  }`);
+  const query = useQuery();
 
-  if (data) {
-    return {
-      counter: data.getConversions.conversions,
-      total: data.getConversions.grantedConversions,
-    }
+  return () => {
+    return query<Response>({
+      name: 'getConversions',
+      query: gql`
+        query GetConversions {
+          getConversions {
+            conversions
+            grantedConversions
+          }
+        }
+      `,
+      fetchPolicy: 'no-cache'
+    });
   }
 }

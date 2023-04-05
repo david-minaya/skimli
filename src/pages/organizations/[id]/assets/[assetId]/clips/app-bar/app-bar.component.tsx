@@ -12,6 +12,7 @@ import { useRef, useState } from 'react';
 import { useAssets } from '~/store/assets.slice';
 import { DeleteDialog } from '~/components/delete-dialog/delete-dialog.component';
 import { Toast } from '~/components/toast/toast.component';
+import { useConversions } from '~/store/conversions.slice';
 
 interface Props {
   asset: Asset;
@@ -24,6 +25,7 @@ export function AppBar(props: Props) {
   const menuRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const Assets = useAssets();
+  const Conversions = useConversions();
   const account = useAccount().get();
   const [openMenu, setOpenMenu] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -41,6 +43,7 @@ export function AppBar(props: Props) {
       setOpenDeleteDialog(false);
       await Assets.deleteOne(asset.uuid);
       await Assets.fetchAll();
+      await Conversions.fetch();
       router.push(`/organizations/${account?.org}/library`);
     
     } catch (err: any) {

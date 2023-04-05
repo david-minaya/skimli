@@ -16,7 +16,11 @@
       "sourceView": "Source view"
     },
     "counter_one": "{{count}} Clip",
-    "counter_other": "{{count}} Clips"
+    "counter_other": "{{count}} Clips",
+    "searchResultsTitle": "Search Results",
+    "searchResultsCounter_one": "{{count}} result",
+    "searchResultsCounter_other": "{{count}} results",
+    "notFoundResults": "No search results found for \"caption\""
   },
   "shareTab": {
     "share": "Social share",

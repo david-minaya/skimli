@@ -27,10 +27,11 @@ export const style = Style({
     fontSize: '12px',
     fontWeight: 600,
     fontVariantNumeric: 'tabular-nums',
-    marginLeft: '12px'
+    marginLeft: '12px',
+    marginRight: 'auto'
   },
   volumeOption: {
-    marginLeft: 'auto',
+    marginLeft: '4px',
     marginRight: '8px'
   },
   volumePopup: {

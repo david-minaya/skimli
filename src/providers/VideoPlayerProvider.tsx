@@ -10,9 +10,11 @@ interface VideoPlayer {
   currentTime: number;
   volume: number;
   muted: boolean;
+  loop: boolean;
   setVideo: (video: HTMLVideoElement) => void;
   setCurrentTime: Dispatch<SetStateAction<number>>;
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
+  setLoop: Dispatch<SetStateAction<boolean>>;
   play: () => void;
   pause: () => void;
   mute: () => void;
@@ -31,6 +33,7 @@ export function VideoPlayerProvider(props: Props) {
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(100);
+  const [loop, setLoop] = useState(false);
 
   function setVideo(video: HTMLVideoElement) {
     ctx.video = video;
@@ -69,9 +72,11 @@ export function VideoPlayerProvider(props: Props) {
     currentTime,
     volume,
     muted,
+    loop,
     setVideo,
     setCurrentTime,
     setIsPlaying,
+    setLoop,
     play,
     pause,
     mute,

@@ -20,12 +20,14 @@ import { AppBar } from './components/app-bar/app-bar.component';
 import { Asset } from '~/types/assets.type';
 import { useAssets } from '~/store/assets.slice';
 import { style } from './index.style';
+import { useConversions } from '~/store/conversions.slice';
 
 function Library() {
 
-  const assetsStore = useAssets();
-  const assets = assetsStore.getAll();
-  const areAssetsSelected = assetsStore.areSelected();
+  const Assets = useAssets();
+  const Conversions = useConversions();
+  const assets = Assets.getAll();
+  const areAssetsSelected = Assets.areSelected();
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
 
   const { t } = useTranslation('library');
@@ -37,15 +39,16 @@ function Library() {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    assetsStore.fetchAll();
+    Assets.fetchAll();
   }, []);
 
   useAseetsUploaded(() => {
-    assetsStore.fetchAll();
+    Assets.fetchAll();
   });
 
   useConvertToClipsSubscription(asset => {
-    assetsStore.update(asset.uuid, asset);
+    Assets.update(asset.uuid, asset);
+    Conversions.fetch();
   });
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -72,7 +75,7 @@ function Library() {
   async function handleSearchChange(value?: string) {
     setIsSearching(value !== undefined && value !== '');
     setSearch(value || '');
-    await assetsStore.fetchAll(value);
+    await Assets.fetchAll(value);
   }
 
   function handleVideoItemClick(asset: Asset) {

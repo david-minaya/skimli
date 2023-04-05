@@ -59,7 +59,7 @@ export function WorkflowStatusModal(props: Props) {
 
   function calcElapsedTime() {
     const time = Date.now() - Date.parse(asset.activityStartTime);
-    return `${Math.trunc((time / 1000) / 60)}m`
+    return formatSeconds(time / 1000);
   }
 
   if (!open) {
@@ -92,6 +92,10 @@ export function WorkflowStatusModal(props: Props) {
           <Box sx={style.item}>
             <Box sx={style.itemTitle}>{t('workflowStatusModal.id')}</Box>
             <Box sx={style.itemText}>{asset.uuid}</Box>
+          </Box>
+          <Box sx={style.item}>
+            <Box sx={style.itemTitle}>{t('workflowStatusModal.videoCategory')}</Box>
+            <Box sx={style.itemText}>{'Other'}</Box>
           </Box>
           <Box sx={style.item}>
             <Box sx={style.itemTitle}>{t('workflowStatusModal.status')}</Box>

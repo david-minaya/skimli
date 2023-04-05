@@ -44,13 +44,6 @@ export function ClipTimelineThumb(props: Props) {
     updatePosition(event.pageX);
   }, []);
 
-  const handleThumbMouseDown = useCallback((event: MouseEvent<HTMLElement>) => {
-    setActive(true);
-    videoPlayer.pause();
-    updatePosition(event.pageX);
-    event.stopPropagation();
-  }, []);
-
   const handleMouseMove = useCallback((event: globalThis.MouseEvent) => {
     updatePosition(event.pageX);
   }, []);
@@ -106,7 +99,6 @@ export function ClipTimelineThumb(props: Props) {
       onMouseDown={handleMouseDown}>
       <ClipTimelineThumbIcon
         sx={style.thumb}
-        onMouseDown={handleThumbMouseDown}
         style={{ 
           left: `${calcPosition()}px`, 
           visibility: !focus ? 'visible' : 'hidden' 
@@ -115,12 +107,10 @@ export function ClipTimelineThumb(props: Props) {
         <Fragment>
           <Box 
             sx={style.line}
-            style={{ left: `${calcPosition()}px` }}
-            onMouseDown={handleThumbMouseDown}/>
+            style={{ left: `${calcPosition()}px` }}/>
           <Box 
             sx={style.tag}
-            style={{ left: `${calcPosition()}px` }}
-            onMouseDown={handleThumbMouseDown}>
+            style={{ left: `${calcPosition()}px` }}>
             {formatSeconds(currentTime, true)}
           </Box>
         </Fragment>
