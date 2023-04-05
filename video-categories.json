@@ -27,6 +27,24 @@
       "model": "autos-and-vehicles"
     },
     {
+      "code": "VIDEO-CATEGORY-HOWTO-STYLE",
+      "archived": false,
+      "label": "Howto & Style",
+      "model": "howto-and-style"
+    },
+    {
+      "code": "VIDEO-CATEGORY-SCIENCE-TECHNOLOGY",
+      "archived": false,
+      "label": "Science & Technology",
+      "model": "science-and-technology"
+    },
+    {
+      "code": "VIDEO-CATEGORY-SPORTS",
+      "archived": false,
+      "label": "Sports",
+      "model": "sports"
+    },
+    {
       "code": "VIDEO-CATEGORY-UFC",
       "archived": false,
       "label": "UFC",
