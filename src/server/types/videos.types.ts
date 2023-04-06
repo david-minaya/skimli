@@ -10,6 +10,17 @@ export enum AssetStatus {
   ERRORED = "ERRORED",
 }
 
+export interface IAssetWorkflow {
+  workflowId: string;
+  runId: string;
+  status: AssetStatus;
+  category: string;
+  activityStatus: ActivityStatus;
+  startTime?: string;
+  endTime?: string;
+  model?: string;
+}
+
 export interface Asset {
   uuid: string;
   createdAt: string;
@@ -22,10 +33,11 @@ export interface Asset {
   sourceMuxInputInfo: SourceMuxInput[];
   sourceMuxAssetData: object;
   activityStartTime?: string;
-  activityStatus?: AcitivityStatus;
+  activityStatus?: ActivityStatus;
   medias?: object;
   inferenceData?: IInferenceData;
   metadata?: AssetMetadata;
+  workflows?: IAssetWorkflow[];
 }
 
 export interface CreateAssetRequest {
@@ -59,7 +71,7 @@ export interface IAdminGetAssetsArgs {
   org: number;
 }
 
-export enum AcitivityStatus {
+export enum ActivityStatus {
   QUEUED = "QUEUED",
   DOWNLOADING = "DOWNLOADING",
   ANALYZING = "ANALYZING",
@@ -142,7 +154,7 @@ export interface ConvertToClipsWorkflowResponse {
 }
 
 export interface ConvertToClipsWorkflowStatus {
-  activityStatus?: AcitivityStatus;
+  activityStatus?: ActivityStatus;
   assetId: string;
   org: number;
   startTime: string;

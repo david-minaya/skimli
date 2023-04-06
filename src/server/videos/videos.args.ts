@@ -16,7 +16,7 @@ import { ArgsType, Field, InputType, Int } from "type-graphql";
 import { IsValidFilename } from "../common/filename.validator";
 import { IsValidCategory } from "../common/category.validator";
 import {
-  AcitivityStatus,
+  ActivityStatus,
   AssetStatus,
   ClipSourceType,
   IAdjustClipArgs,
@@ -144,8 +144,8 @@ export class ConvertToClipsArgs {
 export class TestConvertToClipsWorkflowStatusArgs
   implements IConvertToClipsWorkflowStatus
 {
-  @Field(() => AcitivityStatus)
-  activityStatus: AcitivityStatus;
+  @Field(() => ActivityStatus)
+  activityStatus: ActivityStatus;
 
   @Field(() => String)
   assetId: string;

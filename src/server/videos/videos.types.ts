@@ -11,13 +11,14 @@ import {
 import { TransformClipsCaption } from "../middlewares/transform-clips-caption";
 import { MuxAsset, MuxTokens } from "../mux/mux.types";
 import {
-  AcitivityStatus,
+  ActivityStatus,
   AssetStatus,
   ClipSourceType,
   Asset as IAsset,
   AssetMetadata as IAssetMetadata,
   AssetMetadataAspectRatio as IAssetMetadataAspectRatio,
   AssetMetadataResolution as IAssetMetadataResolution,
+  IAssetWorkflow,
   IClip,
   ConvertToClipsWorkflowResponse as IConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
@@ -34,12 +35,13 @@ import {
   MediaStatus,
   MediaType,
 } from "../types/videos.types";
+import { TransformCategoryCodeToLabel } from "../middlewares/transform-category-code";
 
 registerEnumType(AssetStatus, {
   name: "AssetStatus",
 });
 
-registerEnumType(AcitivityStatus, {
+registerEnumType(ActivityStatus, {
   name: "AcitivityStatus",
 });
 
@@ -182,6 +184,34 @@ export class AssetMetadata implements IAssetMetadata {
 }
 
 @ObjectType()
+export class AssetWorkflow implements IAssetWorkflow {
+  @Field(() => String)
+  workflowId: string;
+
+  @Field(() => String)
+  runId: string;
+
+  @Field(() => AssetStatus)
+  status: AssetStatus;
+
+  @Field(() => String)
+  @UseMiddleware(TransformCategoryCodeToLabel())
+  category: string;
+
+  @Field(() => ActivityStatus)
+  activityStatus: ActivityStatus;
+
+  @Field(() => String, { nullable: true })
+  startTime?: string;
+
+  @Field(() => String, { nullable: true })
+  endTime?: string;
+
+  @Field(() => String, { nullable: true })
+  model?: string;
+}
+
+@ObjectType()
 export class Asset implements IAsset {
   @Field(() => String)
   uuid: string;
@@ -221,8 +251,8 @@ export class Asset implements IAsset {
   @Field(() => String, { nullable: true })
   activityStartTime?: string;
 
-  @Field(() => AcitivityStatus, { nullable: true })
-  activityStatus?: AcitivityStatus;
+  @Field(() => ActivityStatus, { nullable: true })
+  activityStatus?: ActivityStatus;
 
   @Field(() => GraphQLJSON, { nullable: true })
   medias?: object;
@@ -232,6 +262,9 @@ export class Asset implements IAsset {
 
   @Field(() => AssetMetadata, { nullable: true })
   metadata?: AssetMetadata;
+
+  @Field(() => [AssetWorkflow], { nullable: true })
+  workflows?: AssetWorkflow[];
 }
 
 @ObjectType()
@@ -341,8 +374,8 @@ export class SourceMuxInput implements ISourceMuxInput {
 export class ConvertToClipsWorkflowStatus
   implements IConvertToClipsWorkflowStatus
 {
-  @Field(() => AcitivityStatus, { nullable: true })
-  activityStatus?: AcitivityStatus;
+  @Field(() => ActivityStatus, { nullable: true })
+  activityStatus?: ActivityStatus;
 
   @Field(() => AssetStatus, { nullable: true })
   status?: AssetStatus;

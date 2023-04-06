@@ -2,7 +2,7 @@ import { Consumer } from "sqs-consumer";
 import { Container } from "typedi";
 import config from "../../config";
 import {
-  AcitivityStatus,
+  ActivityStatus,
   AssetStatus,
   ConvertToClipsWorkflowStatus,
 } from "../types/videos.types";
@@ -18,7 +18,7 @@ export const videosServiceQueueProcessor = Consumer.create({
     try {
       const msg: ConvertToClipsWorkflowStatus = {
         activityStatus: message.MessageAttributes?.ActivityStatus
-          ?.StringValue as AcitivityStatus,
+          ?.StringValue as ActivityStatus,
         assetId: message.MessageAttributes?.AssetId?.StringValue as string,
         startTime: message.MessageAttributes?.StartTime?.StringValue as string,
         org: Number(message.MessageAttributes?.OrgId?.StringValue),
