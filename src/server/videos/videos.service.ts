@@ -240,7 +240,7 @@ export class VideosService {
     });
 
     const track = await this.muxService.createTextTrack(
-      video?.sourceMuxAssetId,
+      video?.sourceMuxAssetId!,
       {
         name: filename,
         url: signedObjectURL,
@@ -511,7 +511,7 @@ export class VideosService {
 
     const clips = asset.inferenceData?.human.clips || [];
     await this.validateClip({
-      videoAsset: { clips, sourceMuxAssetId: asset.sourceMuxAssetId },
+      videoAsset: { clips, sourceMuxAssetId: asset.sourceMuxAssetId! },
       newOrUpdatedClip: args,
     });
     const clip = await this.videosAPI.createClip(args, authInfo.token);
@@ -524,7 +524,7 @@ export class VideosService {
 
     const clips = asset.inferenceData?.human.clips || [];
     await this.validateClip({
-      videoAsset: { clips: clips, sourceMuxAssetId: asset.sourceMuxAssetId },
+      videoAsset: { clips: clips, sourceMuxAssetId: asset.sourceMuxAssetId! },
       newOrUpdatedClip: args,
     });
     const clip = await this.videosAPI.adjustClip(args, authInfo.token);

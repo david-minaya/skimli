@@ -29,9 +29,9 @@ export interface Asset {
   name: string;
   status: AssetStatus;
   sourceUrl: string;
-  sourceMuxAssetId: string;
-  sourceMuxInputInfo: SourceMuxInput[];
-  sourceMuxAssetData: object;
+  sourceMuxAssetId?: string;
+  sourceMuxInputInfo?: SourceMuxInput[];
+  sourceMuxAssetData?: object;
   activityStartTime?: string;
   activityStatus?: ActivityStatus;
   medias?: object;

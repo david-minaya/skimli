@@ -185,7 +185,8 @@ export class VideosResolver {
 
   @FieldResolver(() => MuxData, { nullable: true })
   async mux(@Root() asset: Asset): Promise<MuxData | null> {
-    return this.videosService.getMuxDataForAsset(asset.sourceMuxAssetId);
+    if (!asset?.sourceMuxAssetId) return null;
+    return this.videosService.getMuxDataForAsset(asset?.sourceMuxAssetId);
   }
 
   @UseMiddleware(IsAppUserGuard)

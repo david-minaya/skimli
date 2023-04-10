@@ -236,14 +236,14 @@ export class Asset implements IAsset {
   sourceUrl: string;
 
   @Field(() => String, { nullable: true })
-  sourceMuxAssetId: string;
+  sourceMuxAssetId?: string;
 
-  @Field(() => [SourceMuxInput])
-  sourceMuxInputInfo: SourceMuxInput[];
+  @Field(() => [SourceMuxInput], { nullable: true })
+  sourceMuxInputInfo?: SourceMuxInput[];
 
   // not exposing this field
   // @Field(() => GraphQLJSON)
-  sourceMuxAssetData: object;
+  sourceMuxAssetData?: object;
 
   @Field(() => MuxData, { nullable: true })
   mux?: MuxData;
