@@ -66,8 +66,8 @@ export function WorkflowStatusModal(props: Props) {
     return null;
   }
 
-  const videoTrack: VideoTrack = asset.sourceMuxInputInfo[0].file.tracks.find(track => track.type === 'video') as any;
-  const audioTrack: AudioTrack = asset.sourceMuxInputInfo[0].file.tracks.find(track => track.type === 'audio') as any;
+  const videoTrack: VideoTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find(track => track.type === 'video') as any;
+  const audioTrack: AudioTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find(track => track.type === 'audio') as any;
 
   return (
     <Dialog
@@ -128,7 +128,7 @@ export function WorkflowStatusModal(props: Props) {
         <Box sx={style.sectionContent}>
           <Box sx={style.item}>
             <Box sx={style.itemTitle}>{t('workflowStatusModal.container')}</Box>
-            <Box sx={style.itemText}>{asset.sourceMuxInputInfo[0].file.container_format}</Box>
+            <Box sx={style.itemText}>{asset.sourceMuxInputInfo?.[0].file.container_format}</Box>
           </Box>
           <Box sx={style.item}>
             <Box sx={style.itemTitle}>{t('workflowStatusModal.width')}</Box>
