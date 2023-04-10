@@ -7,12 +7,12 @@ export function useGetAssets() {
 
   const query = useQuery();
 
-  return useCallback(async (name?: string) => {
+  return useCallback(async (name?: string, skip = 0, take = 1000) => {
     return query<Asset[]>({
       name: 'getAssets',
       query: gql`
-        query GetAssets($name: String) {
-          getAssets(name: $name) {
+        query GetAssets($name: String, $skip: Int, $take: Int) {
+          getAssets(name: $name, skip: $skip, take: $take) {
             uuid
             createdAt
             updatedAt
@@ -80,7 +80,7 @@ export function useGetAssets() {
           }
         }
       `,
-      variables: { name },
+      variables: { name, skip, take },
       fetchPolicy: 'network-only'
     });
   }, [query]);

@@ -33,7 +33,7 @@ export interface Asset {
   metadata: {
     filesize: number;
   }
-  sourceMuxInputInfo: {
+  sourceMuxInputInfo?: {
     file: {
       container_format: string;
       tracks: (AudioTrack | VideoTrack)[]

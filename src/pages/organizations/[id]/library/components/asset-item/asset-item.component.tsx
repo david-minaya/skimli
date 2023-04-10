@@ -28,10 +28,15 @@ interface Props {
 export function AssetItem(props: Props) {
 
   const { 
-    asset,
+    asset: _asset,
     showCheckBox,
     onClick,
   } = props;
+
+  const asset: Asset = { 
+    ..._asset, 
+    status: _asset.sourceMuxAssetId ? _asset.status : 'ERRORED'
+  }
 
   const router = useRouter();
   const Conversions = useConversions();
@@ -84,10 +89,6 @@ export function AssetItem(props: Props) {
       await assetsStore.fetchAll();
       setOpenErrorToast(true);
     }
-  }
-
-  if (asset.status !== 'PROCESSING' && !asset.mux || !thumbnail) {
-    return null;
   }
 
   return (
