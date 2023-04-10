@@ -45,6 +45,19 @@
       "model": "sports"
     },
     {
+      "code": "VIDEO-CATEGORY-PETS-ANIMALS",
+      "archived": false,
+      "label": "Pets & Animals",
+      "model": "pets-and-animals"
+    },
+    {
+      "code": "VIDEO-CATEGORY-OTHER-ANCHOR-BASED",
+      "archived": false,
+      "label": "Other - Anchor Based",
+      "model": "default-anchor-based",
+      "skimliOnly": true
+    },
+    {
       "code": "VIDEO-CATEGORY-UFC",
       "archived": false,
       "label": "UFC",
