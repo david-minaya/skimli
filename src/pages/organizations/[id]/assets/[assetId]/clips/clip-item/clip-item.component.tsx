@@ -4,6 +4,7 @@ import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { useAssets } from '~/store/assets.slice';
 import { Clip } from '~/types/clip.type';
 import { formatSeconds } from '~/utils/formatSeconds';
+import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { style } from './clip-item.style';
 
 interface Props {
@@ -21,11 +22,13 @@ export function ClipItem(props: Props) {
   } = props;
 
   const { t } = useTranslation('editClips');
-  const assetsStore = useAssets();
+  const Assets = useAssets();
+  const videoPlayer = useVideoPlayer();
   const thumbnail = useGetThumbnail(playbackId, 172, 100, clip.startTime);
 
   function handleClick() {
-    assetsStore.selectClip(assetId, clip.uuid);
+    Assets.selectClip(assetId, clip.uuid);
+    videoPlayer.updateProgress(clip.startTime);
   }
 
   return (

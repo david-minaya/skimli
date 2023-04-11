@@ -3,32 +3,26 @@ import { Style } from '~/utils/style';
 export const style = Style({
   container: {
     height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
     position: 'absolute',
     left: '0px',
     right: '0px',
     bottom: '0px',
-    cursor: 'pointer',
-    zIndex: 1
+    cursor: 'pointer'
   },
   thumb: {
-    position: 'absolute',
     transform: 'translateX(-50%)',
-    pointerEvents: 'all', 
-    bottom: '0px',
+    bottom: '0px'
+  },
+  thumbIcon: {
+    display: 'block',
     color: 'primary.main',
     cursor: 'ew-resize',
+    marginTop: 'auto',
     ':hover': {
       color: 'primary.light'
     }
   },
-  tag: {
-    position: 'absolute',
-    top: '0px',
-    transform: 'translate(-50%, -50%)',
+  thumbTimecode: {
     color: 'white',
     fontSize: '11px',
     fontVariantNumeric: 'tabular-nums',
@@ -38,16 +32,14 @@ export const style = Style({
     borderRadius: '4px',
     padding: '2px 8px'
   },
-  line: {
+  thumbTimecodeLine: {
     width: '6px',
-    position: 'absolute',
-    top: '0px',
-    bottom: '0px',
-    transform: 'translateX(-50%)',
+    height: '60px',
     cursor: 'ew-resize',
     backgroundColor: 'black',
     borderLeft: '2px solid',
     borderRight: '2px solid',
-    borderColor: 'primary.main'
+    borderColor: 'primary.main',
+    margin: 'auto'
   }
 });

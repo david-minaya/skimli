@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback, MouseEvent, Fragment } from 'react';
 import { Box } from '@mui/material';
+import { useEffect, useState, useCallback, Fragment } from 'react';
 import { ClipTimelineThumbIcon } from '~/icons/clipTimelineThumbIcon';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { Clip } from '~/types/clip.type';
 import { style } from './clip-timeline-thumb.style';
+import { Drag } from '~/components/drag/drag.component';
 
 interface Props {
   clip: Clip;
@@ -21,100 +22,51 @@ export function ClipTimelineThumb(props: Props) {
   } = props;
 
   const videoPlayer = useVideoPlayer();
+  const time = videoPlayer.currentTime - clip.startTime;
   const [focus, setFocus] = useState(false);
-  const [active, setActive] = useState(false);
-  const currentTime = videoPlayer.currentTime - clip.startTime;
-
-  const [ctx] = useState({ 
-    active: false,
-    clip,
-    width,
-    clipTimelineElement,
-    lastTime: 0
-  });
+  const [left, setLeft] = useState(0);
 
   useEffect(() => {
-    ctx.clip = clip;
-    ctx.width = width;
-    ctx.clipTimelineElement = clipTimelineElement;
-  }, [clip, width, clipTimelineElement]);
-
-  const handleMouseDown = useCallback((event: MouseEvent<HTMLElement>) => {
-    setActive(true);
-    updatePosition(event.pageX);
-  }, []);
-
-  const handleMouseMove = useCallback((event: globalThis.MouseEvent) => {
-    updatePosition(event.pageX);
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    setActive(false);
-  }, []);
-
-  useEffect(() => {
-    if (active) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+    if (clipTimelineElement) {
+      const rect = clipTimelineElement.getBoundingClientRect();
+      setLeft(rect.left);
     }
-  }, [active, handleMouseMove, handleMouseUp]);
+  }, [clipTimelineElement]);
 
-  function updatePosition(pageX: number) {
-
-    const rect = ctx.clipTimelineElement!.getBoundingClientRect();
-    const leftEdge = rect.left;
-    const rightEdge = rect.left + ctx.width;
-  
-    const x = limitPosition(leftEdge, pageX, rightEdge);
-    const clipTime = (ctx.clip.duration / ctx.width) * (x - leftEdge);
-    const time = ctx.clip.startTime + clipTime;
-
-    if (time !== ctx.lastTime) {
-      videoPlayer.updateProgress(time);
-      ctx.lastTime = time;
-    }
-  }
-
-  function calcPosition() {
-    const time = limitPosition(0, currentTime, clip.duration);
-    const x = (width / clip.duration) * time;
-    return x;
-  }
-
-  function limitPosition(start: number, position: number, end: number) {
-    if (position < start) return start;
-    if (position > end) return end;
-    return position;
-  }
+  const handleTimeChange = useCallback((time: number) => {
+    videoPlayer.updateProgress(clip.startTime + time);
+  }, [clip]);
 
   return (
-    <Box 
+    <Drag
       sx={style.container}
-      tabIndex={0}
-      onFocus={() => setFocus(true)}
-      onBlur={() => setFocus(false)}
-      onMouseDown={handleMouseDown}>
-      <ClipTimelineThumbIcon
+      draggable={false}
+      time={time}
+      duration={clip.duration}
+      left={left}
+      right={left + width}
+      width={width}
+      onTimeChange={handleTimeChange}>
+      <Drag
         sx={style.thumb}
-        style={{ 
-          left: `${calcPosition()}px`, 
-          visibility: !focus ? 'visible' : 'hidden' 
-        }}/>
-      {focus &&
-        <Fragment>
-          <Box 
-            sx={style.line}
-            style={{ left: `${calcPosition()}px` }}/>
-          <Box 
-            sx={style.tag}
-            style={{ left: `${calcPosition()}px` }}>
-            {formatSeconds(currentTime, true)}
-          </Box>
-        </Fragment>
-      }
-    </Box>
+        time={time}
+        duration={clip.duration}
+        left={left}
+        right={left + width}
+        width={width}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}>
+        {!focus &&
+          <ClipTimelineThumbIcon 
+            sx={style.thumbIcon}/>
+        }
+        {focus &&
+          <Fragment>
+            <Box sx={style.thumbTimecode}>{formatSeconds(time, true)}</Box>
+            <Box sx={style.thumbTimecodeLine}/>
+          </Fragment>
+        }
+      </Drag>
+    </Drag>
   );
 }

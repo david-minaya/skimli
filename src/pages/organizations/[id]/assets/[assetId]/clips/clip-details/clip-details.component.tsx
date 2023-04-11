@@ -2,7 +2,6 @@ import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
 import { TextField } from '~/components/text-field/text-field.component';
-import { VideoPlayerProvider } from '~/providers/VideoPlayerProvider';
 import { useAssets } from '~/store/assets.slice';
 import { Asset } from '~/types/assets.type';
 import { ClipTimeline } from '../clip-timeline/clip-timeline.component';
@@ -25,39 +24,37 @@ export function ClipDetails(props: Props) {
   }
 
   return (
-    <VideoPlayerProvider>
-      <Box sx={style.container}>
-        <Box sx={style.toolbar}>
-          <OutlinedButton sx={style.addButton} title={t('addButton')}/>
-          <OutlinedButton title={t('stitchButton')}/>
-        </Box>
-        <Box sx={style.content}>
-          {clip &&
-            <Box sx={style.center}>
-              <TextField
-                sx={style.titleInput as any}
-                value={clip.caption}/>
-              <ClipVideoPlayer
-                asset={asset}
-                clip={clip}/>
-              <Box sx={style.info}>
-                <Box sx={style.dateContainer}>
-                  <Box sx={style.dateTitle}>{t('dateTitle')}</Box>
-                  <Box sx={style.date}>{formatDate(clip.createdAt)}</Box>
-                </Box>
-                <OutlinedButton
-                  sx={style.resetButton} 
-                  title={t('resetButton')}/>
-                <OutlinedButton 
-                  title={t('adjustButton')}/>
-              </Box>
-              <ClipTimeline 
-                clip={clip}
-                playbackId={asset.mux!.asset.playback_ids[0].id}/>
-            </Box>
-          }
-        </Box>
+    <Box sx={style.container}>
+      <Box sx={style.toolbar}>
+        <OutlinedButton sx={style.addButton} title={t('addButton')}/>
+        <OutlinedButton title={t('stitchButton')}/>
       </Box>
-    </VideoPlayerProvider>
+      <Box sx={style.content}>
+        {clip &&
+          <Box sx={style.center}>
+            <TextField
+              sx={style.titleInput as any}
+              value={clip.caption}/>
+            <ClipVideoPlayer
+              asset={asset}
+              clip={clip}/>
+            <Box sx={style.info}>
+              <Box sx={style.dateContainer}>
+                <Box sx={style.dateTitle}>{t('dateTitle')}</Box>
+                <Box sx={style.date}>{formatDate(clip.createdAt)}</Box>
+              </Box>
+              <OutlinedButton
+                sx={style.resetButton} 
+                title={t('resetButton')}/>
+              <OutlinedButton 
+                title={t('adjustButton')}/>
+            </Box>
+            <ClipTimeline 
+              clip={clip}
+              playbackId={asset.mux!.asset.playback_ids[0].id}/>
+          </Box>
+        }
+      </Box>
+    </Box>
   )
 }

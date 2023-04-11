@@ -31,7 +31,7 @@ export function ClipVideoPlayer(props: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const volumeRef = useRef<HTMLButtonElement>(null);
   const [showVolume, setShowVolume] = useState(false);
-  const currentTime = videoPlayer.currentTime - clip.startTime;
+  const time = videoPlayer.currentTime - clip.startTime;
 
   useEffect(() => {
     if (videoRef.current) {
@@ -120,7 +120,7 @@ export function ClipVideoPlayer(props: Props) {
         onTimeUpdate={handleTimeUpdate}/>
       <LinearProgress
         variant='determinate'
-        value={currentTime * 100 / clip.duration}/>
+        value={time * 100 / clip.duration}/>
       <Box sx={style.controls}>
         <IconButton
           sx={style.playButton} 
@@ -129,7 +129,7 @@ export function ClipVideoPlayer(props: Props) {
           {videoPlayer.isPlaying ? <PauseIcon/> : <PlayIcon/>}
         </IconButton>
         <Box sx={style.time}>
-          {formatSeconds(currentTime)} / {formatSeconds(clip.duration)}
+          {formatSeconds(time)} / {formatSeconds(clip.duration)}
         </Box>
         <IconButton 
           size='small'

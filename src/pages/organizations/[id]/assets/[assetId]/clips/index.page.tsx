@@ -9,6 +9,7 @@ import { useAsyncEffect } from '~/hooks/useAsyncEffect';
 import { Clips } from './clips/clips.component';
 import { ClipDetails } from './clip-details/clip-details.component';
 import { Sidebar } from './sidebar/sidebar.component';
+import { VideoPlayerProvider } from '~/providers/VideoPlayerProvider';
 import { style } from './index.style';
 
 function EditClips() {
@@ -31,9 +32,11 @@ function EditClips() {
       <Box sx={style.container}>
         <AppBar asset={asset}/>
         <Box sx={style.content}>
-          <Clips asset={asset}/>
-          <ClipDetails asset={asset}/>
-          <Sidebar/>
+          <VideoPlayerProvider>
+            <Clips asset={asset}/>
+            <ClipDetails asset={asset}/>
+            <Sidebar/>
+          </VideoPlayerProvider>
         </Box>
       </Box>
     </Main>

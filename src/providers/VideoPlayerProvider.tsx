@@ -67,7 +67,7 @@ export function VideoPlayerProvider(props: Props) {
   }
 
   const value: VideoPlayer = {
-    video: ctx.video,
+    get video() { return ctx.video },
     isPlaying,
     currentTime,
     volume,
