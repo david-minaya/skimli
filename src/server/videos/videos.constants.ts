@@ -13,3 +13,5 @@ export const MIN_CLIP_DURATION_ERROR = `Clips must be at least ${
 export const MAX_CLIP_DURATION_ERROR = `Clips must be at most ${
   MAX_CLIP_DURATION_IN_MS / 1000
 } seconds`;
+
+export const SUBTITLE_FILE_EXTENSION = "vtt";

@@ -183,7 +183,7 @@ export interface AssetMetadata {
 }
 
 export enum MediaType {
-  AUDIO = "AUDIO",
+  // AUDIO = "AUDIO",
   SUBTITLE = "SUBTITLE",
 }
 

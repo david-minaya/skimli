@@ -67,10 +67,12 @@ import {
   MEDIA_UPLOADED_EVENT,
   MIN_CLIP_DURATION_ERROR,
   MIN_CLIP_DURATION_IN_MS,
+  SUBTITLE_FILE_EXTENSION,
 } from "./videos.constants";
 import {
   AssetNotFoundException,
   ClipsNotFoundException,
+  SubtitleFileNotSupported,
 } from "./videos.exceptions";
 import {
   Asset,
@@ -391,6 +393,9 @@ export class VideosService {
     authInfo: AuthInfo,
     args: IStartMediaUploadArgs
   ): Promise<StartUploadResponse> {
+    if (!args.filename.endsWith(SUBTITLE_FILE_EXTENSION)) {
+      throw SubtitleFileNotSupported;
+    }
     const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
     const key = `org/${user?.org}/media/${args.assetId}/${args.filename}`;
 
