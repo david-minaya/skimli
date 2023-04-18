@@ -5,7 +5,7 @@ export const MEDIA_UPLOADED_EVENT = "MEDIA_UPLOADED";
 // min clip duration in milliseconds
 export const MIN_CLIP_DURATION_IN_MS = 5000;
 // max clip duration in milliseconds
-export const MAX_CLIP_DURATION_IN_MS = 100000;
+export const MAX_CLIP_DURATION_IN_MS = 600000;
 
 export const MIN_CLIP_DURATION_ERROR = `Clips must be at least ${
   MIN_CLIP_DURATION_IN_MS / 1000
