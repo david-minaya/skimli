@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { Clip } from '~/types/clip.type';
 import { style } from './clip-timeline.style';
 import { ClipTimelineFrame } from '../clip-timeline-frame/clip-timeline-frame.component';
 import { ClipTimelineThumb } from '../clip-timeline-thumb/clip-timeline-thumb.component';
+import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 
 interface Props {
   clip: Clip;
@@ -17,16 +18,19 @@ export function ClipTimeline(props: Props) {
     playbackId
   } = props;
 
+  const videoPlayer = useVideoPlayer();
   const ref = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(0);
+  const [left, setLeft] = useState(0);
+  const duration = clip.endTime - clip.startTime;
 
   useEffect(() => {
 
     const calcFrameWidth = () => {
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
-        const frameWidth = rect.width / 20;
-        setFrameWidth(frameWidth);
+        setFrameWidth(rect.width / 20);
+        setLeft(rect.left);
       }
     }
 
@@ -38,9 +42,13 @@ export function ClipTimeline(props: Props) {
     }
   }, []);
 
+  const handleTimeChange = useCallback((time: number) => {
+    videoPlayer.updateProgress(time + clip.startTime);
+  }, [clip]);
+
   const frames = useMemo(() => {
     const frames: number[] = [];
-    for (let i = clip.startTime; i <= clip.startTime + clip.duration; i += 30) {
+    for (let i = clip.startTime; i <= clip.startTime + duration; i += 30) {
       frames.push(i)
     }
     return frames;
@@ -61,9 +69,11 @@ export function ClipTimeline(props: Props) {
         )}
       </Box>
       <ClipTimelineThumb
-        clip={clip}
-        clipTimelineElement={ref.current}
-        width={frames.length * frameWidth}/>
+        time={videoPlayer.currentTime - clip.startTime}
+        duration={duration}
+        timelineLeft={left}
+        timelineWidth={frames.length * frameWidth}
+        onChange={handleTimeChange}/>
     </Box>
   );
 }

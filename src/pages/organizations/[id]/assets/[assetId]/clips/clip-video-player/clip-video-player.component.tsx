@@ -35,7 +35,7 @@ export function ClipVideoPlayer(props: Props) {
 
   useEffect(() => {
     if (videoRef.current) {
-      videoPlayer.setVideo(videoRef.current);
+      videoPlayer.setVideo(videoRef.current, 'clip-video-player');
       videoPlayer.updateProgress(clip.startTime);
     }
   }, [clip]);

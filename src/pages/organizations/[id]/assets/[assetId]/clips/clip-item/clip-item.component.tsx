@@ -50,7 +50,9 @@ export function ClipItem(props: Props) {
           <Box sx={style.title}>{clip.caption || t('noCaptionFound')}</Box>
           <Box sx={style.time}>{formatSeconds(clip.startTime)} - {formatSeconds(clip.endTime)}</Box>
         </Box>
-        <Box sx={style.tag}>AI</Box>
+        {clip.source !== 'HUMAN' &&
+          <Box sx={style.tag}>AI</Box>
+        }
       </Box>
     </Box>
   )

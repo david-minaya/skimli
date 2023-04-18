@@ -10,6 +10,7 @@ import { useGetAsset } from '~/graphqls/useGetAsset';
 import { toSeconds } from '~/utils/toSeconds';
 import { Clip } from '~/types/clip.type';
 import { useGetClips } from '~/graphqls/useGetClips';
+import { string } from 'prop-types';
 
 const adapter = createEntityAdapter<Asset>({ selectId: (asset) => asset.uuid });
 const selectors = adapter.getSelectors<RootState>(state => state.assets);
@@ -62,7 +63,7 @@ export const assetsSlice = createSlice({
     replaceClips(state, action: PayloadAction<Clip[]>) {
       const asset = state.entities[action.payload[0].assetId];
       if (asset?.inferenceData) {
-        asset.inferenceData.human.clips = processClips(action.payload);
+        asset.inferenceData.human.clips = action.payload.map(convertTimeToSeconds);
       }
     },
     
@@ -105,6 +106,19 @@ export const assetsSlice = createSlice({
       });
 
       state.selectedIds = [];
+    },
+
+    updateClip(state, action: PayloadAction<{ id: string, assetId: string, clip: Clip }>) {
+      const asset = state.entities[action.payload.assetId];
+      const clips = asset?.inferenceData?.human.clips;
+      const index = clips?.findIndex(clip => clip.uuid === action.payload.id);
+      if (clips && index !== undefined && index !== -1) {
+        clips[index] = { 
+          ...clips[index], 
+          ...convertTimeToSeconds(action.payload.clip),
+          selected: action.payload.clip.selected === true
+        }
+      }
     },
     
     selectClip(state, action: PayloadAction<{ assetId: string, clipId: string }>) {
@@ -190,6 +204,10 @@ export function useAssets() {
     update(id: string, changes: Partial<Asset>) {
       dispatch(assetsSlice.actions.update({ uuid: id, ...changes }));
     },
+
+    updateClip(id: string, assetId: string, clip: Clip) {
+      dispatch(assetsSlice.actions.updateClip({ id, assetId, clip }))
+    },
     
     async fetchAll(name?: string) {
       try {
@@ -228,21 +246,19 @@ function processInferenceData(inferenceData: Asset['inferenceData']) {
     return {
       inferenceData: {
         human: {
-          clips: processClips(inferenceData.human.clips)
+          clips: inferenceData.human.clips.map(convertTimeToSeconds)
         }
       }
     }
   }
 }
 
-function processClips(clips: Clip[]) {
-  return clips.map(clip => {
-    return {
-      ...clip,
-      startTime: toSeconds(clip.startTime as any),
-      endTime: toSeconds(clip.endTime as any),
-      duration: toSeconds(clip.duration as any),
-      selected: false
-    }
-  });
+function convertTimeToSeconds(clip: Clip) {
+  return {
+    ...clip,
+    startTime: toSeconds(clip.startTime as any),
+    endTime: toSeconds(clip.endTime as any),
+    duration: toSeconds(clip.duration as any),
+    selected: false
+  }
 }

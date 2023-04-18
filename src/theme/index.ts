@@ -116,8 +116,12 @@ export const theme = responsiveFontSizes(createTheme({
       },
       styleOverrides: {
         root: {
+          minHeight: '32px',
           textTransform: 'none',
-          borderRadius: '8px'
+          fontSize: '12px',
+          paddingTop: '4px',
+          paddingBottom: '4px',
+          borderRadius: '8px',
         }
       }
     },

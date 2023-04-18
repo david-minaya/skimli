@@ -23,7 +23,8 @@ export function Toast(props: Props) {
 
   return (
     <Snackbar 
-      open={open} 
+      open={open}
+      sx={style.snakbar}
       autoHideDuration={6000}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       onClose={onClose}>

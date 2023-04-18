@@ -4,12 +4,12 @@ export const style = Style({
   container: {
     height: '100%',
     position: 'absolute',
-    left: '0px',
-    right: '0px',
     bottom: '0px',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    zIndex: 2
   },
   thumb: {
+    position: 'absolute',
     transform: 'translateX(-50%)',
     bottom: '0px'
   },

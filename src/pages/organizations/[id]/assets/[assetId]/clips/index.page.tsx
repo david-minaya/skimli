@@ -32,7 +32,7 @@ function EditClips() {
       <Box sx={style.container}>
         <AppBar asset={asset}/>
         <Box sx={style.content}>
-          <VideoPlayerProvider>
+          <VideoPlayerProvider name='edit-clips'>
             <Clips asset={asset}/>
             <ClipDetails asset={asset}/>
             <Sidebar/>

@@ -1,6 +1,9 @@
-import { useState, ReactNode, createContext, useContext, Dispatch, SetStateAction } from 'react';
+import styled from '@emotion/styled';
+import MuxVideo from '@mux/mux-video-react';
+import { useState, ReactNode, createContext, useContext, Dispatch, SetStateAction, useMemo } from 'react';
 
 interface Props {
+  name?: string;
   children: ReactNode;
 }
 
@@ -8,11 +11,13 @@ interface VideoPlayer {
   video?: HTMLVideoElement;
   isPlaying: boolean;
   currentTime: number;
+  duration: number;
   volume: number;
   muted: boolean;
   loop: boolean;
-  setVideo: (video: HTMLVideoElement) => void;
+  setVideo: (video: HTMLVideoElement, tag?: string) => void;
   setCurrentTime: Dispatch<SetStateAction<number>>;
+  setDuration: Dispatch<SetStateAction<number>>;
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
   setLoop: Dispatch<SetStateAction<boolean>>;
   play: () => void;
@@ -20,23 +25,31 @@ interface VideoPlayer {
   mute: () => void;
   updateProgress: (progress: number) => void;
   updateVolume: (volume: number) => void;
+  onLoad: (cb: () => void) => void;
 }
 
 const Context = createContext({} as VideoPlayer);
+const Video = styled(MuxVideo)``;
 
 export function VideoPlayerProvider(props: Props) {
 
-  const { children } = props;
+  const { children, name } = props;
 
-  const [ctx] = useState<{ video?: HTMLVideoElement }>({ video: undefined });
+  const [ctx] = useState<{ video?: HTMLVideoElement, onLoad?: () => void }>({});
   const [isPlaying, setIsPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(100);
   const [loop, setLoop] = useState(false);
+  const [duration, setDuration] = useState(0);
 
-  function setVideo(video: HTMLVideoElement) {
+  function setVideo(video?: HTMLVideoElement, tag?: string) {
     ctx.video = video;
+    if (video) ctx.onLoad?.();
+  }
+
+  function onLoad(cb: () => void) {
+    ctx.onLoad = cb;
   }
 
   function play() {
@@ -70,11 +83,13 @@ export function VideoPlayerProvider(props: Props) {
     get video() { return ctx.video },
     isPlaying,
     currentTime,
+    duration,
     volume,
     muted,
     loop,
     setVideo,
     setCurrentTime,
+    setDuration,
     setIsPlaying,
     setLoop,
     play,
@@ -82,6 +97,7 @@ export function VideoPlayerProvider(props: Props) {
     mute,
     updateProgress,
     updateVolume,
+    onLoad
   }
 
   return (

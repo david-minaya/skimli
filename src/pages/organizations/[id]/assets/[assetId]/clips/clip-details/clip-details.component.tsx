@@ -7,6 +7,9 @@ import { Asset } from '~/types/assets.type';
 import { ClipTimeline } from '../clip-timeline/clip-timeline.component';
 import { ClipVideoPlayer } from '../clip-video-player/clip-video-player.component';
 import { style } from './clip-details.style';
+import { EditClipModal } from '../edit-clip-modal/edit-clip-modal.component';
+import { VideoPlayerProvider } from '~/providers/VideoPlayerProvider';
+import { useState } from 'react';
 
 interface Props {
   asset: Asset;
@@ -18,6 +21,7 @@ export function ClipDetails(props: Props) {
   const { t } = useTranslation('editClips');
   const assetsStore = useAssets();
   const clip = assetsStore.getClip(asset.uuid);
+  const [openEditClipModal, setOpenEditClipModal] = useState(false);
 
   function formatDate(date: string) {
     return new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(Date.parse(date));
@@ -47,7 +51,8 @@ export function ClipDetails(props: Props) {
                 sx={style.resetButton} 
                 title={t('resetButton')}/>
               <OutlinedButton 
-                title={t('adjustButton')}/>
+                title={t('adjustButton')}
+                onClick={() => setOpenEditClipModal(true)}/>
             </Box>
             <ClipTimeline 
               clip={clip}
@@ -55,6 +60,15 @@ export function ClipDetails(props: Props) {
           </Box>
         }
       </Box>
+      {clip && openEditClipModal &&
+        <VideoPlayerProvider name='edit-clip-modal'>
+          <EditClipModal
+            open={openEditClipModal}
+            clip={clip}
+            asset={asset}
+            onClose={() => setOpenEditClipModal(false)}/>
+        </VideoPlayerProvider>
+      }
     </Box>
-  )
+  );
 }

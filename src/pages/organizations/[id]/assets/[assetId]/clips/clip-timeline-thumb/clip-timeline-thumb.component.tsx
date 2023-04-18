@@ -1,72 +1,65 @@
 import { Box } from '@mui/material';
-import { useEffect, useState, useCallback, Fragment } from 'react';
+import { useState, Fragment } from 'react';
 import { ClipTimelineThumbIcon } from '~/icons/clipTimelineThumbIcon';
-import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { formatSeconds } from '~/utils/formatSeconds';
-import { Clip } from '~/types/clip.type';
 import { style } from './clip-timeline-thumb.style';
 import { Drag } from '~/components/drag/drag.component';
+import { mergeSx } from '~/utils/style';
 
 interface Props {
-  clip: Clip;
-  width: number;
-  clipTimelineElement: HTMLDivElement | null;
+  time: number;
+  startTime?: number;
+  endTime?: number;
+  duration: number;
+  timelineLeft: number;
+  timelineWidth: number;
+  onChange: (time: number) => void;
 }
 
 export function ClipTimelineThumb(props: Props) {
 
   const {
-    clip,
-    width,
-    clipTimelineElement
+    time,
+    startTime = 0,
+    duration,
+    endTime = duration,
+    timelineLeft,
+    timelineWidth,
+    onChange
   } = props;
 
-  const videoPlayer = useVideoPlayer();
-  const time = videoPlayer.currentTime - clip.startTime;
   const [focus, setFocus] = useState(false);
-  const [left, setLeft] = useState(0);
 
-  useEffect(() => {
-    if (clipTimelineElement) {
-      const rect = clipTimelineElement.getBoundingClientRect();
-      setLeft(rect.left);
-    }
-  }, [clipTimelineElement]);
-
-  const handleTimeChange = useCallback((time: number) => {
-    videoPlayer.updateProgress(clip.startTime + time);
-  }, [clip]);
+  const left = (timelineWidth / duration) * startTime;
+  const width = (timelineWidth / duration) * (endTime - startTime);
+  const leftThumb = (timelineWidth / duration) * (Math.min(Math.max(startTime, time), endTime) - startTime);
 
   return (
-    <Drag
-      sx={style.container}
-      draggable={false}
-      time={time}
-      duration={clip.duration}
-      left={left}
-      right={left + width}
-      width={width}
-      onTimeChange={handleTimeChange}>
+    <Fragment>
       <Drag
-        sx={style.thumb}
+        sx={mergeSx(style.container, { left, width })}
+        draggable={false}
         time={time}
-        duration={clip.duration}
-        left={left}
-        right={left + width}
-        width={width}
-        onFocus={() => setFocus(true)}
-        onBlur={() => setFocus(false)}>
-        {!focus &&
-          <ClipTimelineThumbIcon 
-            sx={style.thumbIcon}/>
-        }
-        {focus &&
-          <Fragment>
-            <Box sx={style.thumbTimecode}>{formatSeconds(time, true)}</Box>
-            <Box sx={style.thumbTimecodeLine}/>
-          </Fragment>
-        }
+        startTime={startTime}
+        endTime={endTime}
+        duration={duration}
+        left={timelineLeft}
+        width={timelineWidth}
+        onChange={onChange}>
+        <Box
+          tabIndex={0}
+          sx={mergeSx(style.thumb, { left: leftThumb })}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}>
+          {!focus && <ClipTimelineThumbIcon sx={style.thumbIcon}/>}
+          {focus &&
+            <Fragment>
+              <Box sx={style.thumbTimecode}>{formatSeconds(time - startTime, true)}</Box>
+              <Box sx={style.thumbTimecodeLine}/>
+            </Fragment>
+          }
+        </Box>
       </Drag>
-    </Drag>
+    </Fragment>
   );
 }
