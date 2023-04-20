@@ -8,8 +8,13 @@ import { ClipTimeline } from '../clip-timeline/clip-timeline.component';
 import { ClipVideoPlayer } from '../clip-video-player/clip-video-player.component';
 import { style } from './clip-details.style';
 import { EditClipModal } from '../edit-clip-modal/edit-clip-modal.component';
-import { VideoPlayerProvider } from '~/providers/VideoPlayerProvider';
 import { useState } from 'react';
+import { Clip } from '~/types/clip.type';
+import { useAddClip } from '~/graphqls/useAddClip';
+import { useAdjustClip } from '~/graphqls/useAdjustClip';
+import { toTime } from '~/utils/toTime';
+import { Toast } from '~/components/toast/toast.component';
+import { formatSeconds } from '~/utils/formatSeconds';
 
 interface Props {
   asset: Asset;
@@ -19,18 +24,82 @@ export function ClipDetails(props: Props) {
 
   const { asset } = props;
   const { t } = useTranslation('editClips');
-  const assetsStore = useAssets();
-  const clip = assetsStore.getClip(asset.uuid);
+  const Assets = useAssets();
+  const clip = Assets.getClip(asset.uuid);
+  const adjustClip = useAdjustClip();
+  const addClip = useAddClip();
+  const [openAddClipModal, setOpenAddClipModal] = useState(false);
   const [openEditClipModal, setOpenEditClipModal] = useState(false);
+  const [openDuplicatedToast, setOpenDuplicatedToast] = useState(false);
+  const [openAddErrorToast, setOpenAddErrorToast] = useState(false);
+  const [openEditErrorToast, setOpenEditErrorToast] = useState(false);
+  const [duplicatedClip, setDuplicatedClip] = useState<Clip>();
 
   function formatDate(date: string) {
     return new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(Date.parse(date));
   }
 
+  async function handleAddClip(clip: Clip) {
+
+    if (isDuplicated(clip)) {
+      return;
+    }
+
+    try {
+
+      const response = await addClip(asset.uuid, clip.caption, toTime(clip.startTime), toTime(clip.endTime));
+      Assets.addClip(asset.uuid, response);
+      setOpenAddClipModal(false);
+
+    } catch (err: any) {
+
+      setOpenAddErrorToast(true);
+    }
+  }
+
+  async function handleEditClip(clip: Clip) {
+
+    if (isDuplicated(clip)) {
+      return;
+    }
+
+    try {
+
+      const response = await adjustClip(clip.uuid, asset.uuid, toTime(clip.startTime), toTime(clip.endTime));
+      Assets.updateClip(clip.uuid, asset.uuid, { ...response, selected: true });
+      setOpenEditClipModal(false);
+
+    } catch (err: any) {
+
+      setOpenEditErrorToast(true);
+    }
+  }
+
+  function isDuplicated(clip: Clip) {
+
+    // Check if exists another clip with the same start and end time.
+    const duplicated = asset.inferenceData?.human.clips.find(clipItem =>
+      clipItem.uuid !== clip.uuid &&
+      Math.trunc(clipItem.startTime) === Math.trunc(clip.startTime) &&
+      Math.trunc(clipItem.endTime) === Math.trunc(clip.endTime)
+    );
+
+    if (duplicated) {
+      setDuplicatedClip(duplicated);
+      setOpenDuplicatedToast(true);
+      return true;
+    }
+
+    return false;
+  }
+
   return (
     <Box sx={style.container}>
       <Box sx={style.toolbar}>
-        <OutlinedButton sx={style.addButton} title={t('addButton')}/>
+        <OutlinedButton
+          sx={style.addButton} 
+          title={t('addButton')}
+          onClick={() => setOpenAddClipModal(true)}/>
         <OutlinedButton title={t('stitchButton')}/>
       </Box>
       <Box sx={style.content}>
@@ -60,15 +129,40 @@ export function ClipDetails(props: Props) {
           </Box>
         }
       </Box>
-      {clip && openEditClipModal &&
-        <VideoPlayerProvider name='edit-clip-modal'>
-          <EditClipModal
-            open={openEditClipModal}
-            clip={clip}
-            asset={asset}
-            onClose={() => setOpenEditClipModal(false)}/>
-        </VideoPlayerProvider>
+      <EditClipModal
+        open={openAddClipModal}
+        clip={{ startTime: 0, endTime: 5 } as Clip}
+        asset={asset}
+        onSave={handleAddClip}
+        onClose={() => setOpenAddClipModal(false)}/>
+      <EditClipModal
+        open={openEditClipModal}
+        clip={clip!}
+        asset={asset}
+        onSave={handleEditClip}
+        onClose={() => setOpenEditClipModal(false)}/>
+      {duplicatedClip &&
+        <Toast
+          open={openDuplicatedToast}
+          severity='error'
+          title={t('clipDetails.duplicatedToast.title')}
+          description={t('clipDetails.duplicatedToast.description', { 
+            caption: duplicatedClip.caption, 
+            startTime: formatSeconds(duplicatedClip.startTime),
+            endTime: formatSeconds(duplicatedClip.endTime)
+          })}
+          onClose={() => setOpenDuplicatedToast(false)}/>
       }
+      <Toast
+        open={openAddErrorToast}
+        severity='error'
+        description={t('clipDetails.addErrorToast')}
+        onClose={() => setOpenAddErrorToast(false)}/>
+      <Toast
+        open={openEditErrorToast}
+        severity='error'
+        description={t('clipDetails.editErrorToast')}
+        onClose={() => setOpenEditErrorToast(false)}/>
     </Box>
   );
 }

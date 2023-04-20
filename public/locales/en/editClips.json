@@ -44,15 +44,19 @@
       }
     }
   },
+  "clipDetails": {
+    "duplicatedToast": {
+      "title": "Clip overlaps another clip",
+      "description": "Try adjusting the clip so it does not overlap with the \"{{caption}}\" which has the time code between {{startTime}} and {{endTime}}."
+    },
+    "addErrorToast": "Error adding clip",
+    "editErrorToast": "Error updating clip"
+  },
   "editClipModal": {
     "resetButton": "Reset to original version",
     "cancelButton": "Cancel",
     "saveButton": "Save",
     "confirmDialog": "You will lose unsaved changes, are you sure?",
-    "duplicatedToast": {
-      "title": "Clip overlaps another clip",
-      "description": "Try adjusting the clip so it does not overlap with the \"{{caption}}\" which has the time code between {{startTime}} and {{endTime}}."
-    },
-    "errorToast": "Error updating clip"
+    "captionInputTitle": "Clip caption"
   }
 }

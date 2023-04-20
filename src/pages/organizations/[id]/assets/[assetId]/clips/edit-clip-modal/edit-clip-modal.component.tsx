@@ -1,8 +1,8 @@
 import MuxVideo from '@mux/mux-video-react';
 import { useTranslation } from 'next-i18next';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Button, Dialog, DialogContent, styled } from '@mui/material';
-import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { Box, Button, Dialog, DialogContent, InputBase, styled } from '@mui/material';
+import { VideoPlayerProvider, useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { Asset } from '~/types/assets.type';
 import { Clip } from '~/types/clip.type';
 import { style } from './edit-clip-modal.style';
@@ -16,11 +16,7 @@ import { mergeSx } from '~/utils/style';
 import { UndoIcon } from '~/icons/undoIcon';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
 import { ConfirmDialog } from '~/components/confirm-dialog/confirm-dialog.component';
-import { formatSeconds } from '~/utils/formatSeconds';
-import { Toast } from '~/components/toast/toast.component';
-import { useAdjustClip } from '~/graphqls/useAdjustClip';
-import { useAssets } from '~/store/assets.slice';
-import { toTime } from '~/utils/toTime';
+import { round } from '~/utils/round';
 
 const Video = styled(MuxVideo)``;
 
@@ -28,29 +24,28 @@ interface Props {
   open: boolean;
   clip: Clip;
   asset: Asset;
+  onSave: (clip: Clip) => Promise<void>;
   onClose: () => void;
 }
 
-export function EditClipModal(props: Props) {
+function Modal(props: Props) {
 
   const {
     open,
     clip,
     asset,
+    onSave,
     onClose
   } = props;
 
   const videoPlayer = useVideoPlayer();
   const previewRef = useRef<HTMLVideoElement>(null);
-  const Assets = useAssets();
-  const adjustClip = useAdjustClip();
   const [startTime, setStartTime] = useState(clip.startTime);
   const [endTime, setEndTime] = useState(clip.endTime);
   const [showPreview, setShowPreview] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
-  const [openDuplicatedToast, setOpenDuplicatedToast] = useState(false);
-  const [openErrorToast, setOpenErrorToast] = useState(false);
-  const [duplicatedClip, setDuplicatedClip] = useState<Clip>();
+  const [caption, setCaption] = useState('');
+  const [disabledSaveButton, setDisabledSaveButton] = useState(false);
   const clipDuration = endTime - startTime;
 
   const { t } = useTranslation('editClips');
@@ -109,7 +104,7 @@ export function EditClipModal(props: Props) {
       return;
     }
     
-    videoPlayer.setCurrentTime(videoPlayer.video!.currentTime);
+    videoPlayer.setCurrentTime(round(videoPlayer.video!.currentTime, 3));
   }
 
   function handlePlay() {
@@ -156,6 +151,12 @@ export function EditClipModal(props: Props) {
     videoPlayer.updateProgress(start);
   }
 
+  async function handleCaptionChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.value.length <= 100) {
+      setCaption(event.target.value)
+    }
+  }
+
   function handleReset() {
     setStartTime(clip.startTime);
     setEndTime(clip.endTime);
@@ -164,55 +165,29 @@ export function EditClipModal(props: Props) {
 
   function handleCancel() {
 
-    if (clip.startTime !== startTime && clip.endTime !== endTime) {
+    if (clip.startTime !== startTime || clip.endTime !== endTime) {
       setOpenConfirmModal(true);
       return;
     }
 
-    handleReset();
-    onClose();
-  }
-
-  function handleConfirmCancel() {
-    handleReset();
     onClose();
   }
 
   async function handleSave() {
-
-    // Check if exists another clip with the same start and end time.
-    const duplicated = asset.inferenceData?.human.clips.find(clip =>
-      clip.uuid !== props.clip.uuid &&
-      Math.trunc(clip.startTime) === Math.trunc(startTime) &&
-      Math.trunc(clip.endTime) === Math.trunc(endTime)
-    );
-
-    if (duplicated) {
-      setDuplicatedClip(duplicated);
-      setOpenDuplicatedToast(true);
-      return;
-    }
-
     try {
-
-      console.log('start:', toTime(startTime), 'end:', toTime(endTime));
-
-      const response = await adjustClip(clip.uuid, asset.uuid, toTime(startTime), toTime(endTime));
-      Assets.updateClip(clip.uuid, asset.uuid, { ...response, selected: true });
-
-      console.log('saved:', response);
-
-      handleConfirmCancel();
-
-    } catch (err: any) {
-
-      console.log('error:', err);
-
-      setOpenErrorToast(true);
+      setDisabledSaveButton(true);
+      await onSave({ ...clip, caption, startTime, endTime });
+      setDisabledSaveButton(false);
+    } catch {
+      setDisabledSaveButton(false);
     }
   }
 
-  if (!open) return null;
+  function disableSaveButton() {
+    return clip.uuid 
+      ? (startTime === clip.startTime && endTime === clip.endTime) || disabledSaveButton
+      : caption === '' || disabledSaveButton
+  }
 
   return (
     <Dialog open sx={style.dialog}>
@@ -259,6 +234,18 @@ export function EditClipModal(props: Props) {
             onStartEndTimeChange={handleStartEndTimeChange}
             onPreview={() => setShowPreview(true)}
             onPreviewEnd={() => setShowPreview(false)}/>
+          {!clip.uuid &&
+            <Box sx={style.inputContainer}>
+              <Box sx={style.inputTitle}>
+                <Box>{t('editClipModal.captionInputTitle')}</Box>
+                <Box>{caption.length}/100</Box>
+              </Box>
+              <InputBase
+                sx={style.input}
+                value={caption}
+                onChange={handleCaptionChange}/>
+            </Box>
+          }
           <Box sx={style.buttons}>
             <Button 
               sx={style.resetButton}
@@ -272,7 +259,7 @@ export function EditClipModal(props: Props) {
               onClick={handleCancel}/>
             <Button 
               variant='contained'
-              disabled={startTime === clip.startTime && endTime === clip.endTime}
+              disabled={disableSaveButton()}
               onClick={handleSave}>
               {t('editClipModal.saveButton')}
             </Button>
@@ -282,25 +269,17 @@ export function EditClipModal(props: Props) {
       <ConfirmDialog
         open={openConfirmModal}
         text={t('editClipModal.confirmDialog')}
-        onConfirm={handleConfirmCancel}
+        onConfirm={() => onClose()}
         onClose={() => setOpenConfirmModal(false)}/>
-      {duplicatedClip &&
-        <Toast
-          open={openDuplicatedToast}
-          severity='error'
-          title={t('editClipModal.duplicatedToast.title')}
-          description={t('editClipModal.duplicatedToast.description', { 
-            caption: duplicatedClip.caption, 
-            startTime: formatSeconds(duplicatedClip.startTime),
-            endTime: formatSeconds(duplicatedClip.endTime)
-          })}
-          onClose={() => setOpenDuplicatedToast(false)}/>
-      }
-      <Toast
-        open={openErrorToast}
-        severity='error'
-        description={t('editClipModal.errorToast')}
-        onClose={() => setOpenErrorToast(false)}/>
     </Dialog>
+  );
+}
+
+export function EditClipModal(props: Props) {
+  if (!props.open || !props.clip) return null;
+  return (
+    <VideoPlayerProvider>
+      <Modal {...props}/>
+    </VideoPlayerProvider>
   );
 }
