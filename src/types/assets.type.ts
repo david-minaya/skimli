@@ -1,8 +1,8 @@
-import { Clip } from './clip.type';
-import { MuxAsset } from './muxAsset.type';
+import { Clip } from "./clip.type";
+import { MuxAsset } from "./muxAsset.type";
 
 export interface AudioTrack {
-  type: 'audio';
+  type: "audio";
   duration: number;
   encoding: string;
   channels: string;
@@ -10,7 +10,7 @@ export interface AudioTrack {
 }
 
 export interface VideoTrack {
-  type: 'video';
+  type: "video";
   width: number;
   height: number;
   duration: number;
@@ -24,24 +24,43 @@ export interface Asset {
   updatedAt: string;
   org: number;
   name: string;
-  status: 'PROCESSING' | 'UNCONVERTED' | 'CONVERTING' | 'CONVERTED' | 'DELETING' | 'ERRORED';
+  status:
+    | "PROCESSING"
+    | "UNCONVERTED"
+    | "CONVERTING"
+    | "CONVERTED"
+    | "DELETING"
+    | "ERRORED";
   activityStartTime: string;
-  activityStatus: 'QUEUED' | 'DOWNLOADING' | 'ANALYZING' | 'ASSEMBLING' | 'PUBLISHING' | 'FINISHED';
+  activityStatus:
+    | "QUEUED"
+    | "DOWNLOADING"
+    | "ANALYZING"
+    | "ASSEMBLING"
+    | "PUBLISHING"
+    | "FINISHED";
   sourceMuxAssetId?: string;
   selected: boolean;
   mux?: MuxAsset;
   metadata: {
     filesize: number;
-  }
+  };
   sourceMuxInputInfo?: {
     file: {
       container_format: string;
-      tracks: (AudioTrack | VideoTrack)[]
-    }
-  }[],
+      tracks: (AudioTrack | VideoTrack)[];
+    };
+  }[];
   inferenceData?: {
     human: {
       clips: Clip[];
-    }
-  }
+    };
+  };
+  workflows?: AssetWorkflow[];
+}
+
+export interface AssetWorkflow {
+  startTime?: string;
+  endTime?: string;
+  category?: string;
 }
