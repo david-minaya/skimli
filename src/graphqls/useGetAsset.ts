@@ -77,11 +77,11 @@ export function useGetAsset() {
                   }
                 }
               }
-            }
-            workflows {
-              startTime
-              endTime
-              category
+              workflows {
+                startTime
+                endTime
+                category
+              }
             }
           }
         `,
