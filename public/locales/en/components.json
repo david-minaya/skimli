@@ -7,6 +7,9 @@
     "options": {
       "profile": {
         "tooltip": "My Profile"
+      },
+      "helpMenu": {
+        "tooltip": "Help"
       }
     }
   },
@@ -66,5 +69,11 @@
   "confirmDialog": {
     "cancelButton": "Cancel",
     "acceptButton": "Accept"
+  },
+  "helpMenu": {
+    "options": {
+      "supportCenterLink": "Support Center",
+      "contactSupportLink": "Contact Support"
+    }
   }
 }
