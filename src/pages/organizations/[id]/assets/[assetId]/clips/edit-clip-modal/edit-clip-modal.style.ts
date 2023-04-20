@@ -52,6 +52,26 @@ export const style = Style({
     flexGrow: 1,
     height: '100%'
   },
+  inputContainer: {
+    maxWidth: '500px',
+    margin: '24px 0px'
+  },
+  inputTitle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '12px'
+  },
+  input: {
+    width: '100%',
+    fontSize: '15px',
+    border: '1px solid #CCCCCC',
+    borderRadius: '8px',
+    padding: '4px 8px',
+    marginTop: '4px',
+    '& .MuiInputBase-input': {
+      padding: '0px'
+    }
+  },
   buttons: {
     display: 'flex',
     alignItems: 'center',

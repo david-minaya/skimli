@@ -10,7 +10,6 @@ import { useGetAsset } from '~/graphqls/useGetAsset';
 import { toSeconds } from '~/utils/toSeconds';
 import { Clip } from '~/types/clip.type';
 import { useGetClips } from '~/graphqls/useGetClips';
-import { string } from 'prop-types';
 
 const adapter = createEntityAdapter<Asset>({ selectId: (asset) => asset.uuid });
 const selectors = adapter.getSelectors<RootState>(state => state.assets);
@@ -106,6 +105,14 @@ export const assetsSlice = createSlice({
       });
 
       state.selectedIds = [];
+    },
+
+    addClip(state, action: PayloadAction<{ assetId: string, clip: Clip }>) {
+      const asset = state.entities[action.payload.assetId];
+      if (asset) {
+        asset.inferenceData?.human.clips.push(convertTimeToSeconds(action.payload.clip));
+        asset.inferenceData?.human.clips.sort((c1, c2) => c1.startTime - c2.startTime);
+      }
     },
 
     updateClip(state, action: PayloadAction<{ id: string, assetId: string, clip: Clip }>) {
@@ -205,8 +212,12 @@ export function useAssets() {
       dispatch(assetsSlice.actions.update({ uuid: id, ...changes }));
     },
 
+    addClip(assetId: string, clip: Clip) {
+      dispatch(assetsSlice.actions.addClip({ assetId, clip }));
+    },
+
     updateClip(id: string, assetId: string, clip: Clip) {
-      dispatch(assetsSlice.actions.updateClip({ id, assetId, clip }))
+      dispatch(assetsSlice.actions.updateClip({ id, assetId, clip }));
     },
     
     async fetchAll(name?: string) {

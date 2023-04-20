@@ -11,6 +11,7 @@ import { VolumeIcon } from '~/icons/volumeIcon';
 import { MuteIcon } from '~/icons/muteIcon';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { LoopIcon } from '~/icons/loopIcon';
+import { round } from '~/utils/round';
 
 const Video = styled(MuxVideo)``;
 
@@ -71,7 +72,7 @@ export function ClipVideoPlayer(props: Props) {
       return;
     }
     
-    videoPlayer.setCurrentTime(videoPlayer.video!.currentTime);
+    videoPlayer.setCurrentTime(round(videoPlayer.video!.currentTime, 3));
   }
 
   function handlePlay() {
