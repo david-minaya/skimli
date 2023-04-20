@@ -22,23 +22,25 @@ export function ClipTimeline(props: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(0);
   const [left, setLeft] = useState(0);
+  const [width, setWidth] = useState(0);
   const duration = clip.endTime - clip.startTime;
 
   useEffect(() => {
 
-    const calcFrameWidth = () => {
+    const onResize = () => {
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
-        setFrameWidth(rect.width / 20);
         setLeft(rect.left);
+        setWidth(rect.width);
+        setFrameWidth(rect.width / 20);
       }
     }
 
-    calcFrameWidth();
-    window.addEventListener('resize', calcFrameWidth);
+    onResize();
+    window.addEventListener('resize', onResize);
 
     return () => {
-      window.removeEventListener('resize', calcFrameWidth);
+      window.removeEventListener('resize', onResize);
     }
   }, []);
 
@@ -48,11 +50,12 @@ export function ClipTimeline(props: Props) {
 
   const frames = useMemo(() => {
     const frames: number[] = [];
-    for (let i = clip.startTime; i <= clip.startTime + duration; i += 30) {
-      frames.push(i)
+    const frameDuration = duration / 20;
+    for (let i = 0; i < 20; i += 1) {
+      frames.push(clip.startTime + (i * frameDuration))
     }
     return frames;
-  }, [clip]);
+  }, [clip, duration]);
 
   return (
     <Box 
@@ -72,7 +75,7 @@ export function ClipTimeline(props: Props) {
         time={videoPlayer.currentTime - clip.startTime}
         duration={duration}
         timelineLeft={left}
-        timelineWidth={frames.length * frameWidth}
+        timelineWidth={width}
         onChange={handleTimeChange}/>
     </Box>
   );

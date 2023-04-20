@@ -27,6 +27,7 @@ export function ClipTimelineFrame(props: Props) {
     <Box
       component='img'
       sx={mergeSx(style.image, { width: `${width}px`, height: `${height}px` })}
+      draggable={false}
       src={thumbnail}/>
   );
 }
