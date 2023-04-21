@@ -336,7 +336,14 @@ export class VideosService {
   }
 
   async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<Asset[]> {
-    return this.videosAPI.getAssets(args, authInfo.token);
+    const videos = await this.videosAPI.getAssets(args, authInfo.token);
+    return videos.map((video) => {
+      return {
+        ...video,
+        status: AssetStatus.NO_CLIPS_FOUND ? AssetStatus.ERRORED : video.status,
+      };
+    });
+    // return videos;
   }
 
   async getAsset(authInfo: AuthInfo, assetId: string): Promise<Asset> {

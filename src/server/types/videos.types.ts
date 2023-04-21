@@ -8,6 +8,7 @@ export enum AssetStatus {
   CONVERTED = "CONVERTED",
   DELETING = "DELETING",
   ERRORED = "ERRORED",
+  NO_CLIPS_FOUND = "NO_CLIPS_FOUND",
 }
 
 export interface IAssetWorkflow {
