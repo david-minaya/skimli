@@ -28,10 +28,13 @@ export const style = Style({
     padding: '0px 24px 24px'
   },
   titleInput: {
-    container: {
-      width: '100%',
-      margin: '0px'
-    }
+    display: '-webkit-box',
+    color: 'black',
+    fontWeight: 500,
+    fontSize: '15px',
+    overflow: 'hidden',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical'
   },
   info: {
     display: 'flex',

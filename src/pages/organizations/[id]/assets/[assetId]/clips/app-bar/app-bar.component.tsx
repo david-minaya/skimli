@@ -1,8 +1,7 @@
 import { MoreHoriz } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem } from '@mui/material';
+import {Box, IconButton, Menu, MenuItem, Typography} from '@mui/material';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { TextField } from '~/components/text-field/text-field.component';
 import { ArrowLeftIcon } from '~/icons/arrowLeftIcon';
 import { FolderIcon } from '~/icons/folderIcon';
 import { useAccount } from '~/store/account.slice';
@@ -66,9 +65,7 @@ export function AppBar(props: Props) {
       <Box sx={style.center}>
         <Box sx={style.titleContainer}>
           <Box sx={style.title}>{t('title')}</Box>
-          <TextField 
-            sx={style.titleInput as any} 
-            value={asset.name}/>
+          <Typography sx={style.titleInput as any}>{asset.name}</Typography>
         </Box>
         <Box sx={style.account}>
           <FolderIcon sx={style.folderIcon}/>

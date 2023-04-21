@@ -1,7 +1,6 @@
-import { Box } from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
-import { TextField } from '~/components/text-field/text-field.component';
 import { useAssets } from '~/store/assets.slice';
 import { Asset } from '~/types/assets.type';
 import { ClipTimeline } from '../clip-timeline/clip-timeline.component';
@@ -105,9 +104,7 @@ export function ClipDetails(props: Props) {
       <Box sx={style.content}>
         {clip &&
           <Box sx={style.center}>
-            <TextField
-              sx={style.titleInput as any}
-              value={clip.caption}/>
+            <Typography sx={style.titleInput as any}>{clip.caption}</Typography>
             <ClipVideoPlayer
               asset={asset}
               clip={clip}/>

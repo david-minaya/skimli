@@ -29,14 +29,9 @@ export const style = Style({
     fontWeight: 'bold'
   },
   titleInput: {
-    container: {
-      margin: '0px 12px',
-    },
-    input: {
-      height: '28px',
-      backgroundColor: 'white',
-      margin: '0px'
-    }
+    fontSize: '17px',
+    fontWeight: 'bold',
+    margin: '0px 6px'
   },
   account: {
     display: 'flex',
