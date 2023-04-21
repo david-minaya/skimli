@@ -340,7 +340,10 @@ export class VideosService {
     return videos.map((video) => {
       return {
         ...video,
-        status: AssetStatus.NO_CLIPS_FOUND ? AssetStatus.ERRORED : video.status,
+        status:
+          video.status == AssetStatus.NO_CLIPS_FOUND
+            ? AssetStatus.ERRORED
+            : video.status,
       };
     });
     // return videos;
