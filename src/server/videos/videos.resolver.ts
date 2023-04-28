@@ -29,6 +29,7 @@ import {
   GetAssetsArgs,
   GetClipsArgs,
   GetPartUploadURLArgs,
+  GetSubtitleMediaArgs,
   StartMediaUploadArgs,
   StartUploadArgs,
   TestConvertToClipsWorkflowStatusArgs,
@@ -49,6 +50,7 @@ import {
   GetPartUploadResponse,
   Media,
   MuxData,
+  ParsedVttLine,
   StartUploadResponse,
 } from "./videos.types";
 
@@ -335,5 +337,19 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.getClips(authInfo, args);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => [ParsedVttLine], { nullable: true })
+  async getSubtitleMedia(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: GetSubtitleMediaArgs
+  ): Promise<ParsedVttLine[]> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.getSubtitleMedia(authInfo, args.mediaId);
   }
 }

@@ -16,6 +16,8 @@ import {
 } from "aws-sdk/clients/s3";
 import { Service } from "typedi";
 import config from "../../config";
+import { Readable } from "stream";
+import { streamToString } from "./utils";
 
 AWS.config.update({
   region: config.aws.awsRegion,
@@ -84,5 +86,14 @@ export class S3Service {
       expiresIn: 10000,
     });
     return url;
+  }
+
+  async readObjectBody(params: GetObjectCommandInput): Promise<string> {
+    const command = new GetObjectCommand({
+      ...params,
+    });
+    const { Body } = await this.s3Client.send(command);
+    const bodyContents = await streamToString(Body as Readable);
+    return bodyContents;
   }
 }

@@ -48,8 +48,10 @@ import {
   IGetAssetMediasArgs,
   IGetClipsArgs,
   IMedia,
+  IParsedVtt,
   IStartMediaUploadArgs,
   MediaStatus,
+  MediaType,
 } from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
 import {
@@ -70,8 +72,10 @@ import {
   SUBTITLE_FILE_EXTENSION,
 } from "./videos.constants";
 import {
+  AssetMediaNotFoundException,
   AssetNotFoundException,
   ClipsNotFoundException,
+  MediaNotSubtitleException,
   SubtitleFileNotSupported,
 } from "./videos.exceptions";
 import {
@@ -81,14 +85,18 @@ import {
   MuxData,
   StartUploadResponse,
 } from "./videos.types";
+import { WebVTTParser } from "webvtt-parser";
 @Service()
 export class VideosService {
+  private vttParser: WebVTTParser;
   constructor(
     private readonly accountsService: AccountsService,
     private readonly s3Service: S3Service,
     private readonly muxService: MuxService,
     private readonly videosAPI: VideosAPI
-  ) {}
+  ) {
+    this.vttParser = new WebVTTParser();
+  }
 
   async startUpload(
     authInfo: AuthInfo,
@@ -556,5 +564,50 @@ export class VideosService {
       };
     });
     return clips;
+  }
+
+  parseWebVTT(content: string): IParsedVtt {
+    const tree = this.vttParser.parse(content, "metadata");
+    const parsed = tree?.cues?.map(
+      (cue: { startTime: number; endTime: number; text: string }) => {
+        return {
+          startTime: cue?.startTime,
+          endTime: cue?.endTime,
+          text: cue?.text,
+        };
+      }
+    );
+    return parsed as IParsedVtt;
+  }
+
+  async getSubtitleMedia(
+    authInfo: AuthInfo,
+    mediaId: string
+  ): Promise<IParsedVtt> {
+    const medias = await this.videosAPI.getAssetMedias(
+      { uuid: mediaId },
+      authInfo.token
+    );
+    const media = medias?.pop();
+    if (!media) {
+      throw AssetMediaNotFoundException;
+    }
+
+    if (media.type != MediaType.SUBTITLE) {
+      throw MediaNotSubtitleException;
+    }
+
+    try {
+      const url = new URL(media.details?.sourceUrl);
+      const vttString = await this.s3Service.readObjectBody({
+        Bucket: url.hostname,
+        Key: url.pathname.substring(1),
+      });
+      const parsed = this.parseWebVTT(vttString);
+      return parsed;
+    } catch (e) {
+      console.error(`unable to read vtt file for media ${mediaId}`, e);
+      throw new InternalGraphQLError(`Failed to read subtitle`);
+    }
   }
 }

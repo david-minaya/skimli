@@ -453,3 +453,15 @@ export class Media implements IMedia {
   @Field(() => MediaAssets, { nullable: true })
   assets?: MediaAssets;
 }
+
+@ObjectType()
+export class ParsedVttLine {
+  @Field(() => Float)
+  startTime: number;
+
+  @Field(() => Float)
+  endTime: number;
+
+  @Field(() => String)
+  text: string;
+}

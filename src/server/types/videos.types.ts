@@ -267,3 +267,9 @@ export interface IGetClipsArgs {
   source?: ClipSourceType;
   uuids?: string[];
 }
+
+export type IParsedVtt = {
+  startTime: number;
+  endTime: number;
+  text: string;
+}[];

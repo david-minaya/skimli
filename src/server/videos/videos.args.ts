@@ -299,3 +299,10 @@ export class GetClipsArgs implements IGetClipsArgs {
   @IsOptional()
   uuids?: string[];
 }
+
+@ArgsType()
+export class GetSubtitleMediaArgs {
+  @Field(() => String)
+  @IsUUID()
+  mediaId: string;
+}
