@@ -25,6 +25,10 @@ import {
   ICreateClipArgs,
   IClip,
   IGetClipsArgs,
+  ICreateSubAssetArgs as IAdminCreateSubAssetArgs,
+  ISubAsset,
+  IUpdateSubAssetArgs,
+  AdminGetSubAssetsQuery,
 } from "../types/videos.types";
 import {
   axiosRequestErrorLoggerInterceptor,
@@ -258,6 +262,44 @@ export class VideosAPI {
         params: args,
         headers: { ...generateAuthHeaders(token) },
       });
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adminCreateSubAsset(
+    args: IAdminCreateSubAssetArgs
+  ): Promise<ISubAsset> {
+    try {
+      const response = await this.api.post("/video/v1/admin/subassets", args);
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adminGetSubAsset(query: AdminGetSubAssetsQuery): Promise<ISubAsset[]> {
+    try {
+      const response = await this.api.get(`/video/v1/admin/subassets`, {
+        params: { ...query },
+      });
+      console.log(JSON.stringify(response?.data));
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adminUpdateSubAsset(
+    uuid: string,
+    args: IUpdateSubAssetArgs
+  ): Promise<ISubAsset> {
+    try {
+      const response = await this.api.put(
+        `/video/v1/admin/subassets/${uuid}`,
+        args
+      );
       return response?.data;
     } catch (e) {
       throw new APIError(e);

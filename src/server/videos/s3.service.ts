@@ -80,10 +80,13 @@ export class S3Service {
       .promise();
   }
 
-  async getObjectSignedURL(params: GetObjectCommandInput): Promise<string> {
+  async getObjectSignedURL(
+    params: GetObjectCommandInput,
+    expiresIn = 10000
+  ): Promise<string> {
     const command = new GetObjectCommand({ ...params });
     const url = await getSignedUrl(this.s3Client, command, {
-      expiresIn: 10000,
+      expiresIn: expiresIn,
     });
     return url;
   }

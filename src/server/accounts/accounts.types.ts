@@ -33,7 +33,7 @@ export class User implements UserType {
   product: object;
 
   @Field(() => GraphQLJSON, { nullable: true })
-  entitlements: object;
+  entitlements: any[];
 
   @Field(() => String, { nullable: true })
   billingMethod: BillingMethodType;

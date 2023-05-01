@@ -8,6 +8,8 @@ import { isNumber } from "class-validator";
 import * as path from "path";
 import { Service } from "typedi";
 import Timecode from "typescript-timecode";
+import { v4 } from "uuid";
+import { WebVTTParser } from "webvtt-parser";
 import * as categoriesData from "../../../video-categories.json";
 import config from "../../config";
 import { AccountsService } from "../accounts/accounts.service";
@@ -32,6 +34,11 @@ import {
   VideoTrack,
 } from "../mux/mux.types";
 import {
+  OUTPUT_FORMAT,
+  ShotstackService,
+} from "../shotstack/shotstack.service";
+import { ShotstackWebhookBody } from "../shotstack/shotstack.types";
+import {
   AuthInfo,
   BadInputError,
   InternalGraphQLError,
@@ -52,6 +59,8 @@ import {
   IStartMediaUploadArgs,
   MediaStatus,
   MediaType,
+  SubAssetStatus,
+  SubAssetType,
 } from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
 import {
@@ -59,6 +68,7 @@ import {
   CompleteUploadArgs,
   GetAssetsArgs,
   GetPartUploadURLArgs as GetPartUploadArgs,
+  RenderClipArgs,
   StartUploadArgs,
 } from "./videos.args";
 import {
@@ -69,6 +79,7 @@ import {
   MEDIA_UPLOADED_EVENT,
   MIN_CLIP_DURATION_ERROR,
   MIN_CLIP_DURATION_IN_MS,
+  RENDER_CLIP_EVENT,
   SUBTITLE_FILE_EXTENSION,
 } from "./videos.constants";
 import {
@@ -83,9 +94,9 @@ import {
   AssetUploads,
   GetPartUploadResponse,
   MuxData,
+  RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
-import { WebVTTParser } from "webvtt-parser";
 @Service()
 export class VideosService {
   private vttParser: WebVTTParser;
@@ -93,7 +104,8 @@ export class VideosService {
     private readonly accountsService: AccountsService,
     private readonly s3Service: S3Service,
     private readonly muxService: MuxService,
-    private readonly videosAPI: VideosAPI
+    private readonly videosAPI: VideosAPI,
+    private readonly shotstackAPI: ShotstackService
   ) {
     this.vttParser = new WebVTTParser();
   }
@@ -344,17 +356,7 @@ export class VideosService {
   }
 
   async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<Asset[]> {
-    const videos = await this.videosAPI.getAssets(args, authInfo.token);
-    return videos.map((video) => {
-      return {
-        ...video,
-        status:
-          video.status == AssetStatus.NO_CLIPS_FOUND
-            ? AssetStatus.ERRORED
-            : video.status,
-      };
-    });
-    // return videos;
+    return this.videosAPI.getAssets(args, authInfo.token);
   }
 
   async getAsset(authInfo: AuthInfo, assetId: string): Promise<Asset> {
@@ -609,5 +611,160 @@ export class VideosService {
       console.error(`unable to read vtt file for media ${mediaId}`, e);
       throw new InternalGraphQLError(`Failed to read subtitle`);
     }
+  }
+
+  async generateSignedURL(s3URL: string): Promise<string> {
+    const url = new URL(s3URL);
+    const signedAssetURL = await this.s3Service.getObjectSignedURL({
+      Bucket: url.host,
+      Key: url.pathname.substring(1),
+    });
+    return signedAssetURL;
+  }
+
+  async renderClip(
+    authInfo: AuthInfo,
+    args: RenderClipArgs
+  ): Promise<null | string> {
+    const org = Number(authInfo.auth0.organization_id);
+    const asset = await this.getAsset(authInfo, args.assetId);
+    const [inputInfo, _] = asset.sourceMuxInputInfo ?? [];
+    if (!inputInfo) {
+      throw new InternalGraphQLError(`Missing input info`);
+    }
+
+    const clip = asset.inferenceData?.human.clips?.find(
+      (c) => c.uuid == args.clipId
+    );
+    if (!clip) {
+      throw ClipsNotFoundException;
+    }
+
+    // prevent re-render
+    if (clip?.details?.renders) {
+      const renderedClip = clip.details?.renders?.find(
+        (c) => c.quality == args.quality && c.muteAudio == args.muteAudio
+      );
+      if (renderedClip) {
+        // TODO: increment download counts and store records in db via api
+        return this.generateSignedURL(renderedClip.url);
+      }
+    }
+
+    const signedAssetURL = await this.generateSignedURL(asset.sourceUrl);
+
+    const prefix = `org/${org}/clips/${args.clipId}/renders`;
+    const filename = v4();
+    const subAsset = await this.videosAPI.adminCreateSubAsset({
+      clipId: args.clipId,
+      parentId: args.assetId,
+      type: SubAssetType.CLIP,
+      details: {
+        clipId: args.clipId,
+      },
+      org: org,
+      status: SubAssetStatus.PROCESSING,
+      render: {
+        quality: args.quality,
+        muteAudio: args.muteAudio,
+        url: `s3://${config.aws.assetsS3Bucket}/${prefix}/${filename}.${OUTPUT_FORMAT}`,
+      },
+    });
+
+    const videoTrack = inputInfo.file.tracks.find((t) => t.type == "video");
+    const width = args?.width || videoTrack?.width!;
+    const height = args.height || videoTrack?.height!;
+    const startTime =
+      args.startTime || Timecode.TimetoMilliseconds(clip.startTime) / 1000;
+    const endTime =
+      args.endTime || Timecode.TimetoMilliseconds(clip.endTime) / 1000;
+
+    const renderClipResponse = await this.shotstackAPI.renderClip({
+      src: signedAssetURL,
+      startTime: startTime,
+      endTime: endTime,
+      width: width,
+      height: height,
+      callbackUrl: `${config.shotstack.callbackURL}/api/webhooks/shostack?subAssetID=${subAsset.uuid}`,
+      prefix: prefix,
+      filename: filename,
+      muteAudio: args.muteAudio,
+      quality: args.quality,
+    });
+    console.log("render clip response: ", JSON.stringify(renderClipResponse));
+
+    const payload: RenderClipResponse = {
+      parentId: subAsset.parentId,
+      clipId: subAsset.details.clipId,
+      status: subAsset.status,
+      org: org,
+    };
+    await pubSub.publish(RENDER_CLIP_EVENT, payload);
+    return null;
+  }
+
+  async handleShotstackWebhook(
+    subAssetId: string,
+    body: ShotstackWebhookBody
+  ): Promise<void> {
+    if (!["serve", "edit"].includes(body.type)) {
+      console.warn("shotstack bad webhook request body", body);
+      return;
+    }
+
+    if (body.type != "serve") {
+      return;
+    }
+
+    const subAsset = (
+      await this.videosAPI.adminGetSubAsset({ uuid: subAssetId })
+    ).pop();
+    if (!subAsset) {
+      console.warn("subasset not found with id: ", subAssetId);
+      return;
+    }
+
+    if (body.error) {
+      const updatedSubAsset = await this.videosAPI.adminUpdateSubAsset(
+        subAssetId,
+        {
+          type: subAsset.type,
+          details: {
+            ...subAsset.details,
+            renderId: body?.render,
+            response: body,
+          },
+          status: SubAssetStatus.FAILED,
+        }
+      );
+      const payload: RenderClipResponse = {
+        parentId: subAsset.parentId,
+        clipId: subAsset?.details.clipId,
+        status: updatedSubAsset.status,
+        org: subAsset.org,
+      };
+      await pubSub.publish(RENDER_CLIP_EVENT, payload);
+      return;
+    }
+
+    const updatedSubAsset = await this.videosAPI.adminUpdateSubAsset(
+      subAssetId,
+      {
+        type: subAsset.type,
+        details: { ...subAsset.details, renderId: body?.render },
+        status: SubAssetStatus.SUCCESS,
+      }
+    );
+
+    // TODO: increment download counts and store records in db via api
+    const signedAssetURL = await this.generateSignedURL(subAsset?.render?.url);
+    const payload: RenderClipResponse = {
+      parentId: subAsset.parentId,
+      clipId: subAsset?.details.clipId,
+      status: updatedSubAsset.status,
+      downloadUrl: signedAssetURL,
+      org: subAsset.org,
+    };
+    await pubSub.publish(RENDER_CLIP_EVENT, payload);
   }
 }

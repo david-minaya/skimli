@@ -19,6 +19,7 @@ import { auth, decodeToken } from "./auth";
 import { GraphQLContext, schema } from "./schema";
 import { listen as sqsListener } from "./sqs";
 import { muxWebhook, verifyMuxWebhookMiddleware } from "./webhooks/mux.hooks";
+import { shostackWebhook } from "./webhooks/shostack.hooks";
 
 const port = parseInt(process.env.PORT || "3001", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -111,6 +112,8 @@ async function bootstrap() {
     verifyMuxWebhookMiddleware,
     muxWebhook
   );
+
+  expressApp.post("/api/webhooks/shostack", bodyParser.json(), shostackWebhook);
 
   expressApp.all("*", (req: Request, res: Response) => {
     return handle(req, res);

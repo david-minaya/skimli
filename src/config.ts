@@ -50,6 +50,12 @@ const config = {
     introspectionEnabled: !!process.env.GRAPHQL_INTROSPECTION_ENABLED || false,
     playgroundEnabled: !!process.env.GRAPHQL_PLAYGROUND_ENABLED || false,
   },
+  shotstack: {
+    apiBaseURL: "https://api.shotstack.io",
+    apiEnv: process.env.SHOTSTACK_API_ENV ?? "stage",
+    apikey: process.env.SHOTSTACK_API_KEY ?? "",
+    callbackURL: process.env.SHOTSTACK_BASE_CALLBACK_URL ?? "",
+  },
 };
 
 export default config;

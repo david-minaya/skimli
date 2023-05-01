@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import {
   Arg,
   Args,
@@ -12,11 +13,13 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { Service } from "typedi";
+import conversionsMapping from "../../../aspect-ration-conversions.json";
 import pubSub from "../common/pubsub";
 import { IsAppUserGuard } from "../middlewares/app-user.guard";
 import type { GraphQLContext } from "../schema";
 import { AuthInfo } from "../types/base.types";
 import { AssetStatus } from "../types/videos.types";
+import { getAspectRatio } from "./video-utils";
 import {
   AbortUploadArgs,
   AdjustClipArgs,
@@ -30,6 +33,8 @@ import {
   GetClipsArgs,
   GetPartUploadURLArgs,
   GetSubtitleMediaArgs,
+  GetSupportedConversionsArgs,
+  RenderClipArgs,
   StartMediaUploadArgs,
   StartUploadArgs,
   TestConvertToClipsWorkflowStatusArgs,
@@ -38,6 +43,7 @@ import {
   ASSET_UPLOAD_EVENT,
   CONVERT_TO_CLIPS_TOPIC,
   MEDIA_UPLOADED_EVENT,
+  RENDER_CLIP_EVENT,
 } from "./videos.constants";
 import { VideosService } from "./videos.service";
 import {
@@ -51,6 +57,7 @@ import {
   Media,
   MuxData,
   ParsedVttLine,
+  RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
 
@@ -351,5 +358,78 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.getSubtitleMedia(authInfo, args.mediaId);
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  async aspectRatio(@Root() asset: Asset): Promise<string | null> {
+    if (!asset.sourceMuxInputInfo || asset?.sourceMuxInputInfo?.length < 0) {
+      return null;
+    }
+
+    const videoTrack = asset.sourceMuxInputInfo[0].file.tracks.find(
+      (track) => track.type == "video"
+    );
+    const width = videoTrack?.width!;
+    const height = videoTrack?.height!;
+    if (!width || !height) {
+      return null;
+    }
+    return getAspectRatio(width, height);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => [String])
+  async getSupportedConversions(
+    @Args() args: GetSupportedConversionsArgs
+  ): Promise<string[]> {
+    const supportedConversions = conversionsMapping.find(
+      (conversion) => conversion.sourceAspectRatio == args.sourceAspectRatio
+    );
+    return supportedConversions?.conversionOptions || [];
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => String, {
+    nullable: true,
+    description:
+      "if a clip with given quality and muteAudio is already rendered then download url (string) is returned else null value is returned indication the clip is sent for rendering",
+  })
+  async renderClip(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: RenderClipArgs
+  ): Promise<string | null> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    try {
+      const response = await this.videosService.renderClip(authInfo, args);
+      return response;
+    } catch (e) {
+      console.error(e);
+      throw new GraphQLError(`Unable to render clip`);
+    }
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Subscription(() => RenderClipResponse, {
+    topics: RENDER_CLIP_EVENT,
+    filter: ({
+      payload,
+      context,
+    }: {
+      payload: RenderClipResponse;
+      context: GraphQLContext;
+    }) => {
+      return Number(context?.auth0?.organization_id) == Number(payload?.org);
+    },
+  })
+  async renderClipStatus(
+    @Root() response: RenderClipResponse
+  ): Promise<RenderClipResponse> {
+    return response;
   }
 }

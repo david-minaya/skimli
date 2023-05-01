@@ -79,7 +79,6 @@ export enum ActivityStatus {
   ASSEMBLING = "ASSEMBLING",
   PUBLISHING = "PUBLISHING",
   FINISHED = "FINISHED",
-  NO_CLIPS_FOUND = "NO_CLIPS_FOUND",
 }
 
 export interface ConvertToClipsArgs {
@@ -95,6 +94,16 @@ export enum ClipSourceType {
   AUTOMATIC = "AUTOMATIC",
 }
 
+export interface IClipDetailsRender {
+  quality: RenderClipQuality;
+  muteAudio: boolean;
+  url: string;
+}
+
+export interface IClipDetails {
+  renders: IClipDetailsRender[];
+}
+
 export interface IClip {
   uuid: string;
   caption?: string;
@@ -107,6 +116,7 @@ export interface IClip {
   createdAt: string;
   editedAt: string;
   assetId?: string;
+  details?: IClipDetails;
 }
 
 export interface IInferenceDataAnalysis {
@@ -266,6 +276,74 @@ export interface IGetClipsArgs {
   caption?: string;
   source?: ClipSourceType;
   uuids?: string[];
+}
+
+export enum RenderClipQuality {
+  LOW = "sd",
+  MEDIUM = "hd",
+  HIGH = "1080",
+}
+
+export enum SubAssetType {
+  CLIP = "CLIP",
+  ASSET = "ASSET",
+  STITCH = "STITCH",
+}
+
+export interface ISubAssetDetails {
+  clipId: string;
+  renderId?: string;
+  response?: any;
+}
+
+export interface ISubAssetRender {
+  quality: string;
+  muteAudio: boolean;
+  url: string; // s3 url of rendered clip from shotstack
+}
+
+export interface ICreateSubAssetArgs {
+  parentId: string; // video asset id
+  clipId: string; // clip id
+  details: ISubAssetDetails;
+  type: SubAssetType;
+  org: number;
+  status: SubAssetStatus;
+  render: ISubAssetRender;
+}
+
+export type IUpdateSubAssetArgs = Partial<ICreateSubAssetArgs>;
+
+export enum SubAssetStatus {
+  PROCESSING = "PROCESSING",
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+}
+
+export class ISubAsset {
+  uuid: string;
+  parentId: string;
+  org: number;
+  type: SubAssetType;
+  details: ISubAssetDetails;
+  createdAt: string;
+  updatedAt: string;
+  status: SubAssetStatus;
+  render: ISubAssetRender;
+}
+
+export interface IRenderClipResponse {
+  parentId: string;
+  clipId: string;
+  status: SubAssetStatus;
+  downloadUrl?: string;
+  org: number;
+}
+export interface AdminGetSubAssetsQuery {
+  uuid?: string;
+  clipId?: string;
+  parentId?: string;
+  type?: SubAssetType;
 }
 
 export type IParsedVtt = {
