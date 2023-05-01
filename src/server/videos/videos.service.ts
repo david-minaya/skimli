@@ -613,6 +613,36 @@ export class VideosService {
     }
   }
 
+  async getRawSubtitleMedia(
+    authInfo: AuthInfo,
+    mediaId: string
+  ): Promise<string> {
+    const medias = await this.videosAPI.getAssetMedias(
+      { uuid: mediaId },
+      authInfo.token
+    );
+    const media = medias?.pop();
+    if (!media) {
+      throw AssetMediaNotFoundException;
+    }
+
+    if (media.type != MediaType.SUBTITLE) {
+      throw MediaNotSubtitleException;
+    }
+
+    try {
+      const url = new URL(media.details.sourceUrl);
+      const vttString = await this.s3Service.readObjectBody({
+        Bucket: url.hostname,
+        Key: url.pathname.substring(1),
+      });
+      return vttString;
+    } catch (e) {
+      console.error(`unable to read vtt file for media ${mediaId}`, e);
+      throw new InternalGraphQLError(`Failed to read subtitle`);
+    }
+  }
+
   async generateSignedURL(s3URL: string): Promise<string> {
     const url = new URL(s3URL);
     const signedAssetURL = await this.s3Service.getObjectSignedURL({

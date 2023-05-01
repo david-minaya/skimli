@@ -360,6 +360,20 @@ export class VideosResolver {
     return this.videosService.getSubtitleMedia(authInfo, args.mediaId);
   }
 
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => String, { nullable: true })
+  async getRawSubtitleMedia(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: GetSubtitleMediaArgs
+  ): Promise<string> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.getRawSubtitleMedia(authInfo, args.mediaId);
+  }
+
   @FieldResolver(() => String, { nullable: true })
   async aspectRatio(@Root() asset: Asset): Promise<string | null> {
     if (!asset.sourceMuxInputInfo || asset?.sourceMuxInputInfo?.length < 0) {
