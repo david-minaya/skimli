@@ -8,6 +8,7 @@ import {
   createUnionType,
   registerEnumType,
 } from "type-graphql";
+import { TransformCategoryCodeToLabel } from "../middlewares/transform-category-code";
 import { TransformClipsCaption } from "../middlewares/transform-clips-caption";
 import { MuxAsset, MuxTokens } from "../mux/mux.types";
 import {
@@ -20,22 +21,25 @@ import {
   AssetMetadataResolution as IAssetMetadataResolution,
   IAssetWorkflow,
   IClip,
+  IClipDetails,
+  IClipDetailsRender,
   ConvertToClipsWorkflowResponse as IConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
-  IHumanInferenceData,
   IInferenceData,
   IInferenceDataAnalysis,
   IMedia,
   IMediaAssets,
   IMediaDetails,
+  IRenderClipResponse,
   SourceMuxInput as ISourceMuxInput,
   SourceMuxInputFile as ISourceMuxInputFile,
   SourceMuxInputSettings as ISourceMuxInputSettings,
   SourceMuxInputTrack as ISourceMuxInputTrack,
   MediaStatus,
   MediaType,
+  RenderClipQuality,
+  SubAssetStatus,
 } from "../types/videos.types";
-import { TransformCategoryCodeToLabel } from "../middlewares/transform-category-code";
 
 registerEnumType(AssetStatus, {
   name: "AssetStatus",
@@ -47,6 +51,10 @@ registerEnumType(ActivityStatus, {
 
 registerEnumType(ClipSourceType, {
   name: "ClipSourceType",
+});
+
+registerEnumType(RenderClipQuality, {
+  name: "RenderClipQuality",
 });
 
 @ObjectType()
@@ -89,6 +97,24 @@ export class MuxData {
 }
 
 @ObjectType()
+export class ClipDetailsRender implements IClipDetailsRender {
+  @Field(() => RenderClipQuality)
+  quality: RenderClipQuality;
+
+  @Field(() => Boolean)
+  muteAudio: boolean;
+
+  @Field(() => String)
+  url: string;
+}
+
+@ObjectType()
+export class ClipDetails implements IClipDetails {
+  @Field(() => [ClipDetailsRender], { nullable: true })
+  renders: ClipDetailsRender[];
+}
+
+@ObjectType()
 export class Clip implements IClip {
   @Field(() => String)
   uuid: string;
@@ -122,6 +148,9 @@ export class Clip implements IClip {
 
   @Field(() => String, { nullable: true })
   assetId?: string;
+
+  @Field(() => ClipDetails, { nullable: true })
+  details?: ClipDetails;
 }
 
 @ObjectType()
@@ -452,4 +481,37 @@ export class Media implements IMedia {
 
   @Field(() => MediaAssets, { nullable: true })
   assets?: MediaAssets;
+}
+
+@ObjectType()
+export class RenderClipResponse implements IRenderClipResponse {
+  // @Field(() => Int)
+  org: number;
+
+  @Field(() => String, { description: "video asset uuid" })
+  parentId: string;
+
+  @Field(() => String, { description: "uuid of the clip" })
+  clipId: string;
+
+  @Field(() => String)
+  status: SubAssetStatus;
+
+  @Field(() => String, {
+    description: "download link to rendered clip",
+    nullable: true,
+  })
+  downloadUrl?: string;
+}
+
+@ObjectType()
+export class ParsedVttLine {
+  @Field(() => Float)
+  startTime: number;
+
+  @Field(() => Float)
+  endTime: number;
+
+  @Field(() => String)
+  text: string;
 }

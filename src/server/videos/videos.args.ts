@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -12,7 +13,7 @@ import {
   Validate,
   ValidateNested,
 } from "class-validator";
-import { ArgsType, Field, InputType, Int } from "type-graphql";
+import { ArgsType, Field, Float, InputType, Int } from "type-graphql";
 import { IsValidFilename } from "../common/filename.validator";
 import { IsValidCategory } from "../common/category.validator";
 import {
@@ -25,6 +26,7 @@ import {
   IGetClipsArgs,
   IStartMediaUploadArgs,
   MediaType,
+  RenderClipQuality,
 } from "../types/videos.types";
 import { IsValidClipTitle } from "../common/clip-title.validator";
 
@@ -298,4 +300,69 @@ export class GetClipsArgs implements IGetClipsArgs {
   @IsString({ each: true })
   @IsOptional()
   uuids?: string[];
+}
+
+@ArgsType()
+export class GetSupportedConversionsArgs {
+  @Field(() => String)
+  @IsNotEmpty()
+  @IsString()
+  sourceAspectRatio: string;
+}
+
+@ArgsType()
+export class RenderClipArgs {
+  @Field(() => String, { description: "video asset uuid" })
+  @IsUUID()
+  assetId: string;
+
+  @Field(() => RenderClipQuality, { defaultValue: RenderClipQuality.MEDIUM })
+  quality: RenderClipQuality;
+
+  @Field(() => Boolean, {
+    defaultValue: false,
+  })
+  @IsBoolean()
+  muteAudio: boolean = false;
+
+  @Field(() => String, { description: "clip's uuid" })
+  @IsUUID()
+  clipId: string;
+
+  @Field(() => Float, {
+    nullable: true,
+    description: "clip's startTime in seconds",
+  })
+  @IsOptional()
+  @IsNumber()
+  startTime?: number;
+
+  @Field(() => Float, {
+    nullable: true,
+    description: "clip's endTime in seconds",
+  })
+  @IsOptional()
+  @IsNumber()
+  endTime?: number;
+
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @IsOptional()
+  @IsInt()
+  width?: number;
+
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @IsOptional()
+  @IsInt()
+  height?: number;
+}
+
+@ArgsType()
+export class GetSubtitleMediaArgs {
+  @Field(() => String)
+  @IsUUID()
+  mediaId: string;
 }

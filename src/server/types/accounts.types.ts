@@ -13,7 +13,7 @@ export interface User {
   idp: UserIDPType;
   idpUser: string;
   product: object;
-  entitlements: object;
+  entitlements: Entitlements;
   billingMethod: BillingMethodType;
   subscriptionId: string;
   settings: object;

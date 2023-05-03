@@ -1,0 +1,10 @@
+[
+  {
+    "sourceAspectRatio": "16:9",
+    "conversionOptions": ["1:1", "9:16", "4:5"]
+  },
+  {
+    "sourceAspectRatio": "9:16",
+    "conversionOptions": ["1:1", "4:5"]
+  }
+]

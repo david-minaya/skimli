@@ -31,6 +31,7 @@ export const schema = buildSchemaSync({
     MuxResolver,
     CategoriesResolver,
     ConvertToClipsWorkflowStatusResolver,
+    // ClipDetailsRenderResolver,
   ],
   container: Container,
   validate: validateInput,
