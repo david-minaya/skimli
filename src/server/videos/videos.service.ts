@@ -9,7 +9,6 @@ import * as path from "path";
 import { Service } from "typedi";
 import Timecode from "typescript-timecode";
 import { v4 } from "uuid";
-import { WebVTTParser } from "webvtt-parser";
 import * as categoriesData from "../../../video-categories.json";
 import config from "../../config";
 import { AccountsService } from "../accounts/accounts.service";
@@ -54,8 +53,8 @@ import {
   ICreateClipArgs,
   IGetAssetMediasArgs,
   IGetClipsArgs,
+  IGetMediaSubtitleArgs,
   IMedia,
-  IParsedVtt,
   IStartMediaUploadArgs,
   MediaStatus,
   MediaType,
@@ -63,6 +62,7 @@ import {
   SubAssetType,
 } from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
+import { decodeS3Key } from "./utils";
 import {
   AbortUploadArgs,
   CompleteUploadArgs,
@@ -85,6 +85,7 @@ import {
 import {
   AssetMediaNotFoundException,
   AssetNotFoundException,
+  AutoTranscriptionFailedException,
   ClipsNotFoundException,
   MediaNotSubtitleException,
   SubtitleFileNotSupported,
@@ -99,24 +100,19 @@ import {
 } from "./videos.types";
 @Service()
 export class VideosService {
-  private vttParser: WebVTTParser;
   constructor(
     private readonly accountsService: AccountsService,
     private readonly s3Service: S3Service,
     private readonly muxService: MuxService,
     private readonly videosAPI: VideosAPI,
     private readonly shotstackAPI: ShotstackService
-  ) {
-    this.vttParser = new WebVTTParser();
-  }
+  ) {}
 
   async startUpload(
     authInfo: AuthInfo,
     args: StartUploadArgs
   ): Promise<StartUploadResponse> {
-    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
-    const key = `org/${user?.org}/assets/${args.filename}`;
-
+    const key = `org/${authInfo.auth0?.organization_id}/assets/${args.filename}`;
     let asset: GetObjectOutput | null = null;
     try {
       asset = await this.s3Service.getObject({
@@ -416,9 +412,8 @@ export class VideosService {
     if (!args.filename.endsWith(SUBTITLE_FILE_EXTENSION)) {
       throw SubtitleFileNotSupported;
     }
-    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
-    const key = `org/${user?.org}/media/${args.assetId}/${args.filename}`;
 
+    const key = `org/${authInfo.auth0?.organization_id}/media/${args.assetId}/${args.filename}`;
     let asset: GetObjectOutput | null = null;
     try {
       asset = await this.s3Service.getObject({
@@ -568,77 +563,43 @@ export class VideosService {
     return clips;
   }
 
-  parseWebVTT(content: string): IParsedVtt {
-    const tree = this.vttParser.parse(content, "metadata");
-    const parsed = tree?.cues?.map(
-      (cue: { startTime: number; endTime: number; text: string }) => {
-        return {
-          startTime: cue?.startTime,
-          endTime: cue?.endTime,
-          text: cue?.text,
-        };
-      }
-    );
-    return parsed as IParsedVtt;
-  }
-
   async getSubtitleMedia(
     authInfo: AuthInfo,
-    mediaId: string
-  ): Promise<IParsedVtt> {
-    const medias = await this.videosAPI.getAssetMedias(
-      { uuid: mediaId },
-      authInfo.token
-    );
-    const media = medias?.pop();
-    if (!media) {
-      throw AssetMediaNotFoundException;
-    }
-
-    if (media.type != MediaType.SUBTITLE) {
-      throw MediaNotSubtitleException;
-    }
-
-    try {
-      const url = new URL(media.details?.sourceUrl);
-      const vttString = await this.s3Service.readObjectBody({
-        Bucket: url.hostname,
-        Key: url.pathname.substring(1),
-      });
-      const parsed = this.parseWebVTT(vttString);
-      return parsed;
-    } catch (e) {
-      console.error(`unable to read vtt file for media ${mediaId}`, e);
-      throw new InternalGraphQLError(`Failed to read subtitle`);
-    }
-  }
-
-  async getRawSubtitleMedia(
-    authInfo: AuthInfo,
-    mediaId: string
+    args?: IGetMediaSubtitleArgs
   ): Promise<string> {
-    const medias = await this.videosAPI.getAssetMedias(
-      { uuid: mediaId },
-      authInfo.token
-    );
-    const media = medias?.pop();
-    if (!media) {
-      throw AssetMediaNotFoundException;
-    }
+    let url: URL;
 
-    if (media.type != MediaType.SUBTITLE) {
-      throw MediaNotSubtitleException;
+    if (args?.mediaId) {
+      const medias = await this.videosAPI.getAssetMedias(
+        { uuid: args.mediaId },
+        authInfo.token
+      );
+      const media = medias?.pop();
+      if (!media) {
+        throw AssetMediaNotFoundException;
+      }
+
+      if (media.type != MediaType.SUBTITLE) {
+        throw MediaNotSubtitleException;
+      }
+      url = new URL(media.details.sourceUrl);
+    } else {
+      const asset = await this.getAsset(authInfo, args?.assetId!);
+      if (!asset?.metadata?.vtt_output_path) {
+        throw AutoTranscriptionFailedException;
+      }
+      url = new URL(asset.metadata?.vtt_output_path!);
     }
 
     try {
-      const url = new URL(media.details.sourceUrl);
+      const key = decodeS3Key(url.pathname.substring(1));
       const vttString = await this.s3Service.readObjectBody({
         Bucket: url.hostname,
-        Key: url.pathname.substring(1),
+        Key: key,
       });
       return vttString;
     } catch (e) {
-      console.error(`unable to read vtt file for media ${mediaId}`, e);
+      console.error(`unable to read vtt file for media ${args}`, e);
       throw new InternalGraphQLError(`Failed to read subtitle`);
     }
   }

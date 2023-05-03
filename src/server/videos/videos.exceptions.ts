@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import { BadInputError } from "../types/base.types";
 import { SUBTITLE_FILE_EXTENSION } from "./videos.constants";
 
@@ -11,4 +12,12 @@ export const AssetMediaNotFoundException = new BadInputError(
 );
 export const MediaNotSubtitleException = new BadInputError(
   `Asset media is not a subtitle`
+);
+
+export const AutoTranscriptionFailedException = new GraphQLError(
+  `Auto transcription failed to generate`
+);
+
+export const GetSubtitleMediaException = new BadInputError(
+  `mediaId or assetId is required`
 );

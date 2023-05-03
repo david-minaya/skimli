@@ -56,10 +56,10 @@ import {
   GetPartUploadResponse,
   Media,
   MuxData,
-  ParsedVttLine,
   RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
+import { GetSubtitleMediaException } from "./videos.exceptions";
 
 @Resolver(() => ConvertToClipsWorkflowStatus)
 @Service()
@@ -348,22 +348,8 @@ export class VideosResolver {
 
   @UseMiddleware(IsAppUserGuard)
   @Authorized()
-  @Query(() => [ParsedVttLine], { nullable: true })
-  async getSubtitleMedia(
-    @Ctx() ctx: GraphQLContext,
-    @Args() args: GetSubtitleMediaArgs
-  ): Promise<ParsedVttLine[]> {
-    const authInfo: AuthInfo = {
-      auth0: ctx?.auth0,
-      token: ctx?.token,
-    };
-    return this.videosService.getSubtitleMedia(authInfo, args.mediaId);
-  }
-
-  @UseMiddleware(IsAppUserGuard)
-  @Authorized()
   @Query(() => String, { nullable: true })
-  async getRawSubtitleMedia(
+  async getSubtitleMedia(
     @Ctx() ctx: GraphQLContext,
     @Args() args: GetSubtitleMediaArgs
   ): Promise<string> {
@@ -371,7 +357,11 @@ export class VideosResolver {
       auth0: ctx?.auth0,
       token: ctx?.token,
     };
-    return this.videosService.getRawSubtitleMedia(authInfo, args.mediaId);
+    if (!args?.assetId && !args.mediaId) {
+      throw GetSubtitleMediaException;
+    }
+
+    return this.videosService.getSubtitleMedia(authInfo, args);
   }
 
   @FieldResolver(() => String, { nullable: true })

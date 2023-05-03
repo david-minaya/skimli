@@ -7,3 +7,7 @@ export const streamToString = (stream: Readable): Promise<string> =>
     stream.on("error", reject);
     stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
   });
+
+export const decodeS3Key = (key: string) => {
+  return decodeURIComponent(key.replace(/\+/g, " "));
+};
