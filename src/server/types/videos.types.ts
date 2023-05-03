@@ -12,7 +12,7 @@ export enum AssetStatus {
 }
 
 export interface IConvertToClipsWorkflow {
-  workflowId: string;
+  workflowId?: string;
   runId: string;
   status: AssetStatus;
   category: string;
@@ -22,7 +22,7 @@ export interface IConvertToClipsWorkflow {
   model?: string;
 }
 export interface IPostVideoWorkflow {
-  workflowId: string;
+  workflowId?: string;
   runId: string;
 }
 
