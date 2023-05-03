@@ -5,6 +5,7 @@ import { formatSeconds } from '~/utils/formatSeconds';
 import { Asset, AudioTrack, VideoTrack } from '~/types/assets.type';
 import { DetailItem } from '~/components/detail-item/detail-item.component';
 import { Fragment } from 'react';
+import { ConvertToClipsWorkflow } from '~/types/convertToClipsWorkflow.type';
 import { style } from './workflow-status-modal.style';
 
 import {
@@ -66,9 +67,9 @@ export function WorkflowStatusModal(props: Props) {
     return formatSeconds(time / 1000);
   }
 
-  function calcEndtime() {
-    const startTime = asset.workflows?.[0]?.startTime;
-    const endTime = asset.workflows?.[0]?.endTime;
+  function calcEndtime(workflow?: ConvertToClipsWorkflow) {
+    const startTime = workflow?.startTime;
+    const endTime = workflow?.endTime;
     if (startTime && endTime) {
       const diff = Date.parse(endTime) - Date.parse(startTime);
       return formatSeconds(diff / 1000);
@@ -88,6 +89,10 @@ export function WorkflowStatusModal(props: Props) {
   const videoTrack: VideoTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find((track) => track.type === 'video') as any;
   const audioTrack: AudioTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find((track) => track.type === 'audio') as any;
   const isCompletedOrErrored = asset.status == 'CONVERTED' || asset.status == 'ERRORED';
+
+  const workflow: ConvertToClipsWorkflow | undefined = asset.workflows?.find(workflow => {
+    return workflow.__typename === 'ConvertToClipsWorkflow'
+  }) as any | undefined;
 
   return (
     <Dialog 
@@ -112,9 +117,11 @@ export function WorkflowStatusModal(props: Props) {
           <DetailItem 
             title={t('workflowStatusModal.id')} 
             text={asset.uuid}/>
-          {/* <DetailItem 
-            title={t('workflowStatusModal.videoCategory')} 
-            text={''}/> */}
+          {workflow?.category &&
+            <DetailItem 
+              title={t('workflowStatusModal.videoCategory')} 
+              text={workflow?.category}/>
+          }
           <DetailItem
             sx={style.itemTag}
             title={t('workflowStatusModal.status')}
@@ -132,10 +139,10 @@ export function WorkflowStatusModal(props: Props) {
             <Fragment>
               <DetailItem 
                 title={t('workflowStatusModal.timeEnded')} 
-                text={formatDate(asset.workflows?.[0]?.endTime)}/>
+                text={formatDate(workflow?.endTime)}/>
               <DetailItem 
                 title={t('workflowStatusModal.duration')} 
-                text={calcEndtime() || ''}/>
+                text={calcEndtime(workflow) || ''}/>
             </Fragment>
           }
           {!isCompletedOrErrored &&

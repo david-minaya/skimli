@@ -7,10 +7,10 @@ export function useGetSubtitles() {
 
   return (mediaId: string) => {
     return query<string>({
-      name: 'getRawSubtitleMedia',
+      name: 'getSubtitleMedia',
       query: gql`
         query Query($mediaId: String!) {
-          getRawSubtitleMedia(mediaId: $mediaId)
+          getSubtitleMedia(mediaId: $mediaId)
         }
       `,
       variables: { mediaId },

@@ -23,7 +23,8 @@ export function StatusTag(props: Props) {
         status === 'CONVERTING' && style.converting,
         status === 'CONVERTED' && style.converted,
         status === 'DELETING' && style.deleting,
-        status === 'ERRORED' && style.error
+        status === 'ERRORED' && style.error,
+        status === 'NO_CLIPS_FOUND' && style.error
       )}
       onClick={onClick}>
       {status === 'PROCESSING' && t('assetItem.tags.processing')}
@@ -32,6 +33,7 @@ export function StatusTag(props: Props) {
       {status === 'CONVERTED' && t('assetItem.tags.converted')}
       {status === 'DELETING' && t('assetItem.tags.deleting')}
       {status === 'ERRORED' && t('assetItem.tags.error')}
+      {status === 'NO_CLIPS_FOUND' && t('assetItem.tags.error')}
     </Box>
   );
 }

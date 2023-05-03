@@ -1,8 +1,10 @@
-import { Clip } from "./clip.type";
-import { MuxAsset } from "./muxAsset.type";
+import { Clip } from './clip.type';
+import { ConvertToClipsWorkflow } from './convertToClipsWorkflow.type';
+import { MuxAsset } from './muxAsset.type';
+import { PostVideoWorkflow } from './postVideoWorkflow.type';
 
 export interface AudioTrack {
-  type: "audio";
+  type: 'audio';
   duration: number;
   encoding: string;
   channels: string;
@@ -10,7 +12,7 @@ export interface AudioTrack {
 }
 
 export interface VideoTrack {
-  type: "video";
+  type: 'video';
   width: number;
   height: number;
   duration: number;
@@ -24,21 +26,9 @@ export interface Asset {
   updatedAt: string;
   org: number;
   name: string;
-  status:
-    | "PROCESSING"
-    | "UNCONVERTED"
-    | "CONVERTING"
-    | "CONVERTED"
-    | "DELETING"
-    | "ERRORED";
+  status: 'PROCESSING' | 'UNCONVERTED' | 'CONVERTING' | 'CONVERTED' | 'DELETING' | 'ERRORED' | 'NO_CLIPS_FOUND';
   activityStartTime: string;
-  activityStatus:
-    | "QUEUED"
-    | "DOWNLOADING"
-    | "ANALYZING"
-    | "ASSEMBLING"
-    | "PUBLISHING"
-    | "FINISHED";
+  activityStatus: 'QUEUED' | 'DOWNLOADING' | 'ANALYZING' | 'ASSEMBLING' | 'PUBLISHING' | 'FINISHED';
   sourceMuxAssetId?: string;
   selected: boolean;
   mux?: MuxAsset;
@@ -56,11 +46,5 @@ export interface Asset {
       clips: Clip[];
     };
   };
-  workflows?: AssetWorkflow[];
-}
-
-export interface AssetWorkflow {
-  startTime?: string;
-  endTime?: string;
-  category?: string;
+  workflows?: (ConvertToClipsWorkflow | PostVideoWorkflow)[];
 }

@@ -77,10 +77,6 @@ export function useGetAsset() {
                   }
                 }
               }
-              workflows {
-                startTime
-                endTime
-              }
             }
           }
         `,
@@ -91,3 +87,22 @@ export function useGetAsset() {
     [query]
   );
 }
+
+// workflows {
+//   ... on ConvertToClipsWorkflow {
+//     workflowId
+//     runId
+//     status
+//     category
+//     activityStatus
+//     startTime
+//     endTime
+//     model
+//   }
+//   ... on PostVideoWorkflow {
+//     workflowId
+//     runId
+//     startTime
+//     endTime
+//   }
+// }
