@@ -1,0 +1,29 @@
+{
+  "dateTitle": "Created",
+  "assetTitle": "Video Asset",
+  "mediasTitle": "Attached Media ({{length}})",
+  "menu": {
+    "clips": "Clips",
+    "sourceView": "Source view"
+  },
+  "infoTab": {
+    "title": "Details",
+    "container": "Container",
+    "width": "Width",
+    "height": "Height",
+    "frameRate": "Frame Rate",
+    "encoding": "Encoding",
+    "duration": "Duration",
+    "size": "Size",
+    "audioTrackTitle": "Main Audio Track",
+    "sampleRatio": "Sample ratio",
+    "channels": "Channels"
+  },
+  "sidebarTranscript": {
+    "emptyTitle": "Upload a file",
+    "emptyTextPart1": "Click to",
+    "emptyLink": "browse",
+    "emptyTextPart2": ", or drag & drop a file here",
+    "emptyBottomText": "WebVTT files only"
+  }
+}

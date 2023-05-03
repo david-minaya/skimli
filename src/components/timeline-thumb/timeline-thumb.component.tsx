@@ -2,9 +2,10 @@ import { Box } from '@mui/material';
 import { useState, Fragment } from 'react';
 import { ClipTimelineThumbIcon } from '~/icons/clipTimelineThumbIcon';
 import { formatSeconds } from '~/utils/formatSeconds';
-import { style } from './clip-timeline-thumb.style';
+import { style } from './timeline-thumb.style';
 import { Drag } from '~/components/drag/drag.component';
 import { mergeSx } from '~/utils/style';
+import { toFinite } from '~/utils/toFinite';
 
 interface Props {
   time: number;
@@ -16,7 +17,7 @@ interface Props {
   onChange: (time: number) => void;
 }
 
-export function ClipTimelineThumb(props: Props) {
+export function TimelineThumb(props: Props) {
 
   const {
     time,
@@ -30,9 +31,9 @@ export function ClipTimelineThumb(props: Props) {
 
   const [focus, setFocus] = useState(false);
 
-  const left = (timelineWidth / duration) * startTime;
-  const width = (timelineWidth / duration) * (endTime - startTime);
-  const leftThumb = (timelineWidth / duration) * (Math.min(Math.max(startTime, time), endTime) - startTime);
+  const left = toFinite((timelineWidth / duration) * startTime);
+  const width = toFinite((timelineWidth / duration) * (endTime - startTime));
+  const leftThumb = toFinite((timelineWidth / duration) * (Math.min(Math.max(startTime, time), endTime) - startTime));
 
   return (
     <Fragment>
@@ -48,7 +49,8 @@ export function ClipTimelineThumb(props: Props) {
         onChange={onChange}>
         <Box
           tabIndex={0}
-          sx={mergeSx(style.thumb, { left: leftThumb })}
+          sx={style.thumb}
+          style={{ left: leftThumb }}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}>
           {!focus && <ClipTimelineThumbIcon sx={style.thumbIcon}/>}

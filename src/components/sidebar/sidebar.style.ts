@@ -2,6 +2,15 @@ import { Style } from '~/utils/style';
 
 export const style = Style({
   container: {
+    display: 'flex',
+    flexDirection: 'row-reverse'
+  },
+  tabs: {
+    width: '52px',
+    flexShrink: 0,
+    backgroundColor: '#EEEEEE'
+  },
+  tab: {
     width: '52px',
     height: '40px',
     display: 'flex',

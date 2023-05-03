@@ -7,7 +7,7 @@ import { AxiosProgressEvent } from 'axios';
 import { useAbortUpload } from '~/graphqls/useAbortUpload';
 
 type GetChunkUploadUrl = ReturnType<typeof useGetChunkUploadUrl>;
-type StartUpload = ReturnType<typeof useStartUpload>;
+type StartUpload = (file: File) => Promise<{ key: string, uploadId: string }>;
 type UploadChunk = ReturnType<typeof useUploadChunk>;
 type CompleteUpload = ReturnType<typeof useCompleteUpload>;
 type AbortUpload = ReturnType<typeof useAbortUpload>;
@@ -40,7 +40,7 @@ export class UploadFile {
 
     try {
 
-      const response = await this.startUpload(this.file.name);
+      const response = await this.startUpload(this.file);
 
       this.key = response.key;
       this.uploadId = response.uploadId;

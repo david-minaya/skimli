@@ -36,6 +36,28 @@ export const style = Style({
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical'
   },
+  videoContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: '20px'
+  },
+  video: {
+    display: 'block',
+    width: '100%',
+    flexGrow: 1,
+    backgroundColor: 'black'
+  },
+  controls: {
+    height: '40px',
+    display: 'flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: '0px 4px'
+  },
+  time: {
+    marginRight: 'auto'
+  },
   info: {
     display: 'flex',
     alignItems: 'end',

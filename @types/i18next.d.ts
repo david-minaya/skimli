@@ -7,6 +7,7 @@ import type billing from '../public/locales/en/billing.json';
 import type profile from '../public/locales/en/profile.json';
 import type onboarding from '../public/locales/en/onboarding.json';
 import type editClips from '../public/locales/en/editClips.json';
+import type details from '../public/locales/en/details.json';
 import type page401 from '../public/locales/en/page401.json';
 import type page404 from '../public/locales/en/page404.json';
 import type page500 from '../public/locales/en/page500.json';
@@ -22,6 +23,7 @@ declare module 'i18next' {
       profile: typeof profile
       onboarding: typeof onboarding
       editClips: typeof editClips
+      details: typeof details
       components: typeof components
       page401: typeof page401
       page404: typeof page404

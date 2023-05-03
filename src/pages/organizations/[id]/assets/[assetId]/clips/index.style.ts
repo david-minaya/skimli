@@ -18,5 +18,11 @@ export const style = Style({
     display: 'flex',
     flexGrow: 1,
     overflow: 'hidden'
+  },
+  tabContent: {
+    width: '200px', 
+    padding: '8px', 
+    fontWeight: 600, 
+    fontSize: '15px'
   }
 });

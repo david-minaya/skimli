@@ -66,7 +66,7 @@ export function AssetItem(props: Props) {
   }
 
   function handleEdit() {
-    router.push(`/organizations/${account?.org}/assets/${asset.uuid}/clips`)
+    router.push(`/organizations/${account?.org}/assets/${asset.uuid}/clips`);
     setOpenMenu(false);
   }
 

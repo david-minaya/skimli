@@ -1,7 +1,4 @@
 {
-  "title": "Edit Clips",
-  "account": "Personal Account - {{email}}",
-  "deleteOption": "Delete",
   "addButton": "Add a clip",
   "stitchButton": "Stitch clips",
   "dateTitle": "Created",
@@ -9,7 +6,6 @@
   "adjustButton": "Adjust this clip",
   "noCaptionFound": "No caption found",
   "clipListTitle": "Clips",
-  "errorToast": "Error deleting asset",
   "clips": {
     "menu": {
       "clips": "Clips",

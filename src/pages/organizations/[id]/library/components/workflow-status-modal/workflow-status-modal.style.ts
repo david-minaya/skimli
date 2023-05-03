@@ -1,9 +1,9 @@
-import { Style } from '~/utils/style';
+import { Style, nestedStyle } from '~/utils/style';
 
 export const style = Style({
   dialog: {
     '& .MuiDialog-paper': {
-      width: '480px',
+      width: '50  0px',
       borderRadius: '8px'
     }
   },
@@ -53,29 +53,20 @@ export const style = Style({
     borderRadius: '8px',
     padding: '0px 8px'
   },
-  item: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '14px',
-    margin: '4px 0px'
-  },
-  itemTitle: {
-    fontWeight: 500,
-    marginRight: '12px'
-  },
-  itemText: {
-    color: '#555555',
-  },
-  itemTag: {
-    backgroundColor: '#FEDACC'
-  },
-  itemElapsedTime: {
-    color: 'green.main'
-  },
   audioTrackTitle: {
     fontSize: '14px',
     fontWeight: 500,
     margin: '8px 0px 4px',
     textDecoration: 'underline'
-  }
+  },
+  itemTag: nestedStyle({
+    text: {
+      backgroundColor: '#FEDACC'
+    }
+  }),
+  itemElapsedTime: nestedStyle({
+    text: {
+      color: 'green.main'
+    }
+  })
 });

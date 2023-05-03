@@ -19,19 +19,11 @@ export const style = Style({
     padding: '0px',
     margin: '0px 8px'
   },
-  titleContainer: {
-    height: '32px',
-    display: 'flex',
-    alignItems: 'center'
-  },
   title: {
+    height: '32px',
+    lineHeight: '32px',
     fontSize: '17px',
     fontWeight: 'bold'
-  },
-  titleInput: {
-    fontSize: '17px',
-    fontWeight: 'bold',
-    margin: '0px 6px'
   },
   account: {
     display: 'flex',

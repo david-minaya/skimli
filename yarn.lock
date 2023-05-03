@@ -8389,6 +8389,11 @@ void-elements@3.1.0:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-3.1.0.tgz#614f7fbf8d801f0bb5f0661f5b2f5785750e4f09"
   integrity sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==
 
+vtt.js@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/vtt.js/-/vtt.js-0.13.0.tgz#955c667b34d5325b2012cb9e8ba9bad6e0b11ff8"
+  integrity sha512-t0OJvTmsryCOIHdLWmUPx6V3e0MRGaZMp0Cr5DETWrWNfg9RCHcQlF7X7zNF4mQxhtkyiVKOefdSErSB/KWgOA==
+
 wcwidth@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/wcwidth/-/wcwidth-1.0.1.tgz#f0b0dcf915bc5ff1528afadb2c0e17b532da2fe8"

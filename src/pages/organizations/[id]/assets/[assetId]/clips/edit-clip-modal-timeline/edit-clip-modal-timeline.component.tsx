@@ -1,26 +1,14 @@
-import axios from 'axios';
 import { useEffect, useRef, useState, MouseEvent } from 'react';
 import { Box } from '@mui/material';
-import { style } from './edit-clip-modal-timeline.style';
-import { useAsyncEffect } from '~/hooks/useAsyncEffect';
 import { Asset } from '~/types/assets.type';
-import { ClipTimelineThumb } from '../clip-timeline-thumb/clip-timeline-thumb.component';
 import { EditClipControlHandler } from '../edit-clip-control-handler/edit-clip-control-handler.component';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { round } from '~/utils/round';
-
-interface Storyboard {
-  url: string;
-  tile_width: number;
-  tile_height: number;
-  duration: number;
-  tiles: {
-    start: number;
-    x: number;
-    y: number;
-  }[]
-}
+import { TimelineFrames } from '~/components/timeline-frames/timeline-frames.component';
+import { TimelineThumb } from '~/components/timeline-thumb/timeline-thumb.component';
+import { toFinite } from '~/utils/toFinite';
+import { style } from './edit-clip-modal-timeline.style';
 
 interface Props {
   asset: Asset;
@@ -53,11 +41,6 @@ export function EditClipModalTimeline(props: Props) {
   } = props;
 
   const ref = useRef<HTMLDivElement>(null);
-  const [tileHeight] = useState(48);
-  const [tileWidth, setTileWidth] = useState(0);
-  const [storyboard, setStoryboard] = useState<Storyboard>();
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
   const [timelineLeft, setTimelineLeft] = useState(0.1);
   const [timelineWidth, setTimelineWidth] = useState(0.1);
   const [showSkipThumb, setShowSkipThumb] = useState(false);
@@ -67,48 +50,23 @@ export function EditClipModalTimeline(props: Props) {
   const controlWidth = toFinite((timelineWidth / duration) * (endTime - startTime));
   const skipThumbTime = toFinite((duration / timelineWidth) * skipThumbPosition);
 
-  useAsyncEffect(async () => {
-
-    const playbackId = asset.mux!.asset.playback_ids[0].id;
-    const token = asset.mux!.tokens.storyboard;
-    const response = await axios.get<Storyboard>(`https://image.mux.com/${playbackId}/storyboard.json?token=${token}`);
-    const storyboard = response.data;
-    const columns = storyboard.tiles.filter(tile => tile.y === 0).length;
-    const rows = storyboard.tiles.length / columns;
-    const originalWidth = columns * storyboard.tile_width;
-    const originalHeight = rows * storyboard.tile_height;
-    const height = tileHeight * rows;
-    const scale = originalHeight / height;
-    const width = originalWidth / scale;
-
-    storyboard.tiles.forEach(tile => {
-      tile.x /= scale;
-      tile.y /= scale
-    })
-    
-    setStoryboard(storyboard);
-    setWidth(width);
-    setHeight(height);
-  });
-
   useEffect(() => {
 
-    const calcFrameWidth = () => {
-      if (ref.current && storyboard) {
+    const onResize = () => {
+      if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
         setTimelineLeft(rect.left);
         setTimelineWidth(rect.width);
-        setTileWidth(rect.width / storyboard.tiles.length);
       }
     }
 
-    calcFrameWidth();
-    window.addEventListener('resize', calcFrameWidth);
+    onResize();
+    window.addEventListener('resize', onResize);
 
     return () => {
-      window.removeEventListener('resize', calcFrameWidth);
+      window.removeEventListener('resize', onResize);
     }
-  }, [storyboard]);
+  }, []);
 
   function handleFramesMouseMove(event: MouseEvent<HTMLDivElement>) {
     setSkipThumbPosition(event.pageX - timelineLeft);
@@ -131,35 +89,17 @@ export function EditClipModalTimeline(props: Props) {
     onStartEndTimeChange(start, end);
   }
 
-  function toFinite(number: number) {
-    return isFinite(number) ? number : 0;
-  }
-
   return (
     <Box 
       sx={style.container}
       ref={ref}>
-      <Box 
-        sx={style.frames}
+      <TimelineFrames
+        asset={asset}
+        timelineWidth={timelineWidth}
         onMouseOver={() => setShowSkipThumb(true)}
         onMouseLeave={() => setShowSkipThumb(false)}
         onMouseMove={handleFramesMouseMove}
-        onClick={handleFramesClick}>
-        {storyboard?.tiles.map(tile =>
-          <Box 
-            key={tile.start}
-            sx={{
-              width: `${tileWidth}px`,
-              height: `${tileHeight}px`,
-              flexShrink: 0,
-              pointerEvents: 'none',
-              backgroundRepeat: 'no-repeat',
-              backgroundImage: `url(${storyboard.url})`,
-              backgroundSize: `${width}px ${height}px`,
-              backgroundPosition: `-${tile.x}px -${tile.y}px`
-            }}/>
-        )}
-      </Box>
+        onClick={handleFramesClick}/>
       <Box 
         sx={style.control}
         style={{ left: controlLeft, width: controlWidth }}>
@@ -184,7 +124,7 @@ export function EditClipModalTimeline(props: Props) {
           onChange={onEndTimeChange}
           onEnd={onPreviewEnd}/>
       </Box>
-      <ClipTimelineThumb
+      <TimelineThumb
         time={currentTime}
         startTime={startTime}
         endTime={endTime}

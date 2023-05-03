@@ -6,6 +6,7 @@ import { useCompleteUpload } from '~/graphqls/useCompleteUpload';
 import { useGetChunkUploadUrl } from '~/graphqls/useGetPartChunkUrl';
 import { useStartUpload } from '~/graphqls/useStartUpload';
 import { useUploadChunk } from '~/graphqls/useUploadChunk';
+import { useStartMediaUpload } from '~/graphqls/useStartMediaUpload';
 import { UploadFile } from './uploadFile';
 import { toMb } from './toMb';
 
@@ -17,7 +18,8 @@ interface UploadFiles {
   inProgress: boolean;
   completed: boolean;
   failed: boolean;
-  uploadFiles: (files: FileList) => Promise<void>;
+  uploadVideoFiles: (files: FileList) => Promise<void>;
+  uploadMediaFiles: (files: FileList, assetId: string) => Promise<void>;
   cancel: () => Promise<void>;
 }
 
@@ -32,6 +34,9 @@ interface UploadFilesProgress {
   totalSize: number;
   totalFiles: number;
 }
+
+type OnStartUpload = (file: File) => Promise<{ key: string, uploadId: string }>;
+type OnError = (err: any, file: File) => void;
 
 const Context = createContext({} as UploadFiles);
 const ProgressContext = createContext({} as UploadFilesProgress)
@@ -56,18 +61,61 @@ export function UploadFilesProvider(props: Props) {
   const [openSuccessfulToast, setOpenSuccessfulToast] = useState(false);
 
   const startUpload = useStartUpload();
+  const startMediaUpload = useStartMediaUpload();
   const getChunkUploadUrl = useGetChunkUploadUrl();
   const completeUpload = useCompleteUpload();
   const abortUpload = useAbortUpload();
   const uploadChunk = useUploadChunk();
 
-  const uploadFiles = useCallback(async (fileList: FileList) => {
-
-    reset();
+  const uploadVideoFiles = useCallback(async (fileList: FileList) => {
 
     if (!await validate(fileList)) {
       return;
     }
+
+    const onStartUpload: OnStartUpload = async (file) => {
+      return startUpload(file.name);
+    };
+
+    const onError: OnError = (err, file) => {
+
+      if (err.message === 'Video already exists in library') {
+        setErrorTitle(t('uploadFilesProvider.fileAlreadyExistsError.title', { name: file.name }));
+        setErrorDescription(t('uploadFilesProvider.fileAlreadyExistsError.description'));
+        setOpenErrorToast(true);
+        return;
+      }
+
+      setErrorTitle(t('uploadFilesProvider.uploadingError.title', { name: file.name }));
+      setErrorDescription(t('uploadFilesProvider.uploadingError.description'));
+      setOpenErrorToast(true);
+    }
+
+    await uploadFiles(fileList, onStartUpload, onError);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const uploadMediaFiles = useCallback(async (fileList: FileList, assetId: string) => {
+
+    const onStartUpload: OnStartUpload = async (file) => {
+      return startMediaUpload(file.name, assetId, 'SUBTITLE', 'en');
+    };
+
+    const onError: OnError = (err, file) => {
+      setErrorTitle(t('uploadFilesProvider.uploadingError.title', { name: file.name }));
+      setErrorDescription(t('uploadFilesProvider.uploadingError.description'));
+      setOpenErrorToast(true);
+    }
+
+    await uploadFiles(fileList, onStartUpload, onError);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const uploadFiles = useCallback(async (fileList: FileList, onStartUpload: OnStartUpload, onError?: OnError) => {
+
+    reset();
 
     let stop = false;
     let uploadedProgress = 0;
@@ -89,7 +137,14 @@ export function UploadFilesProvider(props: Props) {
     
     for (const file of files) {
 
-      const uploadFile = new UploadFile(file, startUpload, getChunkUploadUrl, uploadChunk, completeUpload, abortUpload);
+      const uploadFile = new UploadFile(
+        file, 
+        onStartUpload, 
+        getChunkUploadUrl, 
+        uploadChunk, 
+        completeUpload, 
+        abortUpload
+      );
 
       uploadFile.onProgress(bytes => {
 
@@ -110,21 +165,10 @@ export function UploadFilesProvider(props: Props) {
       });
 
       uploadFile.onFailed((err) => {
-        
         setFailed(true);
         setInProgress(false);
         stop = true;
-        
-        if (err.message === 'Video already exists in library') {
-          setErrorTitle(t('uploadFilesProvider.fileAlreadyExistsError.title', { name: file.name }));
-          setErrorDescription(t('uploadFilesProvider.fileAlreadyExistsError.description'));
-          setOpenErrorToast(true);
-          return;
-        }
-
-        setErrorTitle(t('uploadFilesProvider.uploadingError.title', { name: file.name }));
-        setErrorDescription(t('uploadFilesProvider.uploadingError.description'));
-        setOpenErrorToast(true);
+        onError?.(err, file);
       });
 
       uploadFile.onCompleted(() => {
@@ -155,6 +199,8 @@ export function UploadFilesProvider(props: Props) {
   }, [uploadFile]);
 
   async function validate(fileList: FileList) {
+
+    reset();
 
     const files = Array.from(fileList);
     const mimetypes = process.env.NEXT_PUBLIC_SUPPORTED_MIMETYPES?.split(', ') || ['video/mp4'];
@@ -239,9 +285,10 @@ export function UploadFilesProvider(props: Props) {
     inProgress,
     completed,
     failed,
-    uploadFiles,
+    uploadVideoFiles,
+    uploadMediaFiles,
     cancel
-  }), [inProgress, completed, failed, uploadFiles, cancel]);
+  }), [inProgress, completed, failed, uploadVideoFiles, uploadMediaFiles, cancel]);
 
   const progressContext: UploadFilesProgress = {
     inProgress,

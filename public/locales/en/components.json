@@ -75,5 +75,11 @@
       "supportCenterLink": "Support Center",
       "contactSupportLink": "Contact Support"
     }
+  },
+  "assetAppBar": {
+    "title": "Edit Clips",
+    "account": "Personal Account - {{email}}",
+    "deleteOption": "Delete",
+    "errorDeleteToast": "Error deleting asset"
   }
 }

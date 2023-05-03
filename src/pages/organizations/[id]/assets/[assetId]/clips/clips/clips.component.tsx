@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { MenuItem, SelectChangeEvent } from '@mui/material';
+import { MenuItem } from '@mui/material';
 import { Box, Select } from '@mui/material';
 import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
+import { useAccount } from '~/store/account.slice';
 import { SearchField } from '~/components/search-field/search-field.component';
 import { Asset } from '~/types/assets.type';
 import { ClipItem } from '../clip-item/clip-item.component';
@@ -13,31 +15,35 @@ interface Props {
 
 export function Clips(props: Props) {
 
+  const router = useRouter();
+  const Account = useAccount();
+  const account = Account.get();
   const { asset } = props;
   const { t } = useTranslation('editClips');
-  const [section, setSection] = useState('clips');
   const [caption, setCaption] = useState('');
-
-  function handleChange(e: SelectChangeEvent<string>) {
-    setSection(e.target.value);
-  }
 
   async function handleSearchChange(value?: string) {
     setCaption(value || '');
   }
-
+  
   const clips = asset.inferenceData?.human.clips.filter(clip => clip.caption.includes(caption))
 
   return (
     <Box sx={style.container}>
       <Box sx={style.top}>
         <Select 
-          sx={style.select} 
-          required={true}
-          value={section}
-          onChange={handleChange}>
-          <MenuItem value='clips'>{t('clips.menu.clips')}</MenuItem>
-          <MenuItem value='source-view'>{t('clips.menu.sourceView')}</MenuItem>
+          sx={style.select}
+          value='clips'>
+          <MenuItem 
+            value='clips'
+            onClick={() => router.push(`/organizations/${account?.org}/assets/${asset.uuid}/clips`)}>
+            {t('clips.menu.clips')}
+          </MenuItem>
+          <MenuItem 
+            value='source-view'
+            onClick={() => router.push(`/organizations/${account?.org}/assets/${asset.uuid}/details`)}>
+            {t('clips.menu.sourceView')}
+          </MenuItem>
         </Select>
         <SearchField
           sx={style.searchField}

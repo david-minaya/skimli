@@ -32,7 +32,7 @@ function Library() {
 
   const { t } = useTranslation('library');
   const { user } = useUser();
-  const { inProgress, uploadFiles } = useUploadFiles();
+  const { inProgress, uploadVideoFiles } = useUploadFiles();
   const [showDropArea, setShowDropArea] = useState(false);
   const [asset, setAsset] = useState<Asset>();
   const [search, setSearch] = useState('');
@@ -53,7 +53,7 @@ function Library() {
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
-      uploadFiles(event.target.files);
+      uploadVideoFiles(event.target.files);
     }
   }
 
@@ -66,7 +66,7 @@ function Library() {
     event.preventDefault();
 
     if (event.dataTransfer.files && !inProgress) {
-      uploadFiles(event.dataTransfer.files);
+      uploadVideoFiles(event.dataTransfer.files);
     }
     
     setShowDropArea(false);

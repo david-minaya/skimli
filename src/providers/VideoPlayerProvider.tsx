@@ -1,6 +1,4 @@
-import styled from '@emotion/styled';
-import MuxVideo from '@mux/mux-video-react';
-import { useState, ReactNode, createContext, useContext, Dispatch, SetStateAction, useMemo } from 'react';
+import { useState, ReactNode, createContext, useContext, Dispatch, SetStateAction } from 'react';
 
 interface Props {
   name?: string;
@@ -15,6 +13,7 @@ interface VideoPlayer {
   volume: number;
   muted: boolean;
   loop: boolean;
+  isReloading: boolean;
   setVideo: (video: HTMLVideoElement, tag?: string) => void;
   setCurrentTime: Dispatch<SetStateAction<number>>;
   setDuration: Dispatch<SetStateAction<number>>;
@@ -23,13 +22,13 @@ interface VideoPlayer {
   play: () => void;
   pause: () => void;
   mute: () => void;
+  reload: () => void;
   updateProgress: (progress: number) => void;
   updateVolume: (volume: number) => void;
   onLoad: (cb: () => void) => void;
 }
 
 const Context = createContext({} as VideoPlayer);
-const Video = styled(MuxVideo)``;
 
 export function VideoPlayerProvider(props: Props) {
 
@@ -42,6 +41,7 @@ export function VideoPlayerProvider(props: Props) {
   const [volume, setVolume] = useState(100);
   const [loop, setLoop] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [isReloading, setIsReloading] = useState(false);
 
   function setVideo(video?: HTMLVideoElement, tag?: string) {
     ctx.video = video;
@@ -79,6 +79,13 @@ export function VideoPlayerProvider(props: Props) {
     setMuted(ctx.video!.muted);
   }
 
+  function reload() {
+    setIsReloading(true);
+    setTimeout(() => {
+      setIsReloading(false);
+    }, 16);
+  }
+
   const value: VideoPlayer = {
     get video() { return ctx.video },
     isPlaying,
@@ -87,6 +94,7 @@ export function VideoPlayerProvider(props: Props) {
     volume,
     muted,
     loop,
+    isReloading,
     setVideo,
     setCurrentTime,
     setDuration,
@@ -95,6 +103,7 @@ export function VideoPlayerProvider(props: Props) {
     play,
     pause,
     mute,
+    reload,
     updateProgress,
     updateVolume,
     onLoad

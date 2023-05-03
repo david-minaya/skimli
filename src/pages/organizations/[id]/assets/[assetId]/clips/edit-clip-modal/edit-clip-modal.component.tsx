@@ -1,6 +1,6 @@
 import MuxVideo from '@mux/mux-video-react';
 import { useTranslation } from 'next-i18next';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Box, Button, Dialog, DialogContent, InputBase, styled } from '@mui/material';
 import { VideoPlayerProvider, useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { Asset } from '~/types/assets.type';
@@ -17,6 +17,7 @@ import { UndoIcon } from '~/icons/undoIcon';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
 import { ConfirmDialog } from '~/components/confirm-dialog/confirm-dialog.component';
 import { round } from '~/utils/round';
+import { VideoPlayer } from '~/components/video-player/video-player.component';
 
 const Video = styled(MuxVideo)``;
 
@@ -63,32 +64,6 @@ function Modal(props: Props) {
     setEndTime(clip.endTime);
   }, [clip])
 
-  const handleVideoRef = useCallback((element?: HTMLVideoElement) => {
-    if (element && !videoPlayer.video) {
-      videoPlayer.setVideo(element);
-    }
-  }, []);
-
-  function handleDurationChange() {
-    videoPlayer.setDuration(videoPlayer.video?.duration || 0);
-  }
-
-  function handlePlayed() {
-    videoPlayer.setIsPlaying(true);
-  }
-
-  function handlePlaying() {
-    videoPlayer.setIsPlaying(true);
-  }
-
-  function handlePaused() {
-    videoPlayer.setIsPlaying(false);
-  }
-
-  function handleWaiting() {
-    videoPlayer.setIsPlaying(false);
-  }
-
   function handleTimeUpdate() {
 
     if (videoPlayer.video && videoPlayer.video.currentTime > endTime) {
@@ -105,14 +80,6 @@ function Modal(props: Props) {
     }
     
     videoPlayer.setCurrentTime(round(videoPlayer.video!.currentTime, 3));
-  }
-
-  function handlePlay() {
-    if (videoPlayer.video?.paused) {
-      videoPlayer.play();
-    } else {
-      videoPlayer.pause();   
-    }
   }
 
   function handleStartTimeChange(time: number) {
@@ -193,19 +160,10 @@ function Modal(props: Props) {
     <Dialog open sx={style.dialog}>
       <DialogContent sx={style.dialogContent}>
         <Box sx={style.videoContainer}>
-          {/* @ts-ignore */}
-          <Video
+          <VideoPlayer
             sx={style.video}
-            ref={handleVideoRef}
-            playsInline={true}
-            playbackId={`${asset.mux?.asset.playback_ids[0].id}?token=${asset.mux?.tokens.video}`}
-            onClick={handlePlay}
-            onPlay={handlePlayed}
-            onPause={handlePaused}
-            onWaiting={handleWaiting}
-            onPlaying={handlePlaying}
-            onTimeUpdate={handleTimeUpdate}
-            onDurationChange={handleDurationChange}/>
+            asset={asset}
+            onTimeUpdate={handleTimeUpdate}/>
           {/* @ts-ignore */}
           <Video
             sx={mergeSx(style.videoPreview, showPreview && { visibility: 'visible' })}

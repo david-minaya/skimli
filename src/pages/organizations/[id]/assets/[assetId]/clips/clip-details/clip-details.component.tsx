@@ -1,19 +1,26 @@
-import {Box, Typography} from '@mui/material';
+import {Box, LinearProgress, Typography} from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
 import { useAssets } from '~/store/assets.slice';
 import { Asset } from '~/types/assets.type';
 import { ClipTimeline } from '../clip-timeline/clip-timeline.component';
-import { ClipVideoPlayer } from '../clip-video-player/clip-video-player.component';
-import { style } from './clip-details.style';
+import { VideoPlayer } from '~/components/video-player/video-player.component';
 import { EditClipModal } from '../edit-clip-modal/edit-clip-modal.component';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Clip } from '~/types/clip.type';
 import { useAddClip } from '~/graphqls/useAddClip';
 import { useAdjustClip } from '~/graphqls/useAdjustClip';
 import { toTime } from '~/utils/toTime';
 import { Toast } from '~/components/toast/toast.component';
 import { formatSeconds } from '~/utils/formatSeconds';
+import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
+import { round } from '~/utils/round';
+import { PlayButton } from '~/components/play-button/play-button.component';
+import { Time } from '~/components/time/time.component';
+import { LoopButton } from '~/components/loop-button/loop-button.component';
+import { Volume } from '~/components/volume/volume.component';
+import { style } from './clip-details.style';
+import { longDate } from '~/utils/longDate';
 
 interface Props {
   asset: Asset;
@@ -25,6 +32,7 @@ export function ClipDetails(props: Props) {
   const { t } = useTranslation('editClips');
   const Assets = useAssets();
   const clip = Assets.getClip(asset.uuid);
+  const videoPlayer = useVideoPlayer();
   const adjustClip = useAdjustClip();
   const addClip = useAddClip();
   const [openAddClipModal, setOpenAddClipModal] = useState(false);
@@ -34,8 +42,34 @@ export function ClipDetails(props: Props) {
   const [openEditErrorToast, setOpenEditErrorToast] = useState(false);
   const [duplicatedClip, setDuplicatedClip] = useState<Clip>();
 
-  function formatDate(date: string) {
-    return new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(Date.parse(date));
+  useEffect(() => {
+    if (clip) {
+      if (videoPlayer.video) {
+        videoPlayer.updateProgress(clip.startTime);
+      } else {
+        videoPlayer.onLoad(() => videoPlayer.updateProgress(clip.startTime));
+      }
+    }
+  }, [clip]);
+
+  function handleTimeUpdate() {
+
+    if (!clip) return;
+
+    if (videoPlayer.video && videoPlayer.video.currentTime > clip.endTime) {
+      
+      videoPlayer.updateProgress(clip.startTime);
+
+      if (videoPlayer.loop) {
+        videoPlayer.play();
+      } else {
+        videoPlayer.pause();
+      }
+
+      return;
+    }
+    
+    videoPlayer.setCurrentTime(round(videoPlayer.video!.currentTime, 3));
   }
 
   async function handleAddClip(clip: Clip) {
@@ -105,13 +139,28 @@ export function ClipDetails(props: Props) {
         {clip &&
           <Box sx={style.center}>
             <Typography sx={style.titleInput as any}>{clip.caption}</Typography>
-            <ClipVideoPlayer
-              asset={asset}
-              clip={clip}/>
+            <Box sx={style.videoContainer}>
+              <VideoPlayer
+                sx={style.video}
+                asset={asset}
+                onTimeUpdate={handleTimeUpdate}/>
+              <LinearProgress
+                variant='determinate'
+                value={(videoPlayer.currentTime - clip.startTime) * 100 / clip.duration}/>
+              <Box sx={style.controls}>
+                <PlayButton/>
+                <Time 
+                  sx={style.time} 
+                  time={videoPlayer.currentTime - clip.startTime} 
+                  duration={clip.duration}/>
+                <LoopButton/>
+                <Volume/>
+              </Box>
+            </Box>
             <Box sx={style.info}>
               <Box sx={style.dateContainer}>
                 <Box sx={style.dateTitle}>{t('dateTitle')}</Box>
-                <Box sx={style.date}>{formatDate(clip.createdAt)}</Box>
+                <Box sx={style.date}>{longDate(clip.createdAt)}</Box>
               </Box>
               <OutlinedButton
                 sx={style.resetButton} 

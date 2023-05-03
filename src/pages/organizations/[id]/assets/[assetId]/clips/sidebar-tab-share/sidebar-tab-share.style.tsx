@@ -1,8 +1,12 @@
-import { Style } from '~/utils/style';
+import { Style, nestedStyle } from '~/utils/style';
 
 export const style = Style({
+  sidebarContent: nestedStyle({
+    content: {
+      padding: '0px 0px 0px 8px'
+    }
+  }),
   container: {
-    width: '200px',
     height: '100%',
     display: 'flex',
     flexDirection: 'column'
@@ -12,10 +16,7 @@ export const style = Style({
     fontSize: '15px',
     fontWeight: 600,
     color: 'black',
-    ':not(:first-of-type)': {
-      padding: '12px 8px 4px'
-    },
-    padding: '8px'
+    padding: '12px 0px 4px'
   },
   socialMedia: {
     height: '100px',
@@ -27,12 +28,10 @@ export const style = Style({
     rowGap: '8px',
     columnGap: '8px',
     flexShrink: 0,
-    borderBottom: '1px solid #E6E8F0',
-    padding: '0px 8px'
+    borderBottom: '1px solid #E6E8F0'
   },
   aspectRatios: {
     flexGrow: 1,
-    overflow: 'auto',
-    paddingLeft: '8px'
+    overflow: 'auto'
   }
 });

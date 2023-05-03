@@ -6,14 +6,6 @@ export const style = Style({
     position: 'relative',
     margin: '0px 8px'
   },
-  frames: {
-    width: '100%',
-    height: '48px',
-    display: 'flex',
-    position: 'absolute',
-    bottom: '0px',
-    backgroundColor: 'aliceblue'
-  },
   control: {
     height: '48px',
     position: 'absolute',

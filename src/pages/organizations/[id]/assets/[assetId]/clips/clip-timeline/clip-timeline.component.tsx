@@ -3,8 +3,8 @@ import { Box } from '@mui/material';
 import { Clip } from '~/types/clip.type';
 import { style } from './clip-timeline.style';
 import { ClipTimelineFrame } from '../clip-timeline-frame/clip-timeline-frame.component';
-import { ClipTimelineThumb } from '../clip-timeline-thumb/clip-timeline-thumb.component';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
+import { TimelineThumb } from '~/components/timeline-thumb/timeline-thumb.component';
 
 interface Props {
   clip: Clip;
@@ -23,6 +23,7 @@ export function ClipTimeline(props: Props) {
   const [frameWidth, setFrameWidth] = useState(0);
   const [left, setLeft] = useState(0);
   const [width, setWidth] = useState(0);
+  const numberOfFrames = 10;
   const duration = clip.endTime - clip.startTime;
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export function ClipTimeline(props: Props) {
         const rect = ref.current.getBoundingClientRect();
         setLeft(rect.left);
         setWidth(rect.width);
-        setFrameWidth(rect.width / 20);
+        setFrameWidth(rect.width / numberOfFrames);
       }
     }
 
@@ -50,8 +51,8 @@ export function ClipTimeline(props: Props) {
 
   const frames = useMemo(() => {
     const frames: number[] = [];
-    const frameDuration = duration / 20;
-    for (let i = 0; i < 20; i += 1) {
+    const frameDuration = duration / numberOfFrames;
+    for (let i = 0; i < numberOfFrames; i += 1) {
       frames.push(clip.startTime + (i * frameDuration))
     }
     return frames;
@@ -71,7 +72,7 @@ export function ClipTimeline(props: Props) {
             playbackId={playbackId}/>
         )}
       </Box>
-      <ClipTimelineThumb
+      <TimelineThumb
         time={videoPlayer.currentTime - clip.startTime}
         duration={duration}
         timelineLeft={left}

@@ -80,7 +80,6 @@ export function useGetAssets() {
               workflows {
                 startTime
                 endTime
-                category
               }
             }
           }
