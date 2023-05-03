@@ -19,10 +19,10 @@ import {
   AssetMetadata as IAssetMetadata,
   AssetMetadataAspectRatio as IAssetMetadataAspectRatio,
   AssetMetadataResolution as IAssetMetadataResolution,
-  IAssetWorkflow,
   IClip,
   IClipDetails,
   IClipDetailsRender,
+  IConvertToClipsWorkflow,
   ConvertToClipsWorkflowResponse as IConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
   IInferenceData,
@@ -30,6 +30,14 @@ import {
   IMedia,
   IMediaAssets,
   IMediaDetails,
+  IObjectDetectionAliase,
+  IObjectDetectionBoundingBox,
+  IObjectDetectionCategory,
+  IObjectDetectionInstance,
+  IObjectDetectionLabel,
+  IObjectDetectionParent,
+  IObjectDetectionResult,
+  IPostVideoWorkflow,
   IRenderClipResponse,
   SourceMuxInput as ISourceMuxInput,
   SourceMuxInputFile as ISourceMuxInputFile,
@@ -210,10 +218,15 @@ export class AssetMetadata implements IAssetMetadata {
 
   @Field(() => AssetMetadataAspectRatio, { nullable: true })
   aspectRatio?: AssetMetadataAspectRatio;
-}
 
+  @Field(() => [ObjectDetectionResult], { nullable: true })
+  labels?: ObjectDetectionResult[];
+
+  @Field(() => String, { nullable: true, name: "generatedVttUrl" })
+  vtt_output_path?: string;
+}
 @ObjectType()
-export class AssetWorkflow implements IAssetWorkflow {
+export class ConvertToClipsWorkflow implements IConvertToClipsWorkflow {
   @Field(() => String)
   workflowId: string;
 
@@ -231,14 +244,41 @@ export class AssetWorkflow implements IAssetWorkflow {
   activityStatus: ActivityStatus;
 
   @Field(() => String, { nullable: true })
-  startTime?: string;
+  startTime?: string = new Date().toISOString();
 
   @Field(() => String, { nullable: true })
-  endTime?: string;
+  endTime?: string = new Date().toISOString();
 
   @Field(() => String, { nullable: true })
   model?: string;
 }
+
+@ObjectType()
+export class PostVideoWorkflow implements IPostVideoWorkflow {
+  @Field(() => String)
+  workflowId: string;
+
+  @Field(() => String)
+  runId: string;
+
+  @Field(() => String, { nullable: true })
+  startTime?: string = new Date().toISOString();
+
+  @Field(() => String, { nullable: true })
+  endTime?: string = new Date().toISOString();
+}
+
+export const AssetWorkflow = createUnionType({
+  name: "AssetWorkflow",
+  types: () => [ConvertToClipsWorkflow, PostVideoWorkflow],
+  resolveType: (value: ConvertToClipsWorkflow | PostVideoWorkflow) => {
+    if (value?.workflowId.startsWith("CONVERT_TO_CLIPS")) {
+      return ConvertToClipsWorkflow;
+    } else {
+      return PostVideoWorkflow;
+    }
+  },
+});
 
 @ObjectType()
 export class Asset implements IAsset {
@@ -293,7 +333,7 @@ export class Asset implements IAsset {
   metadata?: AssetMetadata;
 
   @Field(() => [AssetWorkflow], { nullable: true })
-  workflows?: AssetWorkflow[];
+  workflows?: (typeof AssetWorkflow)[];
 }
 
 @ObjectType()
@@ -505,13 +545,79 @@ export class RenderClipResponse implements IRenderClipResponse {
 }
 
 @ObjectType()
-export class ParsedVttLine {
-  @Field(() => Float)
-  startTime: number;
+export class ObjectDetectionAliase implements IObjectDetectionAliase {
+  @Field(() => String, { name: "name", nullable: true })
+  Name: string;
+}
 
-  @Field(() => Float)
-  endTime: number;
+@ObjectType()
+export class ObjectDetectionParent implements IObjectDetectionParent {
+  @Field(() => String, { name: "name", nullable: true })
+  Name: string;
+}
 
-  @Field(() => String)
-  text: string;
+@ObjectType()
+export class ObjectDetectionBoundingBox implements IObjectDetectionBoundingBox {
+  @Field(() => Float, { name: "top" })
+  Top: number;
+
+  @Field(() => Float, { name: "left" })
+  Left: number;
+
+  @Field(() => Float, { name: "width" })
+  Width: number;
+
+  @Field(() => Float, { name: "height" })
+  Height: number;
+}
+
+@ObjectType()
+export class ObjectDetectionInstance implements IObjectDetectionInstance {
+  @Field(() => Float, { name: "confidence" })
+  Confidence: number;
+
+  @Field(() => ObjectDetectionBoundingBox, {
+    name: "boundingBox",
+    nullable: true,
+  })
+  BoundingBox: ObjectDetectionBoundingBox;
+}
+
+@ObjectType()
+export class ObjectDetectionCategory implements IObjectDetectionCategory {
+  @Field(() => String, { name: "name", nullable: true })
+  Name: string;
+}
+
+@ObjectType()
+export class ObjectDetectionLabel implements IObjectDetectionLabel {
+  @Field(() => String, { name: "name", nullable: true })
+  Name: string;
+
+  @Field(() => [ObjectDetectionAliase], { name: "aliases", nullable: true })
+  Aliases: ObjectDetectionAliase[];
+
+  @Field(() => [ObjectDetectionParent], { name: "parents", nullable: true })
+  Parents: ObjectDetectionParent[];
+
+  @Field(() => [ObjectDetectionInstance], { name: "instances", nullable: true })
+  Instances: ObjectDetectionInstance[];
+
+  @Field(() => [ObjectDetectionCategory], {
+    name: "categories",
+    nullable: true,
+  })
+  Categories: ObjectDetectionCategory[];
+
+  @Field(() => Float, { name: "confidence" })
+  Confidence: number;
+}
+
+@ObjectType()
+export class ObjectDetectionResult implements IObjectDetectionResult {
+  @Field(() => ObjectDetectionLabel, { name: "label", nullable: true })
+  Label: ObjectDetectionLabel;
+
+  @Field(() => Float, { name: "timestamp", nullable: true })
+  Timestamp: number;
 }

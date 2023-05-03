@@ -14,8 +14,9 @@ import {
   ValidateNested,
 } from "class-validator";
 import { ArgsType, Field, Float, InputType, Int } from "type-graphql";
-import { IsValidFilename } from "../common/filename.validator";
 import { IsValidCategory } from "../common/category.validator";
+import { IsValidClipTitle } from "../common/clip-title.validator";
+import { IsValidFilename } from "../common/filename.validator";
 import {
   ActivityStatus,
   AssetStatus,
@@ -23,12 +24,14 @@ import {
   IAdjustClipArgs,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
   ICreateClipArgs,
+  IGetAssetMediasArgs,
   IGetClipsArgs,
+  IGetMediaSubtitleArgs,
   IStartMediaUploadArgs,
+  MediaStatus,
   MediaType,
   RenderClipQuality,
 } from "../types/videos.types";
-import { IsValidClipTitle } from "../common/clip-title.validator";
 
 @ArgsType()
 export class StartUploadArgs {
@@ -195,10 +198,36 @@ export class StartMediaUploadArgs implements IStartMediaUploadArgs {
 }
 
 @ArgsType()
-export class GetAssetMediasArgs {
-  @Field(() => String, { description: "Video asset's uuid" })
+export class GetAssetMediasArgs implements IGetAssetMediasArgs {
+  @Field(() => String, { description: "Video asset's uuid", nullable: true })
   @IsUUID()
-  assetId: string;
+  @IsOptional()
+  assetId?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @Field(() => MediaType, { nullable: true })
+  @IsEnum(MediaType)
+  @IsOptional()
+  type?: MediaType;
+
+  @Field(() => MediaStatus, { nullable: true })
+  @IsEnum(MediaStatus)
+  @IsOptional()
+  status?: MediaStatus;
+
+  @Field(() => Int, { nullable: true })
+  @IsInt()
+  @IsOptional()
+  skip?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsInt()
+  @IsOptional()
+  take?: number;
 }
 
 // TODO: update when app-services is ready with the changes
@@ -361,8 +390,14 @@ export class RenderClipArgs {
 }
 
 @ArgsType()
-export class GetSubtitleMediaArgs {
-  @Field(() => String)
+export class GetSubtitleMediaArgs implements IGetMediaSubtitleArgs {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
   @IsUUID()
-  mediaId: string;
+  mediaId?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsUUID()
+  assetId?: string;
 }
