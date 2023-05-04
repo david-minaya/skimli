@@ -1,10 +1,14 @@
+import { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Close } from '@mui/icons-material';
 import { toMb } from '~/utils/toMb';
 import { formatSeconds } from '~/utils/formatSeconds';
-import { Asset, AudioTrack, VideoTrack } from '~/types/assets.type';
+import { Asset } from '~/types/assets.type';
 import { DetailItem } from '~/components/detail-item/detail-item.component';
-import { Fragment } from 'react';
+import { VideoTrack } from '~/types/videoTrack.type';
+import { AudioTrack } from '~/types/auditoTrack.type';
+import { Status } from '~/types/status.type';
+import { ActivityStatus } from '~/types/activityStatus.type';
 import { ConvertToClipsWorkflow } from '~/types/convertToClipsWorkflow.type';
 import { style } from './workflow-status-modal.style';
 
@@ -31,6 +35,28 @@ export function WorkflowStatusModal(props: Props) {
   } = props;
 
   const { t } = useTranslation('library');
+
+  const [elapsedTime, setElapsedTime] = useState(0);
+
+  const workflow = asset.workflows?.find((w): w is ConvertToClipsWorkflow => w.__typename === 'ConvertToClipsWorkflow');
+  const videoTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find((track): track is VideoTrack => track.type === 'video');
+  const audioTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find((track): track is AudioTrack => track.type === 'audio');
+
+  useEffect(() => {
+
+    let intervalId: NodeJS.Timer;
+
+    if (open && asset.status === 'CONVERTING') {
+      setElapsedTime((Date.now() - Date.parse(asset.activityStartTime)) / 1000);
+      intervalId = setInterval(() => {
+        setElapsedTime((Date.now() - Date.parse(asset.activityStartTime)) / 1000);
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(intervalId);
+    }
+  }, [open, asset])
 
   function formatDate(date?: string) {
 
@@ -76,23 +102,25 @@ export function WorkflowStatusModal(props: Props) {
     }
   }
 
-  function getStatus(status: string) {
-    if (status === 'CONVERTING') return t('workflowStatusModal.convertingStatus');
-    if (status === 'CONVERTED') return t('workflowStatusModal.convertedStatus');
-    if (status === 'ERRORED') return t('workflowStatusModal.errorStatus');
+  function getStatus(status: Status) {
+    switch (status) {
+      case 'CONVERTING': return t('workflowStatusModal.status.converting');
+      case 'CONVERTED': return t('workflowStatusModal.status.converted');
+      case 'ERRORED': return t('workflowStatusModal.status.error');
+      case 'NO_CLIPS_FOUND': return t('workflowStatusModal.status.error');
+    }
   }
 
-  if (!open) {
-    return null;
+  function getActivityStatus(activityStatus: ActivityStatus) {
+    switch (activityStatus) {
+      case 'ANALYZING': return t('workflowStatusModal.activityStatus.analyzing');
+      case 'ASSEMBLING': return t('workflowStatusModal.activityStatus.assembling');
+      case 'DOWNLOADING': return t('workflowStatusModal.activityStatus.downloading');
+      case 'FINISHED': return t('workflowStatusModal.activityStatus.finished');
+      case 'PUBLISHING': return t('workflowStatusModal.activityStatus.publishing');
+      case 'QUEUED': return t('workflowStatusModal.activityStatus.queued');
+    }
   }
-
-  const videoTrack: VideoTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find((track) => track.type === 'video') as any;
-  const audioTrack: AudioTrack = asset.sourceMuxInputInfo?.[0].file.tracks.find((track) => track.type === 'audio') as any;
-  const isCompletedOrErrored = asset.status == 'CONVERTED' || asset.status == 'ERRORED';
-
-  const workflow: ConvertToClipsWorkflow | undefined = asset.workflows?.find(workflow => {
-    return workflow.__typename === 'ConvertToClipsWorkflow'
-  }) as any | undefined;
 
   return (
     <Dialog 
@@ -124,18 +152,27 @@ export function WorkflowStatusModal(props: Props) {
           }
           <DetailItem
             sx={style.itemTag}
-            title={t('workflowStatusModal.status')}
+            title={t('workflowStatusModal.statusTitle')}
             text={getStatus(asset.status)}/>
           <DetailItem
-            title={t('workflowStatusModal.activity')}
-            text={asset.activityStatus.charAt(0).toUpperCase() + asset.activityStatus.slice(1).toLowerCase()}/>
+            title={t('workflowStatusModal.activityStatusTitle')}
+            text={asset.status !== 'NO_CLIPS_FOUND'
+              ? getActivityStatus(asset.activityStatus)
+              : t('workflowStatusModal.noClipsFounds')
+            }/>
           <DetailItem
             title={t('workflowStatusModal.timeSubmitted')}
             text={formatDate(asset.activityStartTime)}/>
           <DetailItem
             title={t('workflowStatusModal.timeStarted')}
             text={formatDate(asset.activityStartTime)}/>
-          {isCompletedOrErrored &&
+          {asset.status === 'CONVERTING' &&
+            <DetailItem
+              sx={style.itemElapsedTime}
+              title={t('workflowStatusModal.timeElapsed')} 
+              text={formatSeconds(elapsedTime)}/>
+          }
+          {asset.status !== 'CONVERTING' &&
             <Fragment>
               <DetailItem 
                 title={t('workflowStatusModal.timeEnded')} 
@@ -145,12 +182,6 @@ export function WorkflowStatusModal(props: Props) {
                 text={calcEndtime(workflow) || ''}/>
             </Fragment>
           }
-          {!isCompletedOrErrored &&
-            <DetailItem
-              sx={style.itemElapsedTime}
-              title={t('workflowStatusModal.timeElapsed')} 
-              text={calcElapsedTime()}/>
-          }
         </Box>
         <Box sx={style.sectionTitle}>{t('workflowStatusModal.sourceVideoDetails')}</Box>
         <Box sx={style.sectionContent}>
@@ -159,32 +190,32 @@ export function WorkflowStatusModal(props: Props) {
             text={asset.sourceMuxInputInfo?.[0].file.container_format || ''}/>
           <DetailItem
             title={t('workflowStatusModal.width')}
-            text={videoTrack.width}/>
+            text={videoTrack?.width}/>
           <DetailItem
             title={t('workflowStatusModal.height')}
-            text={videoTrack.height}/>
+            text={videoTrack?.height}/>
           <DetailItem
             title={t('workflowStatusModal.frameRate')}
-            text={videoTrack.frame_rate}/>
+            text={videoTrack?.frame_rate}/>
           <DetailItem
             title={t('workflowStatusModal.encoding')}
-            text={videoTrack.encoding}/>
+            text={videoTrack?.encoding}/>
           <DetailItem
             title={t('workflowStatusModal.duration')}
-            text={videoTrack.duration}/>
+            text={videoTrack?.duration}/>
           <DetailItem
             title={t('workflowStatusModal.size')}
             text={`${toMb(asset.metadata.filesize)} MB`}/>
           <Box sx={style.audioTrackTitle}>{t('workflowStatusModal.audioTrackTitle')}</Box>
           <DetailItem
             title={t('workflowStatusModal.sampleRatio')}
-            text={audioTrack.sample_rate}/>
+            text={audioTrack?.sample_rate}/>
           <DetailItem
             title={t('workflowStatusModal.encoding')}
-            text={audioTrack.encoding}/>
+            text={audioTrack?.encoding}/>
           <DetailItem
             title={t('workflowStatusModal.channels')}
-            text={audioTrack.channels}/>
+            text={audioTrack?.channels}/>
         </Box>
       </DialogContent>
     </Dialog>

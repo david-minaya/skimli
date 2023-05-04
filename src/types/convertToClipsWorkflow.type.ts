@@ -1,10 +1,13 @@
+import { ActivityStatus } from './activityStatus.type';
+import { Status } from './status.type';
+
 export interface ConvertToClipsWorkflow {
   __typename: 'ConvertToClipsWorkflow';
   workflowId: string;
   runId: string;
-  status: 'PROCESSING' | 'UNCONVERTED' | 'CONVERTING' | 'CONVERTED' | 'DELETING' | 'ERRORED' | 'NO_CLIPS_FOUND';
+  status: Status;
   category: string;
-  activityStatus: 'QUEUED' | 'DOWNLOADING' | 'ANALYZING' | 'ASSEMBLING' | 'PUBLISHING' | 'FINISHED';
+  activityStatus: ActivityStatus;
   startTime: string;
   endTime: string;
   model: string;

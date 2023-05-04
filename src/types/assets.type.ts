@@ -1,24 +1,11 @@
+import { AudioTrack } from './auditoTrack.type';
 import { Clip } from './clip.type';
 import { ConvertToClipsWorkflow } from './convertToClipsWorkflow.type';
 import { MuxAsset } from './muxAsset.type';
+import { Status } from './status.type';
 import { PostVideoWorkflow } from './postVideoWorkflow.type';
-
-export interface AudioTrack {
-  type: 'audio';
-  duration: number;
-  encoding: string;
-  channels: string;
-  sample_rate: number;
-}
-
-export interface VideoTrack {
-  type: 'video';
-  width: number;
-  height: number;
-  duration: number;
-  encoding: string;
-  frame_rate: number;
-}
+import { VideoTrack } from './videoTrack.type';
+import { ActivityStatus } from './activityStatus.type';
 
 export interface Asset {
   uuid: string;
@@ -26,9 +13,9 @@ export interface Asset {
   updatedAt: string;
   org: number;
   name: string;
-  status: 'PROCESSING' | 'UNCONVERTED' | 'CONVERTING' | 'CONVERTED' | 'DELETING' | 'ERRORED' | 'NO_CLIPS_FOUND';
+  status: Status;
   activityStartTime: string;
-  activityStatus: 'QUEUED' | 'DOWNLOADING' | 'ANALYZING' | 'ASSEMBLING' | 'PUBLISHING' | 'FINISHED';
+  activityStatus: ActivityStatus;
   sourceMuxAssetId?: string;
   selected: boolean;
   mux?: MuxAsset;

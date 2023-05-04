@@ -83,6 +83,24 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
                   }
                 }
               }
+              workflows {
+                ... on ConvertToClipsWorkflow {
+                  workflowId
+                  runId
+                  status
+                  category
+                  activityStatus
+                  startTime
+                  endTime
+                  model
+                }
+                ... on PostVideoWorkflow {
+                  workflowId
+                  runId
+                  startTime
+                  endTime
+                }
+              }
             }
           }
         }
@@ -101,22 +119,3 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
     }
   }, []);
 }
-
-// workflows {
-//   ... on ConvertToClipsWorkflow {
-//     workflowId
-//     runId
-//     status
-//     category
-//     activityStatus
-//     startTime
-//     endTime
-//     model
-//   }
-//   ... on PostVideoWorkflow {
-//     workflowId
-//     runId
-//     startTime
-//     endTime
-//   }
-// }

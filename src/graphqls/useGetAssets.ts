@@ -4,6 +4,7 @@ import { Asset } from "~/types/assets.type";
 import { useQuery } from "~/hooks/useQuery";
 
 export function useGetAssets() {
+  
   const query = useQuery();
 
   return useCallback(
@@ -77,6 +78,24 @@ export function useGetAssets() {
                   }
                 }
               }
+              workflows {
+                ... on ConvertToClipsWorkflow {
+                  workflowId
+                  runId
+                  status
+                  category
+                  activityStatus
+                  startTime
+                  endTime
+                  model
+                }
+                ... on PostVideoWorkflow {
+                  workflowId
+                  runId
+                  startTime
+                  endTime
+                }
+              }
             }
           }
         `,
@@ -87,23 +106,3 @@ export function useGetAssets() {
     [query]
   );
 }
-
-
-// workflows {
-//   ... on ConvertToClipsWorkflow {
-//     workflowId
-//     runId
-//     status
-//     category
-//     activityStatus
-//     startTime
-//     endTime
-//     model
-//   }
-//   ... on PostVideoWorkflow {
-//     workflowId
-//     runId
-//     startTime
-//     endTime
-//   }
-// }

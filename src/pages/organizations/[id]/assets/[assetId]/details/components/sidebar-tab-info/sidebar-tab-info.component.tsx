@@ -2,11 +2,13 @@ import Box from '@mui/material/Box';
 import { useTranslation } from 'next-i18next';
 import { SidebarContent } from '~/components/sidebar-content/sidebar-content.component';
 import { DetailItem } from '~/components/detail-item/detail-item.component';
-import { Asset, AudioTrack, VideoTrack } from '~/types/assets.type';
+import { Asset } from '~/types/assets.type';
 import { toMb } from '~/utils/toMb';
 import { style } from './sidebar-tab-info.style';
 import { InfoIcon } from '~/icons/infoIcon';
 import { IconButton, Tooltip } from '@mui/material';
+import { VideoTrack } from '~/types/videoTrack.type';
+import { AudioTrack } from '~/types/auditoTrack.type';
 
 interface Props {
   asset: Asset;
@@ -18,8 +20,10 @@ export function SidebarTabInfo(props: Props) {
   const { t } = useTranslation('details');
 
   const tracks = asset.sourceMuxInputInfo?.[0].file.tracks;
-  const videoTrack: VideoTrack = tracks?.find((track) => track.type === 'video') as any;
-  const audioTrack: AudioTrack = tracks?.find((track) => track.type === 'audio') as any;
+  const videoTrack = tracks?.find((track): track is VideoTrack => track.type === 'video');
+  const audioTrack = tracks?.find((track): track is AudioTrack => track.type === 'audio');
+
+  if (!videoTrack || !audioTrack) return null;
 
   return (
     <SidebarContent 

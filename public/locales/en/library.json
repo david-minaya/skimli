@@ -46,11 +46,21 @@
     "workflowDetails": "Workflow Details",
     "id": "ID",
     "videoCategory": "Video Category",
-    "status": "Status",
-    "convertingStatus": "Converting to clips",
-    "convertedStatus": "Converted to clips",
-    "errorStatus": "Error",
-    "activity": "Activity",
+    "statusTitle": "Status",
+    "activityStatusTitle": "Activity",
+    "status": {
+      "converting": "Converting to clips",
+      "converted": "Converted to clips",
+      "error": "Error"
+    },
+    "activityStatus": {
+      "analyzing": "Analyzing",
+      "queued": "Queued",
+      "downloading": "Downloading",
+      "assembling": "Assembling",
+      "publishing": "Publishing",
+      "finished": "Finished"
+    },
     "timeSubmitted": "Time Submitted",
     "timeStarted": "Time Started",
     "timeElapsed": "Time Elapsed",
@@ -65,7 +75,8 @@
     "size": "Size",
     "audioTrackTitle": "Main Audio Track",
     "sampleRatio": "Sample ratio",
-    "channels": "Channels"
+    "channels": "Channels",
+    "noClipsFounds": "No clips found"
   },
   "noResultsFound": {
     "description": "No search results found for “{{search}}”"
