@@ -272,15 +272,25 @@ export class VideosService {
     console.log(`track ${track.id} added for mux asset ${metadata.assetId}`);
   }
 
-  async updateAssetInfo(videoId: string, assetId: string): Promise<void> {
+  async updateAssetInfo(
+    videoId: string,
+    assetId: string,
+    status?: AssetStatus
+  ): Promise<void> {
     const assetInput = await this.muxService.getAssetInput(assetId);
     const assetInfo = await this.muxService.getMuxAsset(assetId);
-    const [_, error] = await this.videosAPI.adminUpdateAsset(videoId, {
-      status: AssetStatus.UNCONVERTED,
+
+    const payload = {
       sourceMuxAssetId: assetId,
       sourceMuxInputInfo: assetInput,
       sourceMuxAssetData: assetInfo!.asset,
-    });
+    };
+
+    if (status) {
+      payload["status"] = status;
+    }
+
+    const [_, error] = await this.videosAPI.adminUpdateAsset(videoId, payload);
     if (error != null) {
       console.error("error", error);
       Sentry.captureException(error);
@@ -304,12 +314,12 @@ export class VideosService {
   }) {
     if (event == ASSET_READY_EVENT || event == ASSET_ERRED_EVENT) {
       const data = payload as MuxAssetReadyEvent;
-      await this.updateAssetInfo(passthrough, data.id);
+      const status =
+        data?.status == "ready" ? AssetStatus.UNCONVERTED : AssetStatus.ERRORED;
+
+      await this.updateAssetInfo(passthrough, data.id, status);
       const eventPayload: AssetUploads = {
-        status:
-          data?.status == "ready"
-            ? AssetStatus.UNCONVERTED
-            : AssetStatus.ERRORED,
+        status: status,
         assetId: data.id,
         org: org,
       };
@@ -317,7 +327,8 @@ export class VideosService {
     } else if (event == TRACK_READY_EVENT || event == TRACK_ERRED_EVENT) {
       const data = payload as MuxTrackReadyEvent;
       const media = await this.videosAPI.adminUpdateMedia(passthrough, {
-        status: data?.asset_id ? MediaStatus.READY : MediaStatus.ERRORED,
+        status:
+          data?.status == "errored" ? MediaStatus.ERRORED : MediaStatus.READY,
         org: org,
       });
       await pubSub.publish(MEDIA_UPLOADED_EVENT, media);
@@ -352,7 +363,8 @@ export class VideosService {
   }
 
   async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<Asset[]> {
-    return this.videosAPI.getAssets(args, authInfo.token);
+    const assets = await this.videosAPI.getAssets(args, authInfo.token);
+    return assets;
   }
 
   async getAsset(authInfo: AuthInfo, assetId: string): Promise<Asset> {

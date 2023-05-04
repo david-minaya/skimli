@@ -227,8 +227,8 @@ export class AssetMetadata implements IAssetMetadata {
 }
 @ObjectType()
 export class ConvertToClipsWorkflow implements IConvertToClipsWorkflow {
-  @Field(() => String, { nullable: true })
-  workflowId?: string;
+  @Field(() => String)
+  workflowId: string;
 
   @Field(() => String)
   runId: string;
@@ -255,8 +255,8 @@ export class ConvertToClipsWorkflow implements IConvertToClipsWorkflow {
 
 @ObjectType()
 export class PostVideoWorkflow implements IPostVideoWorkflow {
-  @Field(() => String, { nullable: true })
-  workflowId?: string;
+  @Field(() => String)
+  workflowId: string;
 
   @Field(() => String)
   runId: string;
@@ -272,7 +272,7 @@ export const AssetWorkflow = createUnionType({
   name: "AssetWorkflow",
   types: () => [ConvertToClipsWorkflow, PostVideoWorkflow],
   resolveType: (value: ConvertToClipsWorkflow | PostVideoWorkflow) => {
-    if (value?.["workflowId"]?.startsWith("CONVERT_TO_CLIPS")) {
+    if (value?.workflowId?.startsWith("CONVERT_TO_CLIPS")) {
       return ConvertToClipsWorkflow;
     } else {
       return PostVideoWorkflow;
