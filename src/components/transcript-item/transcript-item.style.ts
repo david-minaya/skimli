@@ -4,10 +4,17 @@ export const style = Style({
   container: {
     display: 'flex',
     alignItems: 'start',
-    padding: '8px'
+    padding: '8px',
+    cursor: 'default',
+    ':hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.06)'
+    }
   },
   active: {
-    backgroundColor: '#FEDACC'
+    backgroundColor: '#FEDACC',
+    ':hover': {
+      backgroundColor: '#FEDACC'
+    }
   },
   time: {
     color: 'white',
@@ -22,6 +29,7 @@ export const style = Style({
     color: '#333333',
     fontSize: '14px',
     fontWeight: 500,
-    marginLeft: '12px'
+    overflowWrap: 'anywhere',
+    marginLeft: '12px',
   }
 });

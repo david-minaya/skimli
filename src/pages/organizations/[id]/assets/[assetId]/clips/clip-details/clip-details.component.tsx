@@ -19,8 +19,9 @@ import { PlayButton } from '~/components/play-button/play-button.component';
 import { Time } from '~/components/time/time.component';
 import { LoopButton } from '~/components/loop-button/loop-button.component';
 import { Volume } from '~/components/volume/volume.component';
-import { style } from './clip-details.style';
 import { longDate } from '~/utils/longDate';
+import { CaptionButton } from '~/components/caption-button/caption-button.component';
+import { style } from './clip-details.style';
 
 interface Props {
   asset: Asset;
@@ -154,6 +155,7 @@ export function ClipDetails(props: Props) {
                   time={videoPlayer.currentTime - clip.startTime} 
                   duration={clip.duration}/>
                 <LoopButton/>
+                <CaptionButton/>
                 <Volume/>
               </Box>
             </Box>

@@ -19,11 +19,13 @@ interface UploadFiles {
   completed: boolean;
   failed: boolean;
   uploadVideoFiles: (files: FileList) => Promise<void>;
-  uploadMediaFiles: (files: FileList, assetId: string) => Promise<void>;
+  uploadMediaFiles: (files: FileList, assetId: string, hidden?: 'hidden') => Promise<void>;
+  reset: () => void;
   cancel: () => Promise<void>;
 }
 
 interface UploadFilesProgress {
+  hidden: boolean;
   inProgress: boolean;
   completed: boolean;
   failed: boolean;
@@ -46,6 +48,7 @@ export function UploadFilesProvider(props: Props) {
   const { t } = useTranslation('components');
 
   const [uploadFile, setUploadFile] = useState<UploadFile>();
+  const [hidden, setHidden] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [inProgress, setInProgress] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -68,6 +71,8 @@ export function UploadFilesProvider(props: Props) {
   const uploadChunk = useUploadChunk();
 
   const uploadVideoFiles = useCallback(async (fileList: FileList) => {
+
+    setHidden(false);
 
     if (!await validate(fileList)) {
       return;
@@ -96,7 +101,9 @@ export function UploadFilesProvider(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const uploadMediaFiles = useCallback(async (fileList: FileList, assetId: string) => {
+  const uploadMediaFiles = useCallback(async (fileList: FileList, assetId: string, hidden?: 'hidden') => {
+
+    setHidden(hidden === 'hidden');
 
     const onStartUpload: OnStartUpload = async (file) => {
       return startMediaUpload(file.name, assetId, 'SUBTITLE', 'en');
@@ -259,7 +266,7 @@ export function UploadFilesProvider(props: Props) {
     });
   }
 
-  function reset() {
+  const reset = useCallback(() => {
     setUploadFile(undefined);
     setCompleted(false);
     setInProgress(false);
@@ -273,7 +280,7 @@ export function UploadFilesProvider(props: Props) {
     setOpenErrorToast(false);
     setErrorTitle(undefined);
     setErrorDescription(undefined);
-  }
+  }, []);
 
   function handleCloseToast() {
     setOpenErrorToast(false);
@@ -287,10 +294,12 @@ export function UploadFilesProvider(props: Props) {
     failed,
     uploadVideoFiles,
     uploadMediaFiles,
+    reset,
     cancel
-  }), [inProgress, completed, failed, uploadVideoFiles, uploadMediaFiles, cancel]);
+  }), [inProgress, completed, failed, uploadVideoFiles, uploadMediaFiles, reset, cancel]);
 
   const progressContext: UploadFilesProgress = {
+    hidden,
     inProgress,
     completed,
     failed,
@@ -307,13 +316,13 @@ export function UploadFilesProvider(props: Props) {
       <ProgressContext.Provider value={progressContext}>
         {props.children}
         <Toast
-          open={openErrorToast}
+          open={openErrorToast && !hidden}
           severity='error'
           title={errorTitle!}
           description={errorDescription}
           onClose={handleCloseToast}/>
         <Toast
-          open={openSuccessfulToast}
+          open={openSuccessfulToast && !hidden}
           severity='success'
           title={t('uploadFilesProvider.filesUploadCompleted.title')}
           description={t('uploadFilesProvider.filesUploadCompleted.description', { count: uploadedFilesCounter })}

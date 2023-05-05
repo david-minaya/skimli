@@ -5,7 +5,7 @@ import { ChangeEvent, useRef } from 'react';
 import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { UploadFiles } from '~/components/upload-files/upload-files.component';
 import { useSubtitles } from '~/hooks/useSubtitles';
-import { TranscriptItem } from '../transcript-item/transcript-item.component';
+import { TranscriptItem } from '~/components/transcript-item/transcript-item.component';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { Asset } from '~/types/assets.type';
 import { useMediaUploadSubscription } from '~/graphqls/useMediaUploadSubscription';
@@ -42,6 +42,10 @@ export function SidebarTranscript(props: Props) {
     }
   }
 
+  function handleClick(time: number) {
+    videoPlayer.updateProgress(time);
+  }
+
   function filter(cue: VTTCue) {
     return (
       cue.startTime >= startTime &&
@@ -71,7 +75,8 @@ export function SidebarTranscript(props: Props) {
           <TranscriptItem
             key={cue.startTime} 
             time={videoPlayer.currentTime}
-            cue={cue}/>
+            cue={cue}
+            onClick={handleClick}/>
         )
       }
       {status.empty &&

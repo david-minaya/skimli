@@ -18,6 +18,7 @@ import { TextIcon } from '~/icons/textIcon';
 import { StitchIcon } from '~/icons/stitchIcon';
 import { TranscriptIcon } from '~/icons/transcriptIcon';
 import { ObjectDetectionIcon } from '~/icons/objectDetectionIcon';
+import { SidebarTranscript } from './sidebar-transcript/sidebar-transcript.component';
 import { style } from './index.style';
 
 function EditClips() {
@@ -53,10 +54,10 @@ function EditClips() {
                 <SidebarTab id='object-detection' icon={<ObjectDetectionIcon/>}/>
               </SidebarTabs>
               <SidebarTabShare/>
+              <SidebarTranscript asset={asset}/>
               <SidebarContent id='audio' title='Audio'/>
               <SidebarContent id='text' title='Text'/>
               <SidebarContent id='stitch' title='Stitch'/>
-              <SidebarContent id='transcript' title='Transcript'/>
               <SidebarContent id='object-detection' title='Object detection'/>
             </Sidebar>
           </VideoPlayerProvider>

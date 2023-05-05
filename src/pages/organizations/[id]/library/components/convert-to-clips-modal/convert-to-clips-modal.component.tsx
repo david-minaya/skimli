@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Close } from '@mui/icons-material';
 import { InfoIcon } from '~/icons/infoIcon';
 import { useGetCategories } from '~/graphqls/useGetCategories';
 import { useConvertToClips } from '~/graphqls/useConvertToClips';
+import { useAsyncEffect } from '~/hooks/useAsyncEffect';
+import { useUploadFiles } from '~/utils/UploadFilesProvider';
 import { Asset } from '~/types/assets.type';
 import { style } from './convert-to-clips-modal.style';
 
@@ -17,7 +19,8 @@ import {
   Tooltip,
   Select,
   MenuItem,
-  SelectChangeEvent
+  SelectChangeEvent,
+  InputBase
 } from '@mui/material';
 
 interface Props {
@@ -35,31 +38,75 @@ export function ConvertToClipsModal(props: Props) {
   } = props;
 
   const { t } = useTranslation('library');
+  const hiddenFileInputRef = useRef<HTMLInputElement>(null);
+  const uploadFiles = useUploadFiles();
   const categories = useGetCategories();
   const convertToClips = useConvertToClips();
   const [category, setCategory] = useState('');
+  const [file, setFile] = useState<FileList>();
+  const [disableButton, setDisableButton] = useState(false);
+  const [showSelectCategoryError, setShowSelectCategoryError] = useState(false);
   const [showError, setShowError] = useState(false);
+
+  useAsyncEffect(async () => {
+
+    if (open && uploadFiles.completed) {
+      uploadFiles.reset();
+      await convert();
+    }
+
+    if (open && uploadFiles.failed) {
+      setDisableButton(false);
+    }
+  }, [open, category, asset, uploadFiles.completed]);
 
   function handleChange(e: SelectChangeEvent<string>) {
     setCategory(e.target.value);
-    setShowError(false);
+    setShowSelectCategoryError(false);
+  }
+
+  function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.files) {
+      setFile(event.target.files);
+    }
   }
 
   async function handleSubmit() {
 
     if (category === '') {
-      setShowError(true);
+      setShowSelectCategoryError(true);
       return;
     }
 
-    await convertToClips(asset.uuid, category);
-    onClose();
+    if (!file) {
+      setDisableButton(true);
+      await convert();
+      return;
+    }
+
+    setShowError(false);
+    setDisableButton(true);
+    uploadFiles.uploadMediaFiles(file, asset.uuid, 'hidden');
   }
 
   function handleClose() {
     setCategory('');
+    setFile(undefined);
+    setShowSelectCategoryError(false);
     setShowError(false);
+    setDisableButton(false);
+    uploadFiles.reset();
     onClose();
+  }
+
+  async function convert() {
+    try {
+      await convertToClips(asset.uuid, category);
+      handleClose();
+    } catch (err: any) {
+      setShowError(true);
+      setDisableButton(false);
+    }
   }
 
   return (
@@ -79,9 +126,9 @@ export function ConvertToClipsModal(props: Props) {
         <Box sx={style.content}>
           <Box sx={style.assetTitle}>{asset.name}</Box>
           <Box sx={style.selectTitle}>
-            {t('convertToClipsModal.selectTitle')}
+            {t('convertToClipsModal.selectCategory.title')}
             <Tooltip
-              title={t('convertToClipsModal.tooltip')}
+              title={t('convertToClipsModal.selectCategory.tooltip')}
               componentsProps={{ tooltip: { sx: style.tooltip } }}
               placement='top-start'>
               <IconButton sx={style.iconButton}>
@@ -102,16 +149,49 @@ export function ConvertToClipsModal(props: Props) {
               </MenuItem>
             )}
           </Select>
-          {showError &&
-            <Box sx={style.error}>{t('convertToClipsModal.error')}</Box>
+          {showSelectCategoryError &&
+            <Box sx={style.selectCategoryError}>{t('convertToClipsModal.selectCategory.error')}</Box>
+          }
+          <Box sx={style.selectTitle}>
+            {t('convertToClipsModal.uploadFile.title')}
+            <Tooltip
+              title={t('convertToClipsModal.uploadFile.tooltip')}
+              componentsProps={{ tooltip: { sx: style.tooltip } }}
+              placement='top-start'>
+              <IconButton sx={style.iconButton}>
+                <InfoIcon sx={style.icon}/>
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Box 
+            sx={style.uploadFile}
+            onClick={() => hiddenFileInputRef.current?.click()}>
+            <Box sx={style.uploadFileValue}>{file?.[0]?.name || ''}</Box>
+            <Box sx={style.uploadFileButton}>{t('convertToClipsModal.uploadFile.button')}</Box>
+          </Box>
+          {uploadFiles.inProgress &&
+            <Box sx={style.uploadFileProgress}>{t('convertToClipsModal.uploadFile.progress')}</Box>
+          }
+          {uploadFiles.failed &&
+            <Box sx={style.uploadFileError}>{t('convertToClipsModal.uploadFile.error')}</Box>
           }
           <Button 
             sx={style.button}
+            disabled={disableButton}
             variant='contained'
             onClick={handleSubmit}>
             {t('convertToClipsModal.button')}
           </Button>
+          {showError &&
+            <Box sx={style.error}>{t('convertToClipsModal.error')}</Box>
+          }
         </Box>
+        <InputBase
+          sx={style.hiddenFileInput}
+          type='file'
+          inputRef={hiddenFileInputRef}
+          inputProps={{ accept: '.vtt' }}
+          onChange={handleInputFileChange}/>
       </DialogContent>
     </Dialog>
   );

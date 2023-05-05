@@ -10,6 +10,7 @@ export function UploadFiles() {
   const { cancel } = useUploadFiles();
 
   const { 
+    hidden,
     inProgress,
     percent,
     progress,
@@ -19,7 +20,7 @@ export function UploadFiles() {
     totalFiles
   } = useUploadFilesProgress();
 
-  if (!inProgress) {
+  if (!inProgress || hidden) {
     return null;
   }
 

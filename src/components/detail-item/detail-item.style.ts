@@ -13,6 +13,9 @@ export const style = Style({
     marginRight: '12px'
   },
   text: {
-    color: '#555555'
+    color: '#555555',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   }
 });

@@ -36,9 +36,19 @@
   },
   "convertToClipsModal": {
     "title": "Select options",
-    "selectTitle": "Video category",
-    "tooltip": "Choose other if your video does not fit any category.",
-    "error": "Select a category",
+    "selectCategory":{
+      "title": "Video category",
+      "tooltip": "Choose other if your video does not fit any category.",
+      "error": "Select a category"
+    },
+    "uploadFile": {
+      "title": "Add subtitles",
+      "tooltip": "WebVTT files supported",
+      "button": "Choose file",
+      "progress": "Uploading file...",
+      "error": "Error uploading file"
+    },
+    "error": "Error converting to clips",
     "button": "Submit"
   },
   "workflowStatusModal": {

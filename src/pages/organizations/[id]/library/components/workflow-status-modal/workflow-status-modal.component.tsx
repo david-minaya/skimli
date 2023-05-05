@@ -88,11 +88,6 @@ export function WorkflowStatusModal(props: Props) {
     );
   }
 
-  function calcElapsedTime() {
-    const time = Date.now() - Date.parse(asset.activityStartTime);
-    return formatSeconds(time / 1000);
-  }
-
   function calcEndtime(workflow?: ConvertToClipsWorkflow) {
     const startTime = workflow?.startTime;
     const endTime = workflow?.endTime;
@@ -144,7 +139,7 @@ export function WorkflowStatusModal(props: Props) {
         <Box sx={style.sectionContent}>
           <DetailItem 
             title={t('workflowStatusModal.id')} 
-            text={asset.uuid}/>
+            text={workflow?.workflowId}/>
           {workflow?.category &&
             <DetailItem 
               title={t('workflowStatusModal.videoCategory')} 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IconButton } from '@mui/material';
 import { TranscriptIcon } from '~/icons/transcriptIcon';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
+import { mergeSx } from '~/utils/style';
 import { style } from './caption-button.style';
 
 export function CaptionButton() {
@@ -26,7 +27,7 @@ export function CaptionButton() {
   return (
     <IconButton 
       size='small'
-      sx={active ? style.active : undefined}
+      sx={mergeSx(style.iconButton, active && style.active)}
       onClick={handleClick}>
       <TranscriptIcon/>
     </IconButton>

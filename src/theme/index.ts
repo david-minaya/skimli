@@ -75,6 +75,7 @@ export const theme = responsiveFontSizes(createTheme({
             width: '20px'
           },
           '&::-webkit-scrollbar-thumb': {
+            minHeight: '24px',
             backgroundColor: '#D9D9D9',
             borderRadius: '10px',
             border: '4px solid transparent',

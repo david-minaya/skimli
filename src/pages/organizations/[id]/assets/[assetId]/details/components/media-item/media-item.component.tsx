@@ -16,7 +16,7 @@ export function MediaItem(props: Props) {
     <Box sx={style.container}>
       <TranscriptIcon sx={style.icon}/>
       <Box sx={style.details}>
-        <Box sx={style.title}>{media.name}</Box>
+        <Box sx={style.title} title={media.name}>{media.name}</Box>
         <Box sx={style.date}>{longDate(media.createdAt)}</Box>
       </Box>
     </Box>

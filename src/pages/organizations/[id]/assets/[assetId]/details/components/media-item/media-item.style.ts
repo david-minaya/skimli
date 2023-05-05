@@ -4,14 +4,14 @@ export const style = Style({
   container: {
     display: 'flex',
     alignItems: 'start',
-    overflow: 'hidden',
     padding: '8px'
   },
   icon: {
     marginTop: '2px'
   },
   details: {
-    marginLeft: '8px'
+    marginLeft: '8px',
+    overflow: 'hidden'
   },
   title: {
     fontSize: '16px',
