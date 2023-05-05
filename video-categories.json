@@ -51,6 +51,42 @@
       "model": "pets-and-animals"
     },
     {
+      "code": "VIDEO-CATEGORY-COMEDY",
+      "archived": false,
+      "label": "Comedy",
+      "model": "comedy"
+    },
+    {
+      "code": "VIDEO-CATEGORY-EDUCATION",
+      "archived": false,
+      "label": "Education",
+      "model": "education"
+    },
+    {
+      "code": "VIDEO-CATEGORY-MUSIC",
+      "archived": false,
+      "label": "Music",
+      "model": "music"
+    },
+    {
+      "code": "VIDEO-CATEGORY-NEWS-POLITICS",
+      "archived": false,
+      "label": "News & Politics",
+      "model": "news-and-politics"
+    },
+    {
+      "code": "VIDEO-CATEGORY-NONPROFITS-ACTIVISM",
+      "archived": false,
+      "label": "Nonprofits & Activism",
+      "model": "nonprofits-and-activism"
+    },
+    {
+      "code": "VIDEO-CATEGORY-PEOPLE-BLOGS",
+      "archived": false,
+      "label": "People & Blogs",
+      "model": "people-and-blogs"
+    },
+    {
       "code": "VIDEO-CATEGORY-OTHER-ANCHOR-BASED",
       "archived": false,
       "label": "Other - Anchor Based",
