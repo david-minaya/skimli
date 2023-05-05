@@ -70,9 +70,13 @@ export const style = Style({
     padding: '0px 4px 0px 12px'
   },
   uploadFileValue: {
-    fontSize: '15px'
+    fontSize: '15px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   },
   uploadFileButton: {
+    flexShrink: 0,
     color: '#555555',
     fontSize: '14px',
     userSelect: 'none',
