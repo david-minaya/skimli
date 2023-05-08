@@ -20,7 +20,7 @@
     "@apollo/client": "^3.7.1",
     "@apollo/server": "^4.3.3",
     "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.0",
-    "@auth0/nextjs-auth0": "^2.0.1",
+    "@auth0/nextjs-auth0": "^2.5.0",
     "@aws-sdk/client-s3": "^3.259.0",
     "@aws-sdk/s3-request-presigner": "^3.259.0",
     "@emotion/cache": "^11.7.1",

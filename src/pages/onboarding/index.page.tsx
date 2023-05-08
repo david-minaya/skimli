@@ -43,7 +43,8 @@ export default function Onboarding() {
         }
   
         if (account) {
-          router.push('/');
+          setIndex(3);
+          setLoading(false);
           return;
         }
 
