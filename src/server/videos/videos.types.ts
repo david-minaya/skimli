@@ -14,11 +14,14 @@ import { MuxAsset, MuxTokens } from "../mux/mux.types";
 import {
   ActivityStatus,
   AssetStatus,
+  AssetTranscriptionObjectDetectionStatus,
   ClipSourceType,
   Asset as IAsset,
   AssetMetadata as IAssetMetadata,
   AssetMetadataAspectRatio as IAssetMetadataAspectRatio,
+  IAssetMetadataObjectDetection,
   AssetMetadataResolution as IAssetMetadataResolution,
+  IAssetMetadataTranscription,
   IClip,
   IClipDetails,
   IClipDetailsRender,
@@ -63,6 +66,10 @@ registerEnumType(ClipSourceType, {
 
 registerEnumType(RenderClipQuality, {
   name: "RenderClipQuality",
+});
+
+registerEnumType(AssetTranscriptionObjectDetectionStatus, {
+  name: "AssetTranscriptionObjectDetectionStatus",
 });
 
 @ObjectType()
@@ -205,6 +212,35 @@ export class AssetMetadataAspectRatio implements IAssetMetadataAspectRatio {
 }
 
 @ObjectType()
+export class AssetMetadataTranscription implements IAssetMetadataTranscription {
+  @Field(() => AssetTranscriptionObjectDetectionStatus)
+  status: AssetTranscriptionObjectDetectionStatus;
+
+  @Field(() => String, { nullable: true })
+  sourceUrl?: string;
+
+  @Field(() => String)
+  workflowId: string;
+}
+
+@ObjectType()
+export class AssetMetadataObjectDetection
+  implements IAssetMetadataObjectDetection
+{
+  @Field(() => AssetTranscriptionObjectDetectionStatus)
+  status: AssetTranscriptionObjectDetectionStatus;
+
+  @Field(() => String, { nullable: true })
+  sourceUrl?: string | undefined;
+
+  @Field(() => String)
+  workflowId: string;
+
+  @Field(() => Int)
+  labelCount: number;
+}
+
+@ObjectType()
 export class AssetMetadata implements IAssetMetadata {
   @Field(() => Float, {
     nullable: true,
@@ -219,11 +255,11 @@ export class AssetMetadata implements IAssetMetadata {
   @Field(() => AssetMetadataAspectRatio, { nullable: true })
   aspectRatio?: AssetMetadataAspectRatio;
 
-  @Field(() => [ObjectDetectionResult], { nullable: true })
-  labels?: ObjectDetectionResult[];
+  @Field(() => AssetMetadataTranscription, { nullable: true })
+  transcription?: AssetMetadataTranscription;
 
-  @Field(() => String, { nullable: true, name: "generatedVttUrl" })
-  vtt_output_path?: string;
+  @Field(() => AssetMetadataObjectDetection, { nullable: true })
+  objectDetection?: AssetMetadataObjectDetection;
 }
 @ObjectType()
 export class ConvertToClipsWorkflow implements IConvertToClipsWorkflow {

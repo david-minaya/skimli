@@ -15,7 +15,7 @@ import { MuxResolver } from "./mux/mux.resolver";
 import {
   ConvertToClipsWorkflowStatusResolver,
   VideosResolver,
-} from "./videos/videos.resolver";
+} from "./videos/resolvers/videos.resolver";
 
 export const UnAuthorizedError = new GraphQLError(
   "Access denied! You need to be authorized to perform this action!"

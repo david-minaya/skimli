@@ -27,6 +27,7 @@ import {
   IGetAssetMediasArgs,
   IGetClipsArgs,
   IGetMediaSubtitleArgs,
+  IGetObjectDetectionArgs,
   IStartMediaUploadArgs,
   MediaStatus,
   MediaType,
@@ -400,4 +401,20 @@ export class GetSubtitleMediaArgs implements IGetMediaSubtitleArgs {
   @IsOptional()
   @IsUUID()
   assetId?: string;
+}
+
+@ArgsType()
+export class GetObjectDetectionLabelsArgs implements IGetObjectDetectionArgs {
+  @Field(() => String)
+  @IsUUID()
+  assetId: string;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    defaultValue: true,
+    description: "return the label's that contains bounding boxes",
+  })
+  @IsBoolean()
+  @IsOptional()
+  withBoundingBoxes?: boolean = true;
 }
