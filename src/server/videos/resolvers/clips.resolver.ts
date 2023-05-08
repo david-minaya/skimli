@@ -1,7 +1,7 @@
-import { FieldResolver, Resolver, Root } from "type-graphql";
+import { FieldResolver, Root } from "type-graphql";
 import { Service } from "typedi";
-import { S3Service } from "./s3.service";
-import { ClipDetailsRender } from "./videos.types";
+import { S3Service } from "../s3.service";
+import { ClipDetailsRender } from "../videos.types";
 
 // Disable this temporarily ...
 // @Resolver(() => ClipDetailsRender)

@@ -11,3 +11,13 @@ export const streamToString = (stream: Readable): Promise<string> =>
 export const decodeS3Key = (key: string) => {
   return decodeURIComponent(key.replace(/\+/g, " "));
 };
+
+export function parseS3URL(sourceUrl: string): {
+  bucket: string;
+  key: string;
+} {
+  const url = new URL(sourceUrl);
+  const bucket = url.hostname;
+  const key = decodeS3Key(url.pathname.substring(1));
+  return { key, bucket };
+}

@@ -121,7 +121,7 @@ export class VideosAPI {
   ): Promise<UpdateAssetResponse> {
     try {
       const response = await this.api.put(
-        `/video/v1/admin/assets/${videoUUID}`,
+        `/video/v1/admin/assets/${encodeURIComponent(videoUUID)}`,
         body
       );
       return [response?.data, null];
@@ -182,9 +182,12 @@ export class VideosAPI {
   async adminGetAssets(params: IAdminGetAssetsArgs): Promise<Asset[]> {
     const { org, ...rest } = params;
     try {
-      const response = await this.api.get(`/video/v1/admin/assets/${org}`, {
-        params: rest,
-      });
+      const response = await this.api.get(
+        `/video/v1/admin/assets/${encodeURIComponent(org)}`,
+        {
+          params: rest,
+        }
+      );
       return response?.data;
     } catch (e) {
       throw new APIError(e);
@@ -206,7 +209,7 @@ export class VideosAPI {
   ): Promise<IMedia> {
     try {
       const response = await this.api.put(
-        `/video/v1/admin/media/${mediaId}`,
+        `/video/v1/admin/media/${encodeURIComponent(mediaId)}`,
         params
       );
       return response?.data;
@@ -247,9 +250,13 @@ export class VideosAPI {
   ): Promise<IClip> {
     try {
       const { uuid, ...rest } = args;
-      const response = await this.api.put(`/video/v1/clips/${uuid}`, rest, {
-        headers: { ...generateAuthHeaders(token) },
-      });
+      const response = await this.api.put(
+        `/video/v1/clips/${encodeURIComponent(uuid)}`,
+        rest,
+        {
+          headers: { ...generateAuthHeaders(token) },
+        }
+      );
       return response?.data;
     } catch (e) {
       throw new APIError(e);
@@ -297,7 +304,7 @@ export class VideosAPI {
   ): Promise<ISubAsset> {
     try {
       const response = await this.api.put(
-        `/video/v1/admin/subassets/${uuid}`,
+        `/video/v1/admin/subassets/${encodeURIComponent(uuid)}`,
         args
       );
       return response?.data;

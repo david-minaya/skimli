@@ -13,13 +13,13 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { Service } from "typedi";
-import conversionsMapping from "../../../aspect-ration-conversions.json";
-import pubSub from "../common/pubsub";
-import { IsAppUserGuard } from "../middlewares/app-user.guard";
-import type { GraphQLContext } from "../schema";
-import { AuthInfo } from "../types/base.types";
-import { AssetStatus } from "../types/videos.types";
-import { getAspectRatio } from "./video-utils";
+import conversionsMapping from "../../../../aspect-ration-conversions.json";
+import pubSub from "../../common/pubsub";
+import { IsAppUserGuard } from "../../middlewares/app-user.guard";
+import type { GraphQLContext } from "../../schema";
+import { AuthInfo } from "../../types/base.types";
+import { AssetStatus } from "../../types/videos.types";
+import { getAspectRatio } from "../video-utils";
 import {
   AbortUploadArgs,
   AdjustClipArgs,
@@ -31,6 +31,7 @@ import {
   GetAssetMediasArgs,
   GetAssetsArgs,
   GetClipsArgs,
+  GetObjectDetectionLabelsArgs,
   GetPartUploadURLArgs,
   GetSubtitleMediaArgs,
   GetSupportedConversionsArgs,
@@ -38,14 +39,14 @@ import {
   StartMediaUploadArgs,
   StartUploadArgs,
   TestConvertToClipsWorkflowStatusArgs,
-} from "./videos.args";
+} from "../videos.args";
 import {
   ASSET_UPLOAD_EVENT,
   CONVERT_TO_CLIPS_TOPIC,
   MEDIA_UPLOADED_EVENT,
   RENDER_CLIP_EVENT,
-} from "./videos.constants";
-import { VideosService } from "./videos.service";
+} from "../videos.constants";
+import { VideosService } from "../videos.service";
 import {
   Asset,
   AssetUploadResponse,
@@ -56,10 +57,11 @@ import {
   GetPartUploadResponse,
   Media,
   MuxData,
+  ObjectDetectionResult,
   RenderClipResponse,
   StartUploadResponse,
-} from "./videos.types";
-import { GetSubtitleMediaException } from "./videos.exceptions";
+} from "../videos.types";
+import { GetSubtitleMediaException } from "../videos.exceptions";
 
 @Resolver(() => ConvertToClipsWorkflowStatus)
 @Service()
@@ -435,5 +437,19 @@ export class VideosResolver {
     @Root() response: RenderClipResponse
   ): Promise<RenderClipResponse> {
     return response;
+  }
+
+  @Query(() => [ObjectDetectionResult], { nullable: true })
+  async getObjectDetectionLabels(
+    @Args() args: GetObjectDetectionLabelsArgs,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<ObjectDetectionResult[]> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    const objectDetectionLabels =
+      await this.videosService.getObjectDetectionLabels(authInfo, args);
+    return objectDetectionLabels;
   }
 }

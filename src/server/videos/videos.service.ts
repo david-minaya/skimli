@@ -45,6 +45,7 @@ import {
 } from "../types/base.types";
 import {
   AssetStatus,
+  AssetTranscriptionObjectDetectionStatus,
   ConvertToClipsArgs,
   ConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus,
@@ -54,7 +55,10 @@ import {
   IGetAssetMediasArgs,
   IGetClipsArgs,
   IGetMediaSubtitleArgs,
+  IGetObjectDetectionArgs,
   IMedia,
+  IObjectDetectionResult,
+  IObjectDetectionResults,
   IStartMediaUploadArgs,
   MediaStatus,
   MediaType,
@@ -62,7 +66,7 @@ import {
   SubAssetType,
 } from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
-import { decodeS3Key } from "./utils";
+import { decodeS3Key, parseS3URL } from "./utils";
 import {
   AbortUploadArgs,
   CompleteUploadArgs,
@@ -98,6 +102,7 @@ import {
   RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
+import { GraphQLError } from "graphql";
 @Service()
 export class VideosService {
   constructor(
@@ -597,16 +602,20 @@ export class VideosService {
       url = new URL(media.details.sourceUrl);
     } else {
       const asset = await this.getAsset(authInfo, args?.assetId!);
-      if (!asset?.metadata?.vtt_output_path) {
+      if (
+        asset.metadata?.transcription?.status !=
+          AssetTranscriptionObjectDetectionStatus.COMPLETED ||
+        !asset?.metadata?.transcription?.sourceUrl
+      ) {
         throw AutoTranscriptionFailedException;
       }
-      url = new URL(asset.metadata?.vtt_output_path!);
+      url = new URL(asset.metadata?.transcription?.sourceUrl);
     }
 
     try {
-      const key = decodeS3Key(url.pathname.substring(1));
+      const { bucket, key } = parseS3URL(url.toString());
       const vttString = await this.s3Service.readObjectBody({
-        Bucket: url.hostname,
+        Bucket: bucket,
         Key: key,
       });
       return vttString;
@@ -617,10 +626,10 @@ export class VideosService {
   }
 
   async generateSignedURL(s3URL: string): Promise<string> {
-    const url = new URL(s3URL);
+    const { bucket, key } = parseS3URL(s3URL);
     const signedAssetURL = await this.s3Service.getObjectSignedURL({
-      Bucket: url.host,
-      Key: url.pathname.substring(1),
+      Bucket: bucket,
+      Key: key,
     });
     return signedAssetURL;
   }
@@ -769,5 +778,43 @@ export class VideosService {
       org: subAsset.org,
     };
     await pubSub.publish(RENDER_CLIP_EVENT, payload);
+  }
+
+  async getObjectDetectionLabels(
+    authInfo: AuthInfo,
+    args: IGetObjectDetectionArgs
+  ) {
+    const asset = await this.getAsset(authInfo, args.assetId);
+    if (!asset) throw AssetNotFoundException;
+
+    if (
+      !asset?.metadata?.objectDetection ||
+      asset?.metadata?.objectDetection?.status !=
+        AssetTranscriptionObjectDetectionStatus.COMPLETED
+    ) {
+      throw new GraphQLError(`object detection data not available`);
+    }
+
+    try {
+      const { bucket, key } = parseS3URL(
+        asset?.metadata?.objectDetection?.sourceUrl!
+      );
+      const objectDetection: IObjectDetectionResults = JSON.parse(
+        await this.s3Service.readObjectBody({
+          Bucket: bucket,
+          Key: key,
+        })
+      );
+      if (!args?.withBoundingBoxes) {
+        return objectDetection;
+      }
+      const objectDetectionWithBoundingBoxes = objectDetection.filter(
+        (label) => label?.Label?.Instances?.length > 0
+      );
+
+      return objectDetectionWithBoundingBoxes;
+    } catch (e) {
+      throw new InternalGraphQLError(`failed to parse object detection data`);
+    }
   }
 }
