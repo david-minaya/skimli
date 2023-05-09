@@ -79,6 +79,8 @@
     "container": "Container",
     "width": "Width",
     "height": "Height",
+    "aspectRatio": "Aspect Ratio",
+    "resolution": "Resolution",
     "frameRate": "Frame Rate",
     "encoding": "Encoding",
     "duration": "Duration",

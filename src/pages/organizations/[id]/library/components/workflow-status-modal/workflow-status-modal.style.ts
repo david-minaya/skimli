@@ -3,7 +3,7 @@ import { Style, nestedStyle } from '~/utils/style';
 export const style = Style({
   dialog: {
     '& .MuiDialog-paper': {
-      width: '50  0px',
+      width: '560px',
       borderRadius: '8px'
     }
   },

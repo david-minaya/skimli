@@ -1,15 +1,16 @@
-import { useCallback } from "react";
-import { gql } from "@apollo/client";
-import { Asset } from "~/types/assets.type";
-import { useQuery } from "~/hooks/useQuery";
+import { useCallback } from 'react';
+import { gql } from '@apollo/client';
+import { Asset } from '~/types/assets.type';
+import { useQuery } from '~/hooks/useQuery';
 
 export function useGetAsset() {
+
   const query = useQuery();
 
   return useCallback(
     async (id: string) => {
       return query<Asset>({
-        name: "getAsset",
+        name: 'getAsset',
         query: gql`
           query GetAsset($id: String!) {
             getAsset(uuid: $id) {
@@ -24,6 +25,13 @@ export function useGetAsset() {
               sourceMuxAssetId
               metadata {
                 filesize
+                resolution {
+                  name
+                }
+                aspectRatio {
+                  decimal
+                  dimension
+                }
               }
               mux {
                 asset {
@@ -99,7 +107,7 @@ export function useGetAsset() {
           }
         `,
         variables: { id },
-        fetchPolicy: "network-only",
+        fetchPolicy: 'network-only',
       });
     },
     [query]

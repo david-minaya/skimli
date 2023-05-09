@@ -190,6 +190,12 @@ export function WorkflowStatusModal(props: Props) {
             title={t('workflowStatusModal.height')}
             text={videoTrack?.height}/>
           <DetailItem
+            title={t('workflowStatusModal.aspectRatio')}
+            text={`${asset.metadata.aspectRatio.decimal} (${asset.metadata.aspectRatio.dimension})`}/>
+          <DetailItem
+            title={t('workflowStatusModal.resolution')}
+            text={`${asset.metadata.resolution.name}`}/>
+          <DetailItem
             title={t('workflowStatusModal.frameRate')}
             text={videoTrack?.frame_rate}/>
           <DetailItem

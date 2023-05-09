@@ -30,6 +30,13 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
               sourceMuxAssetId
               metadata {
                 filesize
+                resolution {
+                  name
+                }
+                aspectRatio {
+                  decimal
+                  dimension
+                }
               }
               mux {
                 asset {

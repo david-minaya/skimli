@@ -21,17 +21,24 @@ export interface Asset {
   mux?: MuxAsset;
   metadata: {
     filesize: number;
-  };
+    resolution: {
+      name: string;
+    }
+    aspectRatio: {
+      decimal: string;
+      dimension: string;
+    }
+  }
   sourceMuxInputInfo?: {
     file: {
       container_format: string;
       tracks: (AudioTrack | VideoTrack)[];
-    };
+    }
   }[];
   inferenceData?: {
     human: {
       clips: Clip[];
-    };
-  };
+    }
+  }
   workflows?: (ConvertToClipsWorkflow | PostVideoWorkflow)[];
 }

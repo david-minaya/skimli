@@ -25,6 +25,13 @@ export function useGetAssets() {
               sourceMuxAssetId
               metadata {
                 filesize
+                resolution {
+                  name
+                }
+                aspectRatio {
+                  decimal
+                  dimension
+                }
               }
               mux {
                 asset {
