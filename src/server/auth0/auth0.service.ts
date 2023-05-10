@@ -9,6 +9,7 @@ import {
   ResendVerificationEmailResponse,
   UserLogResponse,
 } from "./auth0.types";
+import { IAuth0AppMetadata } from "../types/accounts.types";
 
 const USERNAME_PASSWORD_CONNECTION = "Username-Password-Authentication";
 
@@ -114,7 +115,10 @@ export class Auth0Service {
     });
   }
 
-  async setUserAppMetadata(userId: string, metadata: object): Promise<void> {
+  async setUserAppMetadata(
+    userId: string,
+    metadata: IAuth0AppMetadata
+  ): Promise<void> {
     const user = await this.managementAPI.getUser({ id: userId });
     await this.managementAPI.updateAppMetadata(
       { id: userId },

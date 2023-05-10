@@ -75,7 +75,9 @@ export class AccountsService {
       throw new APIError(error);
     }
     await this.auth0Service.setUserAppMetadata(userId, {
-      organization_id: response?.org,
+      organization_id: response?.org!,
+      consentGiven: true,
+      consentTimestamp: new Date().toUTCString(),
     });
     return response!;
   }

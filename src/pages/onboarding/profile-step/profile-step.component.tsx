@@ -1,6 +1,6 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Link } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { TaskAltRounded, ErrorOutlineRounded } from '@mui/icons-material';
 import { useUpdateName } from '~/graphqls/useUpdateName';
@@ -15,6 +15,8 @@ interface Props {
   show: boolean;
   onNext: () => void;
 }
+
+// TODO: use translation for consent text
 
 export function ProfileStep(props: Props) {
 
@@ -145,6 +147,9 @@ export function ProfileStep(props: Props) {
           show={isEmailSended}
           timeout={60000}
           onTimeout={() => setIsEmailSended(false)}/>
+        <Box sx={style.consent}>
+          By creating an account, I agree to Skimli’s <Link sx={style.consentLink} target="_blank" href={`${process.env.NEXT_PUBLIC_WEB_SITE_DOMAIN}/legal/terms`}>Terms of Use</Link>, use of my personal data as described in Skimli’s <Link sx={style.consentLink} target="_blank" href={`${process.env.NEXT_PUBLIC_WEB_SITE_DOMAIN}/legal/privacy`}>Privacy Policy</Link> and to receive marketing emails from Skimli.
+        </Box>
       </Box>
       <Toast
         open={openSuccessToast}
