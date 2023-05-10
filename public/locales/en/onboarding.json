@@ -1,16 +1,16 @@
 {
   "profile": {
-    "step": "Profile details",
+    "step": "Create account",
     "title": "Your profile details",
     "nameTextField": "Name",
     "emailTextField": "Email",
     "verifiedEmail": "Email verified",
     "notVerifiedEmail": "Check your inbox for verification instructions and refresh this page after completed.",
-    "nextButton": "Next",
+    "nextButton": "Create Account",
     "verificationButton": "Resend Verification Email",
     "successToast": "Name updated successfully",
     "errorToast": "Fail update name",
-    "serverErrorToast": "Upps an error happened"
+    "serverErrorToast": "Oops an error happened"
   },
   "pricing": {
     "step": "Choose a plan",

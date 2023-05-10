@@ -51,5 +51,14 @@ export const style = Style({
     paddingLeft: '40px',
     paddingRight: '40px',
     margin: '36px auto 0px'
+  },
+  consent: {
+    fontSize: '12px',
+    color: '#555555',
+    marginTop: '8px',
+    textAlign: 'center'
+  },
+  consentLink: {
+    fontWeight: 'bold'
   }
 });
