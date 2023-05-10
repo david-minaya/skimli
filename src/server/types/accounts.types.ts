@@ -114,3 +114,10 @@ export interface Details {
   dimension: string;
   valueType: string;
 }
+
+export interface IAuth0AppMetadata {
+  organization_id: number;
+  features?: Record<string, any>;
+  consentGiven?: boolean;
+  consentTimestamp?: string;
+}
