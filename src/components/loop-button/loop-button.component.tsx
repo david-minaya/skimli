@@ -19,7 +19,7 @@ export function LoopButton() {
         setActive(true);
         return true;
       }
-    })
+    });
   }
 
   return (

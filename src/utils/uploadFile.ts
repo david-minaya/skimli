@@ -1,6 +1,5 @@
 import { Part } from '~/types/Part.type';
 import { useGetChunkUploadUrl } from '~/graphqls/useGetPartChunkUrl';
-import { useStartUpload } from '~/graphqls/useStartUpload';
 import { useUploadChunk } from '~/graphqls/useUploadChunk';
 import { useCompleteUpload } from '~/graphqls/useCompleteUpload';
 import { AxiosProgressEvent } from 'axios';

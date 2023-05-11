@@ -64,5 +64,5 @@ export function LeftSidebar(props: Props) {
           media={media}/>
       )}
     </Box>
-  )
+  );
 }

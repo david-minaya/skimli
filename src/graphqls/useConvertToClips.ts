@@ -21,6 +21,6 @@ export function useConvertToClips() {
         assetId,
         category
       }
-    })
+    });
   }, []);
 }

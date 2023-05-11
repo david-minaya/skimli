@@ -117,12 +117,12 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
     const subscription = observable.subscribe(observer => {
       const asset = observer.data?.convertToClipsWorkflowStatus.asset;
       if (asset) {
-        cb(asset)
+        cb(asset);
       }
     });
 
     return () => {
       subscription.unsubscribe();
-    }
+    };
   }, []);
 }

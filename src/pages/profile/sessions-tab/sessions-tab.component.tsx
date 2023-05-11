@@ -26,7 +26,7 @@ export function SessionsTab() {
         .slice(0, 19);
     
       setSessionHistory(filtered);
-    })()
+    })();
   }, [getUserLogs]);
 
   function formatTime(date: string) {

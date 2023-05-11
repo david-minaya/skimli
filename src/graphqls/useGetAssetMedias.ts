@@ -32,5 +32,5 @@ export function useGetAssetMedias() {
       variables: { assetId },
       fetchPolicy: 'network-only'
     });
-  }
+  };
 }

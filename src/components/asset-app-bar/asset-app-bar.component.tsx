@@ -45,7 +45,7 @@ export function AssetAppBar(props: Props) {
       await Conversions.fetch();
       router.push(`/organizations/${account?.org}/library`);
     
-    } catch (err: any) {
+    } catch (err) {
 
       await Assets.fetchAll();
       setOpenErrorToast(true);

@@ -9,9 +9,9 @@ interface Props {
 
 export function DropArea(props: Props) {
 
-  const { 
+  const {
     show,
-    onHide 
+    onHide
   } = props;
 
   const { t } = useTranslation('library');
@@ -21,7 +21,7 @@ export function DropArea(props: Props) {
   }
 
   return (
-    <Box 
+    <Box
       sx={style.container}
       onDragLeave={onHide}>
       <Box sx={style.content}>
@@ -34,5 +34,5 @@ export function DropArea(props: Props) {
         </Box>
       </Box>
     </Box>
-  )
+  );
 }

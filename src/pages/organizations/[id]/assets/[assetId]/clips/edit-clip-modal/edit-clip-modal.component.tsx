@@ -62,7 +62,7 @@ function Modal(props: Props) {
   useEffect(() => {
     setStartTime(clip.startTime);
     setEndTime(clip.endTime);
-  }, [clip])
+  }, [clip]);
 
   function handleTimeUpdate() {
 
@@ -120,7 +120,7 @@ function Modal(props: Props) {
 
   async function handleCaptionChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value.length <= 100) {
-      setCaption(event.target.value)
+      setCaption(event.target.value);
     }
   }
 
@@ -153,7 +153,7 @@ function Modal(props: Props) {
   function disableSaveButton() {
     return clip.uuid 
       ? (startTime === clip.startTime && endTime === clip.endTime) || disabledSaveButton
-      : caption === '' || disabledSaveButton
+      : caption === '' || disabledSaveButton;
   }
 
   return (

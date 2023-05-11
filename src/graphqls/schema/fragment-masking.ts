@@ -1,3 +1,5 @@
+/* eslint-disable semi */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TypedDocumentNode as DocumentNode, ResultOf } from '@graphql-typed-document-node/core';
 
 

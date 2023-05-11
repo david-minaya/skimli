@@ -55,5 +55,5 @@ export function ClipItem(props: Props) {
         }
       </Box>
     </Box>
-  )
+  );
 }

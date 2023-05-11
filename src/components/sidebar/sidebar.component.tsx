@@ -45,5 +45,5 @@ export function SidebarTab(props: { id: string, icon: JSX.Element }) {
       onClick={() => onClick(id)}>
       {icon}
     </Box>
-  )
+  );
 }

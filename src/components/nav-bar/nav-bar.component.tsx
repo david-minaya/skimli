@@ -14,61 +14,61 @@ const Link = styled(NextLink)``;
 
 export function NavBar() {
 
-    const accountStore = useAccount();
-    const account = accountStore.get();
-    const {t} = useTranslation('components');
-    const {user} = useUser();
-    const [profileAnchor, setProfileAnchor] = useState<HTMLDivElement | null>(null);
-    const [helpMenuAnchor, setHelpMenuAnchor] = useState<HTMLDivElement | null>(null);
+  const accountStore = useAccount();
+  const account = accountStore.get();
+  const {t} = useTranslation('components');
+  const {user} = useUser();
+  const [profileAnchor, setProfileAnchor] = useState<HTMLDivElement | null>(null);
+  const [helpMenuAnchor, setHelpMenuAnchor] = useState<HTMLDivElement | null>(null);
 
-    return (
-        <Box sx={style.container}>
-            <Box sx={style.options}>
-                <Link href={`/organizations/${account?.org}/library`}>
-                    <Box
-                        sx={style.logo}
-                        component='img'
-                        src='/logo.svg'/>
-                </Link>
-                <Link
-                    sx={style.linkOption}
-                    href={`/organizations/${account?.org}/library`}>
-                    <Box sx={style.option}>
-                        <HomeIcon sx={style.optionIcon}/>
-                    </Box>
-                </Link>
-            </Box>
-            <Box sx={style.options}>
-                <Tooltip
-                    componentsProps={{tooltip: {sx: style.tooltip}}}
-                    title={t('navBar.options.helpMenu.tooltip')}
-                    placement='right'>
-                    <Box
-                        sx={style.option}
-                        onClick={e => setHelpMenuAnchor(e.currentTarget)}>
-                        <HelpMenuIcon sx={style.optionIcon}/>
-                    </Box>
-                </Tooltip>
-                <HelpMenu
-                    anchor={helpMenuAnchor}
-                    onClose={() => setHelpMenuAnchor(null)}/>
-                <Tooltip
-                    componentsProps={{tooltip: {sx: style.tooltip}}}
-                    title={t('navBar.options.profile.tooltip')}
-                    placement='right'>
-                    <Box
-                        sx={style.option}
-                        onClick={e => setProfileAnchor(e.currentTarget)}>
-                        <Box
-                            sx={style.profileImage}
-                            component='img'
-                            src={user?.picture || ''}/>
-                    </Box>
-                </Tooltip>
-                <Profile
-                    anchor={profileAnchor}
-                    onClose={() => setProfileAnchor(null)}/>
-            </Box>
-        </Box>
-    );
+  return (
+    <Box sx={style.container}>
+      <Box sx={style.options}>
+        <Link href={`/organizations/${account?.org}/library`}>
+          <Box
+            sx={style.logo}
+            component='img'
+            src='/logo.svg'/>
+        </Link>
+        <Link
+          sx={style.linkOption}
+          href={`/organizations/${account?.org}/library`}>
+          <Box sx={style.option}>
+            <HomeIcon sx={style.optionIcon}/>
+          </Box>
+        </Link>
+      </Box>
+      <Box sx={style.options}>
+        <Tooltip
+          componentsProps={{tooltip: {sx: style.tooltip}}}
+          title={t('navBar.options.helpMenu.tooltip')}
+          placement='right'>
+          <Box
+            sx={style.option}
+            onClick={e => setHelpMenuAnchor(e.currentTarget)}>
+            <HelpMenuIcon sx={style.optionIcon}/>
+          </Box>
+        </Tooltip>
+        <HelpMenu
+          anchor={helpMenuAnchor}
+          onClose={() => setHelpMenuAnchor(null)}/>
+        <Tooltip
+          componentsProps={{tooltip: {sx: style.tooltip}}}
+          title={t('navBar.options.profile.tooltip')}
+          placement='right'>
+          <Box
+            sx={style.option}
+            onClick={e => setProfileAnchor(e.currentTarget)}>
+            <Box
+              sx={style.profileImage}
+              component='img'
+              src={user?.picture || ''}/>
+          </Box>
+        </Tooltip>
+        <Profile
+          anchor={profileAnchor}
+          onClose={() => setProfileAnchor(null)}/>
+      </Box>
+    </Box>
+  );
 }

@@ -23,5 +23,5 @@ export function PlayButton() {
       onClick={handlePlay}>
       {videoPlayer.isPlaying ? <PauseIcon/> : <PlayIcon/>}
     </IconButton>
-  )
+  );
 }

@@ -23,7 +23,7 @@ import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { useApollo } from '~/graphqls/useApollo';
 import { appWithTranslation } from 'next-i18next';
 import { UploadFilesProvider } from '~/utils/UploadFilesProvider';
-import { Provider as ReduxProvider } from 'react-redux'
+import { Provider as ReduxProvider } from 'react-redux';
 import { store } from '../store/store';
 
 Router.events.on('routeChangeStart', nProgress.start);
@@ -44,19 +44,19 @@ const App = (props) => {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>Skimli | Webapp</title>
-        <meta name='viewport' content='initial-scale=1,width=device-width' />
-        <meta name='theme-color' content='#FC4603' />
+        <meta name='viewport' content='initial-scale=1,width=device-width'/>
+        <meta name='theme-color' content='#FC4603'/>
         <meta name='description' content={META_DESCRIPTION}/>
       </Head>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Toaster position='top-center' />
+          <CssBaseline/>
+          <Toaster position='top-center'/>
           <ReduxProvider store={store}>
             <UserProvider>
               <ApolloProvider client={apollo}>
                 <UploadFilesProvider>
-                  <Component {...pageProps} />
+                  <Component {...pageProps}/>
                 </UploadFilesProvider>
               </ApolloProvider>
             </UserProvider>

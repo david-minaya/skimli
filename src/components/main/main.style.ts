@@ -1,4 +1,3 @@
-import { autocompleteClasses } from '@mui/material';
 import { Style } from '~/utils/style';
 
 export const style = Style({

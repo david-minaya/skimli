@@ -26,7 +26,7 @@ export function Clips(props: Props) {
     setCaption(value || '');
   }
   
-  const clips = asset.inferenceData?.human.clips.filter(clip => clip.caption.includes(caption))
+  const clips = asset.inferenceData?.human.clips.filter(clip => clip.caption.includes(caption));
 
   return (
     <Box sx={style.container}>
@@ -84,5 +84,5 @@ export function Clips(props: Props) {
         )}
       </Box>
     </Box>
-  )
+  );
 }

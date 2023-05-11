@@ -40,7 +40,7 @@ export const assetsSlice = createSlice({
           ...action.payload,
           ...processInferenceData(action.payload.inferenceData)
         }
-      })
+      });
     },
 
     add(state, action: PayloadAction<Asset>) {
@@ -124,7 +124,7 @@ export const assetsSlice = createSlice({
           ...clips[index], 
           ...convertTimeToSeconds(action.payload.clip),
           selected: action.payload.clip.selected === true
-        }
+        };
       }
     },
     
@@ -260,7 +260,7 @@ function processInferenceData(inferenceData: Asset['inferenceData']) {
           clips: inferenceData.human.clips.map(convertTimeToSeconds)
         }
       }
-    }
+    };
   }
 }
 
@@ -271,5 +271,5 @@ function convertTimeToSeconds(clip: Clip) {
     endTime: toSeconds(clip.endTime as any),
     duration: toSeconds(clip.duration as any),
     selected: false
-  }
+  };
 }

@@ -13,13 +13,13 @@ function Index() {
 
   useEffect(() => {
     if (account) {
-      router.push(`/organizations/${account.org}/library`)
+      router.push(`/organizations/${account.org}/library`);
     } else {
       router.push('/onboarding');
     }
   }, [router, account]);
 
-  return <Loading/>
+  return <Loading/>;
 }
 
 export default function Page() {
@@ -27,7 +27,7 @@ export default function Page() {
     <ProtectedRoute>
       <Index/>
     </ProtectedRoute>
-  )
+  );
 }
 
 export const getServerSideProps = withPageAuthRequired();

@@ -47,7 +47,7 @@ export function useSubtitles(assetId: string) {
     return () => {
       setStatus('loading');
       setCues([]);
-    }
+    };
   }, [fetch]);
 
   const refresh = useCallback(async () => {
@@ -63,5 +63,5 @@ export function useSubtitles(assetId: string) {
       error: status === 'error'
     },
     refresh
-  }
+  };
 }

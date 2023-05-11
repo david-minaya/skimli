@@ -29,20 +29,20 @@ declare module '@mui/material/styles' {
 }
 
 export const theme = responsiveFontSizes(createTheme({
-  direction: "ltr",
+  direction: 'ltr',
   palette: {
-    mode: "light",
+    mode: 'light',
     primary: {
-      main: "#fc4603",
-      light: "#ff7b3c",
-      dark: "#c00000",
-      contrastText: "#ffffff",
+      main: '#fc4603',
+      light: '#ff7b3c',
+      dark: '#c00000',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: "#FD6B35",
-      light: "#fff4f0",
-      dark: "#feae91",
-      contrastText: "rgba(0, 0, 0, 0.87)"
+      main: '#FD6B35',
+      light: '#fff4f0',
+      dark: '#feae91',
+      contrastText: 'rgba(0, 0, 0, 0.87)'
     },
     info: {
       main: '#316AFE'
@@ -69,8 +69,8 @@ export const theme = responsiveFontSizes(createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        "*": {
-          boxSizing: "border-box",
+        '*': {
+          boxSizing: 'border-box',
           '&::-webkit-scrollbar': {
             width: '20px'
           },
@@ -103,8 +103,8 @@ export const theme = responsiveFontSizes(createTheme({
           backgroundColor: 'white',
           color: '#333333'
         },
-        "#__next": {
-          height: "100%"
+        '#__next': {
+          height: '100%'
         },
         a: {
           textDecoration: 'none'
@@ -149,28 +149,28 @@ export const theme = responsiveFontSizes(createTheme({
         standardInfo: ({ theme }) => ({
           backgroundColor: '#F3F6FF',
           border: `1px solid ${theme.palette.info.main}`,
-          "& .MuiAlert-icon": {
+          '& .MuiAlert-icon': {
             color: theme.palette.info.main
           }
         }),
         standardSuccess: ({ theme }) => ({
           backgroundColor: '#F1FBFA',
           border: `1px solid ${theme.palette.success.main}`,
-          "& .MuiAlert-icon": {
+          '& .MuiAlert-icon': {
             color: theme.palette.success.main
           }
         }),
         standardWarning: ({ theme }) => ({
           backgroundColor: '#FFFBF2',
           border: `1px solid ${theme.palette.warning.main}`,
-          "& .MuiAlert-icon": {
+          '& .MuiAlert-icon': {
             color: theme.palette.warning.main
           }
         }),
         standardError: ({ theme }) => ({
           backgroundColor: '#FDF4F4',
           border: `1px solid ${theme.palette.error.main}`,
-          "& .MuiAlert-icon": {
+          '& .MuiAlert-icon': {
             color: theme.palette.error.main
           }
         })

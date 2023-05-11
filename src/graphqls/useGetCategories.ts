@@ -24,6 +24,6 @@ export function useGetCategories(includeArchived = false) {
   return useMemo(() => {
     return data?.getCategories
       .map(c => c)
-      .sort((a, b) => a.label.localeCompare(b.label))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [data]);
 }

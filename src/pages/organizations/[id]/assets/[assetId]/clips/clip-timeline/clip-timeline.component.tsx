@@ -35,14 +35,14 @@ export function ClipTimeline(props: Props) {
         setWidth(rect.width);
         setFrameWidth(rect.width / numberOfFrames);
       }
-    }
+    };
 
     onResize();
     window.addEventListener('resize', onResize);
 
     return () => {
       window.removeEventListener('resize', onResize);
-    }
+    };
   }, []);
 
   const handleTimeChange = useCallback((time: number) => {
@@ -53,7 +53,7 @@ export function ClipTimeline(props: Props) {
     const frames: number[] = [];
     const frameDuration = duration / numberOfFrames;
     for (let i = 0; i < numberOfFrames; i += 1) {
-      frames.push(clip.startTime + (i * frameDuration))
+      frames.push(clip.startTime + (i * frameDuration));
     }
     return frames;
   }, [clip, duration]);

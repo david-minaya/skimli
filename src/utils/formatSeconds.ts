@@ -8,7 +8,7 @@ export function formatSeconds(time: number, withMilliseconds = false) {
     `${hours ? `${format(hours)}:` : ''}` +
     `${format(minutes)}:` +
     `${format(seconds, withMilliseconds)}`
-  )
+  );
 }
 
 function format(time: number, withMilliseconds = false) {

@@ -42,7 +42,7 @@ export function TimelineFrames(props: Props) {
   const [height, setHeight] = useState(0);
 
   const tileHeight = 48;
-  const tileWidth =  timelineWidth / (storyboard?.tiles.length || 0)
+  const tileWidth =  timelineWidth / (storyboard?.tiles.length || 0);
 
   useAsyncEffect(async () => {
 
@@ -60,8 +60,8 @@ export function TimelineFrames(props: Props) {
 
     storyboard.tiles.forEach(tile => {
       tile.x /= scale;
-      tile.y /= scale
-    })
+      tile.y /= scale;
+    });
     
     setStoryboard(storyboard);
     setWidth(width);

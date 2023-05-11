@@ -36,7 +36,7 @@ export function AssetItem(props: Props) {
   const asset: Asset = { 
     ..._asset, 
     status: _asset.sourceMuxAssetId ? _asset.status : 'ERRORED'
-  }
+  };
 
   const router = useRouter();
   const Conversions = useConversions();
@@ -198,5 +198,5 @@ export function AssetItem(props: Props) {
         asset={asset}
         onClose={() => setOpenWorkflowStatusModal(false)}/>
     </Box>
-  )
+  );
 }

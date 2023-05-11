@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useVideoPlayer } from '~/providers/VideoPlayerProvider';
 import { round } from '~/utils/round';
 import { styled } from '@mui/material';
-import { SxProps, Theme } from "@mui/system";
+import { SxProps, Theme } from '@mui/system';
 import { Asset } from '~/types/assets.type';
 import { style } from './video-player.style';
 import { mergeSx } from '~/utils/style';

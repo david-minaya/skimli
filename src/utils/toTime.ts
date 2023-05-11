@@ -8,5 +8,5 @@ export function toTime(time: number) {
     `${Math.trunc(hours).toString().padStart(2, '0')}:` +
     `${Math.trunc(minutes).toString().padStart(2, '0')}:` +
     `${seconds.toFixed(2).padStart(5, '0')}`
-  )
+  );
 }

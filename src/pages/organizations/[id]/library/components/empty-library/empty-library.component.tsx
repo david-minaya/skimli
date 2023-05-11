@@ -46,5 +46,5 @@ export function EmptyLibrary(props: Props) {
         <Box sx={style.emptyLibraryDescription}>{t`emptyLibraryDescription`}</Box>
       </Box>
     </Box>
-  )
+  );
 }

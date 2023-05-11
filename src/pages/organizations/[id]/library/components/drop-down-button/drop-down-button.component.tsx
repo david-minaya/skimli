@@ -52,5 +52,5 @@ export function DropDownButton(props: Props) {
         </Paper>
       </Popper>
     </Fragment>
-  )
+  );
 }

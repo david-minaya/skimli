@@ -33,6 +33,6 @@ export function useAddClip() {
         startTime,
         endTime
       }
-    })
+    });
   }, []);
 }

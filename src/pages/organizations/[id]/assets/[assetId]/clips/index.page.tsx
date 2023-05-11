@@ -41,7 +41,7 @@ function EditClips() {
       <Box sx={style.container}>
         <AssetAppBar asset={asset}/>
         <Box sx={style.content}>
-          <VideoPlayerProvider name='edit-clips'>
+          <VideoPlayerProvider>
             <Clips asset={asset}/>
             <ClipDetails asset={asset}/>
             <Sidebar defaultTab='share'>
@@ -80,5 +80,5 @@ export async function getServerSideProps({ locale }) {
     props: { 
       ...(await serverSideTranslations(locale, ['editClips', 'components']))
     }
-  }
+  };
 }

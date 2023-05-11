@@ -1,4 +1,4 @@
-import { SxProps, Theme } from "@mui/system";
+import { SxProps, Theme } from '@mui/system';
 
 type Nested<T> = { [k in keyof T]: SxProps<Theme> };
 
@@ -16,7 +16,7 @@ export function Style<T>(style: { [k in keyof T]: SxProps<Theme> | T[k] }) {
 }
 
 export function nestedStyle<T>(style: { [k in keyof T]: SxProps<Theme> }) {
-  return style as Nested<typeof style>
+  return style as Nested<typeof style>;
 }
 
 export function mergeSx(...sxs: (SxProps<Theme> | undefined | false)[]): SxProps<Theme> {

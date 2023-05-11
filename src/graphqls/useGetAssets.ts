@@ -1,7 +1,7 @@
-import { useCallback } from "react";
-import { gql } from "@apollo/client";
-import { Asset } from "~/types/assets.type";
-import { useQuery } from "~/hooks/useQuery";
+import { useCallback } from 'react';
+import { gql } from '@apollo/client';
+import { Asset } from '~/types/assets.type';
+import { useQuery } from '~/hooks/useQuery';
 
 export function useGetAssets() {
   
@@ -10,7 +10,7 @@ export function useGetAssets() {
   return useCallback(
     async (name?: string, skip = 0, take = 1000) => {
       return query<Asset[]>({
-        name: "getAssets",
+        name: 'getAssets',
         query: gql`
           query GetAssets($name: String, $skip: Int, $take: Int) {
             getAssets(name: $name, skip: $skip, take: $take) {
@@ -107,7 +107,7 @@ export function useGetAssets() {
           }
         `,
         variables: { name, skip, take },
-        fetchPolicy: "network-only",
+        fetchPolicy: 'network-only',
       });
     },
     [query]

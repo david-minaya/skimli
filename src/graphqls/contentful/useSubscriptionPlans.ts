@@ -49,11 +49,11 @@ export function useSubscriptionPlans() {
           });
         }
 
-      } catch (err: any) {
+      } catch (err) {
 
         console.error(err);
       }
-    })()
+    })();
   }, []);
 
   return state;

@@ -1,3 +1,3 @@
-import createEmotionCache from "./create-emotion-cache";
+import createEmotionCache from './create-emotion-cache';
 
 export { createEmotionCache };

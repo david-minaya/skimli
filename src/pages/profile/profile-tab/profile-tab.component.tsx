@@ -25,7 +25,7 @@ export function ProfileTab() {
 
   async function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value.length <= 64) {
-      setName(event.target.value)
+      setName(event.target.value);
     }
   }
 
@@ -47,7 +47,7 @@ export function ProfileTab() {
   }
 
   async function handleResetPassword() {
-    await resetPassword(user?.email!);
+    await resetPassword(user!.email!);
     setShowResetPasswordMessage(true);
   }
 
@@ -65,7 +65,7 @@ export function ProfileTab() {
           <Link 
             href='https://en.gravatar.com/' 
             sx={style.link}
-            target="_blank">
+            target='_blank'>
             {t('profile.link')}
           </Link>
         </Box>

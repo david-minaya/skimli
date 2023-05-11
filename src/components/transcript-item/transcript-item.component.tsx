@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { style } from './transcript-item.style';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { mergeSx } from '~/utils/style';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface Props {
   time: number;

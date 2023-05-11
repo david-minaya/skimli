@@ -20,11 +20,7 @@ interface Props {
 
 export function ProfileStep(props: Props) {
 
-  const {
-    show,
-    onNext
-  } = props;
-
+  const { show } = props;
   const { t } = useTranslation('onboarding');
   const { user, checkSession } = useUser();
   const [name, setName] = useState('');
@@ -44,7 +40,7 @@ export function ProfileStep(props: Props) {
 
   async function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value.length <= 64) {
-      setName(event.target.value)
+      setName(event.target.value);
     }
   }
 
@@ -148,7 +144,7 @@ export function ProfileStep(props: Props) {
           timeout={60000}
           onTimeout={() => setIsEmailSended(false)}/>
         <Box sx={style.consent}>
-          By creating an account, I agree to Skimli’s <Link sx={style.consentLink} target="_blank" href={`${process.env.NEXT_PUBLIC_WEB_SITE_DOMAIN}/legal/terms`}>Terms of Use</Link>, use of my personal data as described in Skimli’s <Link sx={style.consentLink} target="_blank" href={`${process.env.NEXT_PUBLIC_WEB_SITE_DOMAIN}/legal/privacy`}>Privacy Policy</Link> and to receive marketing emails from Skimli.
+          By creating an account, I agree to Skimli’s <Link sx={style.consentLink} target='_blank' href={`${process.env.NEXT_PUBLIC_WEB_SITE_DOMAIN}/legal/terms`}>Terms of Use</Link>, use of my personal data as described in Skimli’s <Link sx={style.consentLink} target='_blank' href={`${process.env.NEXT_PUBLIC_WEB_SITE_DOMAIN}/legal/privacy`}>Privacy Policy</Link> and to receive marketing emails from Skimli.
         </Box>
       </Box>
       <Toast

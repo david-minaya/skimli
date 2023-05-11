@@ -1,5 +1,5 @@
 import { Button, SxProps, Theme } from '@mui/material';
-import { RefObject, useRef } from 'react';
+import { RefObject } from 'react';
 import { style } from './outlined-button.style';
 
 interface Props {
@@ -23,8 +23,6 @@ export function OutlinedButton(props: Props) {
     secondaryIcon: SecondaryIcon,
     onClick
   } = props;
-
-  const a = useRef<HTMLButtonElement>(null);
 
   return (
     <Button

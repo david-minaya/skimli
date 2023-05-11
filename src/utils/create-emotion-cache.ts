@@ -4,8 +4,8 @@
  * Do not distribute outside Skimli LLC.
  */
 
-import createCache from "@emotion/cache";
+import createCache from '@emotion/cache';
 
 export default function createEmotionCache() {
-  return createCache({ key: "css", prepend: true });
+  return createCache({ key: 'css', prepend: true });
 }

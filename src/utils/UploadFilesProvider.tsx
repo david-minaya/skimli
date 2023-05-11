@@ -41,7 +41,7 @@ type OnStartUpload = (file: File) => Promise<{ key: string, uploadId: string }>;
 type OnError = (err: any, file: File) => void;
 
 const Context = createContext({} as UploadFiles);
-const ProgressContext = createContext({} as UploadFilesProgress)
+const ProgressContext = createContext({} as UploadFilesProgress);
 
 export function UploadFilesProvider(props: Props) {
 
@@ -94,7 +94,7 @@ export function UploadFilesProvider(props: Props) {
       setErrorTitle(t('uploadFilesProvider.uploadingError.title', { name: file.name }));
       setErrorDescription(t('uploadFilesProvider.uploadingError.description'));
       setOpenErrorToast(true);
-    }
+    };
 
     await uploadFiles(fileList, onStartUpload, onError);
 
@@ -113,7 +113,7 @@ export function UploadFilesProvider(props: Props) {
       setErrorTitle(t('uploadFilesProvider.uploadingError.title', { name: file.name }));
       setErrorDescription(t('uploadFilesProvider.uploadingError.description'));
       setOpenErrorToast(true);
-    }
+    };
 
     await uploadFiles(fileList, onStartUpload, onError);
 
@@ -138,7 +138,7 @@ export function UploadFilesProvider(props: Props) {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       return event.returnValue = t('uploadFilesProvider.preventPageExit');
-    }
+    };
 
     window.addEventListener('beforeunload', onBeforeUnload);
     
@@ -255,12 +255,12 @@ export function UploadFilesProvider(props: Props) {
 
       video.onerror = () => {
         resolve(-1);
-      }
+      };
   
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
         resolve(video.duration);
-      }
+      };
     
       video.src = URL.createObjectURL(file);
     });
@@ -329,7 +329,7 @@ export function UploadFilesProvider(props: Props) {
           onClose={() => setOpenSuccessfulToast(false)}/>
       </ProgressContext.Provider>
     </Context.Provider>
-  )
+  );
 }
 
 export function useUploadFiles() {

@@ -26,7 +26,7 @@ export function SearchField(props: Props) {
       timeout = setTimeout(() => {
         onChange(value);
       }, 100);
-    }
+    };
   }, []);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -59,5 +59,5 @@ export function SearchField(props: Props) {
         </IconButton>
       }
     </Box>
-  )
+  );
 }

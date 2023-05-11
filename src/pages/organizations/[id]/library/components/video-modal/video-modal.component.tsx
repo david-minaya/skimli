@@ -46,5 +46,5 @@ export function VideoModal(props: Props) {
         </IconButton>
       </Box>
     </Box>
-  )
+  );
 }

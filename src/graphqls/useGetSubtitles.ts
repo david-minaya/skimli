@@ -16,5 +16,5 @@ export function useGetSubtitles() {
       variables: { mediaId },
       fetchPolicy: 'network-only'
     });
-  }
+  };
 }

@@ -1,1 +1,1 @@
-export const META_DESCRIPTION = "Skimli Webapp";
+export const META_DESCRIPTION = 'Skimli Webapp';

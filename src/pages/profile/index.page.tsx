@@ -55,5 +55,5 @@ export async function getServerSideProps({ locale }) {
     props: { 
       ...(await serverSideTranslations(locale, ['profile', 'components']))
     }
-  }
+  };
 }

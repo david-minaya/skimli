@@ -25,7 +25,7 @@ export const style = Style({
     color: '#6B7280',
     margin: '4px',
     textAlign: 'center',
-    ":not(:first-of-type)": {
+    ':not(:first-of-type)': {
       marginTop: '24px'
     }
   },

@@ -1,7 +1,6 @@
 import { useState, ReactNode, createContext, useContext, Dispatch, SetStateAction } from 'react';
 
 interface Props {
-  name?: string;
   children: ReactNode;
 }
 
@@ -32,7 +31,7 @@ const Context = createContext({} as VideoPlayer);
 
 export function VideoPlayerProvider(props: Props) {
 
-  const { children, name } = props;
+  const { children } = props;
 
   const [ctx] = useState<{ video?: HTMLVideoElement, onLoad?: () => void }>({});
   const [isPlaying, setIsPlaying] = useState(false);
@@ -43,7 +42,7 @@ export function VideoPlayerProvider(props: Props) {
   const [duration, setDuration] = useState(0);
   const [isReloading, setIsReloading] = useState(false);
 
-  function setVideo(video?: HTMLVideoElement, tag?: string) {
+  function setVideo(video?: HTMLVideoElement) {
     ctx.video = video;
     if (video) ctx.onLoad?.();
   }
@@ -87,7 +86,7 @@ export function VideoPlayerProvider(props: Props) {
   }
 
   const value: VideoPlayer = {
-    get video() { return ctx.video },
+    get video() { return ctx.video; },
     isPlaying,
     currentTime,
     duration,
@@ -107,7 +106,7 @@ export function VideoPlayerProvider(props: Props) {
     updateProgress,
     updateVolume,
     onLoad
-  }
+  };
 
   return (
     <Context.Provider value={value}>

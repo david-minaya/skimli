@@ -19,11 +19,11 @@ export function useAccount() {
   const dispatch = useAppDispatch();
 
   const get = useCallback(() => {
-    return useAppSelector(state => state.account)
+    return useAppSelector(state => state.account);
   }, []);
 
   const set = useCallback((account: Account) => {
-    dispatch(accountSlice.actions.set(account))
+    dispatch(accountSlice.actions.set(account));
   }, [dispatch]);
   
   return useMemo(() => ({ get, set }), [get, set]);

@@ -38,12 +38,12 @@ export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
     const subscription = observable.subscribe(observer => {
       const media = observer.data?.mediaUploads;
       if (media) {
-        cb(media)
+        cb(media);
       }
     });
 
     return () => {
       subscription.unsubscribe();
-    }
+    };
   }, []);
 }

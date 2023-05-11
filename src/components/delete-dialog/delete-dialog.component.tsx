@@ -58,5 +58,5 @@ export function DeleteDialog(props: Props) {
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }

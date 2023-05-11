@@ -58,14 +58,14 @@ export function EditClipModalTimeline(props: Props) {
         setTimelineLeft(rect.left);
         setTimelineWidth(rect.width);
       }
-    }
+    };
 
     onResize();
     window.addEventListener('resize', onResize);
 
     return () => {
       window.removeEventListener('resize', onResize);
-    }
+    };
   }, []);
 
   function handleFramesMouseMove(event: MouseEvent<HTMLDivElement>) {

@@ -27,13 +27,13 @@ export function useAseetsUploaded(cb: (status: string, assetId: string) => void)
 
     const subscription = observable.subscribe(observer => {
       if (observer.data) {
-        cb(observer.data?.assetUploads.status, observer.data?.assetUploads.assetId)
+        cb(observer.data?.assetUploads.status, observer.data?.assetUploads.assetId);
       }
     });
 
     return () => {
       subscription.unsubscribe();
-    }
+    };
 
   }, [client, cb]);
 }

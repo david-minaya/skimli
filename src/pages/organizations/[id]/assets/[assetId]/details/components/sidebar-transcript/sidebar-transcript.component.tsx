@@ -71,7 +71,7 @@ export function SidebarTranscript(props: Props) {
         'Loading...'
       }
       {status.successfull &&
-        cues.filter(filter).map((cue, index) =>
+        cues.filter(filter).map(cue =>
           <TranscriptItem
             key={cue.startTime} 
             time={videoPlayer.currentTime}

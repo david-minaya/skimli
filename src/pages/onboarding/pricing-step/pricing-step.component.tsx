@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Box, Link } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { Toast } from '~/components/toast/toast.component';
-import { SubscriptionPlan } from '~/graphqls/contentful/types/subscriptionPlan';
 import { useSubscriptionPlans } from '~/graphqls/contentful/useSubscriptionPlans';
 import { useSubscribeToPlan } from '~/graphqls/useSubscribeToPlan';
 import { PlanCard } from '../components/plan-card/plan-card.component';
@@ -27,7 +26,7 @@ export function PricingStep(props: Props) {
   const [openFailToast, setOpenFailToast] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
-  async function handleClick(plan: SubscriptionPlan) {
+  async function handleClick() {
 
     try {
 
@@ -49,13 +48,13 @@ export function PricingStep(props: Props) {
       <Box sx={style.content}>
         <Box sx={style.title}>{t('pricing.title')}</Box>
         <Box sx={style.plans}>
-        {subscriptionPlanSection.subscriptionPlans?.map(plan => 
-          <PlanCard 
-            key={plan.productCode} 
-            plan={plan}
-            disabled={disabled}
-            onClick={handleClick}/>
-        )}
+          {subscriptionPlanSection.subscriptionPlans?.map(plan => 
+            <PlanCard 
+              key={plan.productCode} 
+              plan={plan}
+              disabled={disabled}
+              onClick={handleClick}/>
+          )}
         </Box>
         <Link
           sx={style.link}

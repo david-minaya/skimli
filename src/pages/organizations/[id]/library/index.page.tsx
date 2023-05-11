@@ -166,7 +166,7 @@ export default function Page() {
     <ProtectedRoute>
       <Library/>
     </ProtectedRoute>
-  )
+  );
 }
 
 export async function getServerSideProps({ locale }) {
@@ -174,5 +174,5 @@ export async function getServerSideProps({ locale }) {
     props: { 
       ...(await serverSideTranslations(locale, ['library', 'components']))
     }
-  }
+  };
 }

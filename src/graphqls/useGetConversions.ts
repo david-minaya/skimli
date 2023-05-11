@@ -23,5 +23,5 @@ export function useGetConversions() {
       `,
       fetchPolicy: 'no-cache'
     });
-  }
+  };
 }

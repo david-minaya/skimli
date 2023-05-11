@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect, useMemo } from 'react';
-import { ApolloClient, HttpLink, InMemoryCache, split } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache, split } from '@apollo/client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';

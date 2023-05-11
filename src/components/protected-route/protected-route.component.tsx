@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, useEffect, useState } from 'react'
+import React, { Fragment, ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useCheckUserExists } from '~/graphqls/useCheckUserExists';
 import { Loading } from '../loading/loading.component';

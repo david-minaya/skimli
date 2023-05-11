@@ -16,6 +16,6 @@ export function useGetThumbnailQuery() {
           getThumbnail(playbackId: $playbackId, width: $width, height: $height, time: $time, fit_mode: $fitMode)
         }
       `
-    })
+    });
   }, []);
 }

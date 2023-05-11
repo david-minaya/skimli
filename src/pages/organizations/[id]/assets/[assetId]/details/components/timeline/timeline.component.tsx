@@ -33,14 +33,14 @@ export function Timeline(props: Props) {
         setTimelineLeft(rect.left);
         setTimelineWidth(rect.width);
       }
-    }
+    };
 
     onResize();
     window.addEventListener('resize', onResize);
 
     return () => {
       window.removeEventListener('resize', onResize);
-    }
+    };
   }, []);
 
   return (

@@ -55,8 +55,8 @@ export function WorkflowStatusModal(props: Props) {
 
     return () => {
       clearInterval(intervalId);
-    }
-  }, [open, asset])
+    };
+  }, [open, asset]);
 
   function formatDate(date?: string) {
 
@@ -127,7 +127,7 @@ export function WorkflowStatusModal(props: Props) {
         <IconButton 
           size='small' 
           onClick={onClose}>
-          <Close />
+          <Close/>
         </IconButton>
       </DialogTitle>
       <DialogContent sx={style.content}>

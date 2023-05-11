@@ -20,9 +20,9 @@ export function SuccessIcon(props: any) {
           strokeLinejoin='round'/>
       </g>
       <defs>
-      <clipPath id='clip0_224_51'>
-      <rect width='20' height='20' fill='white'/>
-      </clipPath>
+        <clipPath id='clip0_224_51'>
+          <rect width='20' height='20' fill='white'/>
+        </clipPath>
       </defs>
     </SvgIcon>
   );

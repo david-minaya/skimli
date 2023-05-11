@@ -38,5 +38,5 @@ export function ProtectedRoute(props: Props) {
         {props.children}
       </ValidateOrgId>
     </Protected>
-  )
+  );
 }

@@ -57,7 +57,7 @@ export function Timeout(props: Props) {
       clearTimeout(timeoutId.id);
       setMinutes(undefined);
       setSeconds(undefined);
-    }
+    };
 
   }, [show, timeout, onTimeout, calcTimeout, timeoutId]);
 

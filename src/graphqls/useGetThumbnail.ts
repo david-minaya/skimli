@@ -10,7 +10,7 @@ export function useGetThumbnail(playbackId?: string, width?: number, height?: nu
     if (playbackId) {
       query(playbackId, width, height, time, fitMode).then(value => setState(value));
     }
-  }, [query, playbackId, width, height, time, fitMode])
+  }, [query, playbackId, width, height, time, fitMode]);
 
   return useMemo(() => state, [state]);
 }
