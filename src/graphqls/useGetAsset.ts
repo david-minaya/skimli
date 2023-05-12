@@ -107,7 +107,7 @@ export function useGetAsset() {
           }
         `,
         variables: { id },
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
       });
     },
     [query]

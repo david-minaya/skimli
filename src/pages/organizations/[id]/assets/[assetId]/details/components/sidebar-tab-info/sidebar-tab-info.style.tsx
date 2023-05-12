@@ -9,7 +9,7 @@ export const style = Style({
   },
   detailItem: nestedStyle({
     title: {
-      minWidth: '80px'
+      minWidth: '84px'
     }
   }),
   iconButton: {

@@ -51,9 +51,11 @@ export function SidebarTabInfo(props: Props) {
         title={t('infoTab.height')}
         text={videoTrack.height}/>
       <DetailItem
+        sx={style.detailItem}
         title={t('infoTab.aspectRatio')}
         text={`${asset.metadata.aspectRatio.decimal} (${asset.metadata.aspectRatio.dimension})`}/>
       <DetailItem
+        sx={style.detailItem}
         title={t('infoTab.resolution')}
         text={`${asset.metadata.resolution.name}`}/>
       <DetailItem

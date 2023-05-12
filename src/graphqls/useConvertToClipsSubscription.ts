@@ -111,7 +111,8 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
             }
           }
         }
-      `
+      `,
+      fetchPolicy: 'no-cache'
     });
 
     const subscription = observable.subscribe(observer => {

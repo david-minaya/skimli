@@ -4,8 +4,7 @@ import { Close } from '@mui/icons-material';
 import { InfoIcon } from '~/icons/infoIcon';
 import { useGetCategories } from '~/graphqls/useGetCategories';
 import { useConvertToClips } from '~/graphqls/useConvertToClips';
-import { useAsyncEffect } from '~/hooks/useAsyncEffect';
-import { useUploadFiles } from '~/utils/UploadFilesProvider';
+import { useUploadMediaFile } from '~/hooks/useUploadMediaFile';
 import { Asset } from '~/types/assets.type';
 import { style } from './convert-to-clips-modal.style';
 
@@ -39,26 +38,14 @@ export function ConvertToClipsModal(props: Props) {
 
   const { t } = useTranslation('library');
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
-  const uploadFiles = useUploadFiles();
+  const uploadFile = useUploadMediaFile();
   const categories = useGetCategories();
   const convertToClips = useConvertToClips();
   const [category, setCategory] = useState('');
-  const [file, setFile] = useState<FileList>();
+  const [file, setFile] = useState<File>();
   const [disableButton, setDisableButton] = useState(false);
   const [showSelectCategoryError, setShowSelectCategoryError] = useState(false);
   const [showError, setShowError] = useState(false);
-
-  useAsyncEffect(async () => {
-
-    if (open && uploadFiles.completed) {
-      uploadFiles.reset();
-      await convert();
-    }
-
-    if (open && uploadFiles.failed) {
-      setDisableButton(false);
-    }
-  }, [open, category, asset, uploadFiles.completed]);
 
   function handleChange(e: SelectChangeEvent<string>) {
     setCategory(e.target.value);
@@ -67,7 +54,7 @@ export function ConvertToClipsModal(props: Props) {
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
-      setFile(event.target.files);
+      setFile(event.target.files[0]);
     }
   }
 
@@ -77,36 +64,36 @@ export function ConvertToClipsModal(props: Props) {
       setShowSelectCategoryError(true);
       return;
     }
-
-    if (!file) {
-      setDisableButton(true);
-      await convert();
-      return;
+    
+    if (file) {
+      try {
+        setDisableButton(true);
+        await uploadFile.upload(file, asset.uuid);
+      } catch (err) {
+        setDisableButton(false);
+        return;
+      }
     }
 
-    setShowError(false);
-    setDisableButton(true);
-    uploadFiles.uploadMediaFiles(file, asset.uuid, 'hidden');
-  }
-
-  function handleClose() {
-    setCategory('');
-    setFile(undefined);
-    setShowSelectCategoryError(false);
-    setShowError(false);
-    setDisableButton(false);
-    uploadFiles.reset();
-    onClose();
-  }
-
-  async function convert() {
     try {
+      setShowError(false);
+      setDisableButton(true);
       await convertToClips(asset.uuid, category);
       handleClose();
     } catch (err: any) {
       setShowError(true);
       setDisableButton(false);
     }
+  }
+
+  function handleClose() {
+    onClose();
+    setCategory('');
+    setFile(undefined);
+    setShowSelectCategoryError(false);
+    setShowError(false);
+    setDisableButton(false);
+    uploadFile.reset();
   }
 
   return (
@@ -166,13 +153,13 @@ export function ConvertToClipsModal(props: Props) {
           <Box 
             sx={style.uploadFile}
             onClick={() => hiddenFileInputRef.current?.click()}>
-            <Box sx={style.uploadFileValue}>{file?.[0]?.name || ''}</Box>
+            <Box sx={style.uploadFileValue}>{file?.name || ''}</Box>
             <Box sx={style.uploadFileButton}>{t('convertToClipsModal.uploadFile.button')}</Box>
           </Box>
-          {uploadFiles.inProgress &&
+          {uploadFile.inProgress &&
             <Box sx={style.uploadFileProgress}>{t('convertToClipsModal.uploadFile.progress')}</Box>
           }
-          {uploadFiles.failed &&
+          {uploadFile.failed &&
             <Box sx={style.uploadFileError}>{t('convertToClipsModal.uploadFile.error')}</Box>
           }
           <Button 

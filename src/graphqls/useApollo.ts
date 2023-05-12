@@ -59,7 +59,8 @@ export function useApollo() {
 
     return new ApolloClient({
       link: splitLink,
-      cache: new InMemoryCache()
+      cache: new InMemoryCache(),
+      connectToDevTools: process.env.NODE_ENV === 'development'
     });
   }, [token]);
 

@@ -19,6 +19,7 @@
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-extra-semi": "warn",
+        "@typescript-eslint/no-empty-function": "warn",
         "react-hooks/exhaustive-deps": "off",
         "react/jsx-tag-spacing": ["warn", { "beforeSelfClosing": "never" }],
         "react/jsx-max-props-per-line": ["warn", { "when": "multiline" }]

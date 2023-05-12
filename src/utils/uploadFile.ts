@@ -21,10 +21,10 @@ export class UploadFile {
   private partCounter = 1;
   private progress = 0;
   private abortController: AbortController;
-  private onProgressCallback: (bytes: number) => void;
-  private onCancelledCallback: () => void;
-  private onFailedCallback: (err: any) => void;
-  private onCompletedCallback: () => void;
+  private onProgressCallback?: (bytes: number) => void;
+  private onCancelledCallback?: () => void;
+  private onFailedCallback?: (err: any) => void;
+  private onCompletedCallback?: () => void;
 
   constructor(
     private file: File,
@@ -50,16 +50,16 @@ export class UploadFile {
       }
 
       await this.completeUpload(this.key, this.parts, this.uploadId);
-      this.onCompletedCallback();
+      this.onCompletedCallback?.();
 
     } catch (err: any) {
 
       if (err.code === 'ERR_CANCELED') {
-        this.onCancelledCallback();
+        this.onCancelledCallback?.();
         return;
       }
 
-      this.onFailedCallback(err);
+      this.onFailedCallback?.(err);
     }
   }
 
@@ -101,14 +101,14 @@ export class UploadFile {
           throw new Error('Upload failed');
         }
 
-        this.onProgressCallback(-this.progress);
+        this.onProgressCallback?.(-this.progress);
       }
     }
   }
 
   private handleProgressUpdate(event: AxiosProgressEvent) {
     this.progress = event.loaded;
-    this.onProgressCallback(event.bytes);
+    this.onProgressCallback?.(event.bytes);
   }
 
   onProgress(cb: (bytes: number) => void) {
