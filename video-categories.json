@@ -87,6 +87,18 @@
       "model": "people-and-blogs"
     },
     {
+      "code": "VIDEO-CATEGORY-GAMING",
+      "archived": false,
+      "label": "Gaming",
+      "model": "gaming"
+    },
+    {
+      "code": "VIDEO-CATEGORY-FILM-AND-ANIMATION",
+      "archived": false,
+      "label": "Film & Animation",
+      "model": "film-and-animation"
+    },
+    {
       "code": "VIDEO-CATEGORY-OTHER-ANCHOR-BASED",
       "archived": false,
       "label": "Other - Anchor Based",
