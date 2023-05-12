@@ -9,6 +9,7 @@ import { InfoIcon } from '~/icons/infoIcon';
 import { IconButton, Tooltip } from '@mui/material';
 import { VideoTrack } from '~/types/videoTrack.type';
 import { AudioTrack } from '~/types/auditoTrack.type';
+import { formatSeconds } from '~/utils/formatSeconds';
 
 interface Props {
   asset: Asset;
@@ -69,7 +70,7 @@ export function SidebarTabInfo(props: Props) {
       <DetailItem
         sx={style.detailItem}
         title={t('infoTab.duration')}
-        text={videoTrack.duration}/>
+        text={formatSeconds(videoTrack?.duration || 0)}/>
       <DetailItem
         sx={style.detailItem}
         title={t('infoTab.size')}

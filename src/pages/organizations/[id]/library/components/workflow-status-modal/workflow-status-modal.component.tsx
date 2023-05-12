@@ -122,8 +122,8 @@ export function WorkflowStatusModal(props: Props) {
       open={open} 
       sx={style.dialog} 
       onClose={onClose}>
-      <DialogTitle sx={style.title}>
-        {asset.name}
+      <DialogTitle sx={style.dialogTitle}>
+        <Box sx={style.title}>{asset.name}</Box>
         <IconButton 
           size='small' 
           onClick={onClose}>
@@ -203,7 +203,7 @@ export function WorkflowStatusModal(props: Props) {
             text={videoTrack?.encoding}/>
           <DetailItem
             title={t('workflowStatusModal.duration')}
-            text={videoTrack?.duration}/>
+            text={formatSeconds(videoTrack?.duration || 0)}/>
           <DetailItem
             title={t('workflowStatusModal.size')}
             text={`${toMb(asset.metadata.filesize)} MB`}/>

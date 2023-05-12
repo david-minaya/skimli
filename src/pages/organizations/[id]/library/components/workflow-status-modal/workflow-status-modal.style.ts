@@ -10,15 +10,18 @@ export const style = Style({
   content: {
     padding: '40px'
   },
-  title: {
+  dialogTitle: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '12px 12px 16px 24px',
-    '&.MuiDialogTitle-root': {
-      fontSize: '16px',
-      fontWeight: 'bold'
-    }
+    padding: '12px 12px 16px 24px'
+  },
+  title: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   },
   iconButton: {
     display: 'inline-flex',
