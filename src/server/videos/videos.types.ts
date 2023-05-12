@@ -287,6 +287,9 @@ export class ConvertToClipsWorkflow implements IConvertToClipsWorkflow {
 
   @Field(() => String, { nullable: true })
   model?: string;
+
+  @Field(() => Float, { nullable: true })
+  etc?: number;
 }
 
 @ObjectType()

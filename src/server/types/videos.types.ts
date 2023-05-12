@@ -9,6 +9,7 @@ export enum AssetStatus {
   DELETING = "DELETING",
   ERRORED = "ERRORED",
   NO_CLIPS_FOUND = "NO_CLIPS_FOUND",
+  TIMEOUT = "TIMEOUT",
 }
 
 export interface IConvertToClipsWorkflow {
@@ -20,7 +21,9 @@ export interface IConvertToClipsWorkflow {
   startTime?: string;
   endTime?: string;
   model?: string;
+  etc?: number; // etc in ms
 }
+
 export interface IPostVideoWorkflow {
   workflowId: string;
   runId: string;
