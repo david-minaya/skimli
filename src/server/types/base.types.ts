@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/nextjs";
 import { AxiosError } from "axios";
 import { GraphQLError, GraphQLErrorOptions } from "graphql";
 import { GraphQLContext } from "../schema";
+import AppErrorCodes from "../../common/app-error-codes";
 
 export type AuthInfo = {
   auth0: GraphQLContext["auth0"];
@@ -41,7 +42,7 @@ export class APIError extends GraphQLError {
 
 export class InternalGraphQLError extends GraphQLError {
   constructor(error: any) {
-    super(INTERNAL_ERROR, {
+    super(AppErrorCodes.INTERNAL_SERVER_ERROR, {
       extensions: {
         message: error?.message || error?.cause || error,
       },

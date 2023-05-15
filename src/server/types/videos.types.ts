@@ -225,8 +225,8 @@ export interface AssetMetadata {
 }
 
 export enum MediaType {
-  // AUDIO = "AUDIO",
   SUBTITLE = "SUBTITLE",
+  AUDIO = "AUDIO",
 }
 
 export enum MediaStatus {
@@ -239,6 +239,8 @@ export enum MediaStatus {
 
 export interface IMediaDetails {
   sourceUrl: string;
+  muxAssetId?: string;
+  playbackId?: string;
 }
 
 export interface IMediaAssets {
@@ -430,4 +432,22 @@ export interface IGetMediaSubtitleArgs {
 export interface IGetObjectDetectionArgs {
   assetId: string;
   withBoundingBoxes?: boolean;
+}
+
+// TODO: later change to better name
+export enum MuxPassthroughType {
+  VIDEO_ASSET = "video",
+  AUDIO_MEDIA = "audio-media",
+  SUBTITLE_MEDIA = "subtitle-media",
+}
+
+export interface IAdminGetMediaArgs {
+  assetId?: string;
+  uuid?: string;
+  name?: string;
+  type?: MediaType;
+  status?: MediaStatus;
+  take?: number;
+  skip?: number;
+  org: number;
 }

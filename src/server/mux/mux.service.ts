@@ -49,7 +49,7 @@ export class MuxService {
   async getMuxAsset(assetId: string): Promise<MuxSignedAsset | null> {
     try {
       const asset = await this.muxClient.Video.Assets.get(assetId);
-      if (asset?.playback_ids!.length == 0) {
+      if (asset?.playback_ids?.length && asset?.playback_ids?.length == 0) {
         return { asset: asset };
       }
       const playback = asset.playback_ids![0];

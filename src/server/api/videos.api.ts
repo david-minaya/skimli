@@ -29,6 +29,7 @@ import {
   ISubAsset,
   IUpdateSubAssetArgs,
   AdminGetSubAssetsQuery,
+  IAdminGetMediaArgs,
 } from "../types/videos.types";
 import {
   axiosRequestErrorLoggerInterceptor,
@@ -307,6 +308,17 @@ export class VideosAPI {
         `/video/v1/admin/subassets/${encodeURIComponent(uuid)}`,
         args
       );
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adminGetMedia(args: IAdminGetMediaArgs): Promise<IMedia[]> {
+    try {
+      const response = await this.api.get("/video/v1/admin/media", {
+        params: args,
+      });
       return response?.data;
     } catch (e) {
       throw new APIError(e);

@@ -5,11 +5,13 @@ import {
   GetObjectOutput,
 } from "aws-sdk/clients/s3";
 import { isNumber } from "class-validator";
+import { GraphQLError } from "graphql";
 import * as path from "path";
 import { Service } from "typedi";
 import Timecode from "typescript-timecode";
 import { v4 } from "uuid";
 import * as categoriesData from "../../../video-categories.json";
+import AppErrorCodes from "../../common/app-error-codes";
 import config from "../../config";
 import { AccountsService } from "../accounts/accounts.service";
 import { VideosAPI } from "../api/videos.api";
@@ -57,16 +59,16 @@ import {
   IGetMediaSubtitleArgs,
   IGetObjectDetectionArgs,
   IMedia,
-  IObjectDetectionResult,
   IObjectDetectionResults,
   IStartMediaUploadArgs,
   MediaStatus,
   MediaType,
+  MuxPassthroughType,
   SubAssetStatus,
   SubAssetType,
 } from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
-import { decodeS3Key, parseS3URL } from "./utils";
+import { parseS3URL } from "./utils";
 import {
   AbortUploadArgs,
   CompleteUploadArgs,
@@ -77,6 +79,7 @@ import {
 } from "./videos.args";
 import {
   ASSET_UPLOAD_EVENT,
+  AUDIO_FILE_EXTENSION,
   CONVERT_TO_CLIPS_TOPIC,
   MAX_CLIP_DURATION_ERROR,
   MAX_CLIP_DURATION_IN_MS,
@@ -89,6 +92,7 @@ import {
 import {
   AssetMediaNotFoundException,
   AssetNotFoundException,
+  AudioFileNotSupported,
   AutoTranscriptionFailedException,
   ClipsNotFoundException,
   MediaNotSubtitleException,
@@ -102,7 +106,6 @@ import {
   RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
-import { GraphQLError } from "graphql";
 @Service()
 export class VideosService {
   constructor(
@@ -224,7 +227,7 @@ export class VideosService {
       input: [{ url: signedObjectURL }],
       mp4_support: "standard",
       playback_policy: "signed",
-      passthrough: `video#${org}#${createdAsset?.uuid}`,
+      passthrough: `${MuxPassthroughType.VIDEO_ASSET}#${org}#${createdAsset?.uuid}`,
     });
     console.log("mux asset uploaded: ", asset.id);
   }
@@ -253,28 +256,45 @@ export class VideosService {
       org: org,
       uuid: metadata.assetId,
     });
+    if (!video) {
+      console.warn(`video asset not found for ${metadata?.assetId}`);
+      console.warn("skipping creating media");
+      return;
+    }
+
     const media = await this.videosAPI.adminCreateMedia({
       name: filename,
       details: { sourceUrl: `s3://${bucket}/${key}` },
       type: metadata.type,
-      assets: { ids: [video.uuid], count: 1 },
+      assets: { ids: [video?.uuid], count: 1 },
       status: MediaStatus.PROCSESSING,
       org: org,
     });
 
-    const track = await this.muxService.createTextTrack(
-      video?.sourceMuxAssetId!,
-      {
-        name: filename,
-        url: signedObjectURL,
-        language_code: metadata.languageCode!,
-        text_type: "subtitles" as const,
-        type: "text" as const,
-        passthrough: `media#${org}#${media.uuid}`,
-      }
-    );
+    if (metadata.type == MediaType.SUBTITLE) {
+      const track = await this.muxService.createTextTrack(
+        video?.sourceMuxAssetId!,
+        {
+          name: filename,
+          url: signedObjectURL,
+          language_code: metadata.languageCode!,
+          text_type: "subtitles" as const,
+          type: "text" as const,
 
-    console.log(`track ${track.id} added for mux asset ${metadata.assetId}`);
+          passthrough: `${MuxPassthroughType.SUBTITLE_MEDIA}#${org}#${media.uuid}`,
+        }
+      );
+      console.log(`track ${track.id} added for mux asset ${metadata.assetId}`);
+    } else if (metadata.type == MediaType.AUDIO) {
+      const muxAudioAsset = await this.muxService.uploadAssetToMux({
+        passthrough: `${MuxPassthroughType.AUDIO_MEDIA}#${org}#${media.uuid}`,
+        playback_policy: "signed",
+        input: [{ url: signedObjectURL, type: "audio", name: filename }],
+      });
+      console.log(
+        `audio mux asset ${muxAudioAsset.id} added for asset ${metadata.assetId}`
+      );
+    }
   }
 
   async updateAssetInfo(
@@ -307,10 +327,12 @@ export class VideosService {
     payload,
     org,
     passthrough,
+    passthroughType,
   }: {
     org: number;
     event: string;
     passthrough: string;
+    passthroughType: string;
     payload:
       | MuxAssetReadyEventPayload
       | MuxAssetErredEvent
@@ -319,16 +341,44 @@ export class VideosService {
   }) {
     if (event == ASSET_READY_EVENT || event == ASSET_ERRED_EVENT) {
       const data = payload as MuxAssetReadyEvent;
-      const status =
-        data?.status == "ready" ? AssetStatus.UNCONVERTED : AssetStatus.ERRORED;
 
-      await this.updateAssetInfo(passthrough, data.id, status);
-      const eventPayload: AssetUploads = {
-        status: status,
-        assetId: data.id,
-        org: org,
-      };
-      await pubSub.publish(ASSET_UPLOAD_EVENT, eventPayload);
+      if (passthroughType == MuxPassthroughType.VIDEO_ASSET) {
+        const status =
+          data?.status == "ready"
+            ? AssetStatus.UNCONVERTED
+            : AssetStatus.ERRORED;
+
+        await this.updateAssetInfo(passthrough, data.id, status);
+        const eventPayload: AssetUploads = {
+          status: status,
+          assetId: data.id,
+          org: org,
+        };
+        await pubSub.publish(ASSET_UPLOAD_EVENT, eventPayload);
+      } else if (passthroughType == MuxPassthroughType.AUDIO_MEDIA) {
+        const [media] = await this.videosAPI.adminGetMedia({
+          uuid: passthrough,
+          org: org,
+        });
+        if (!media) {
+          console.warn(`media with id: ${passthrough} not found!`);
+          return;
+        }
+        const updatedMedia = await this.videosAPI.adminUpdateMedia(
+          passthrough,
+          {
+            status:
+              data?.status == "ready" ? MediaStatus.READY : MediaStatus.ERRORED,
+            org: org,
+            details: {
+              ...media.details,
+              muxAssetId: data.id,
+              playbackId: data.playback_ids?.pop()?.id,
+            },
+          }
+        );
+        await pubSub.publish(MEDIA_UPLOADED_EVENT, updatedMedia);
+      }
     } else if (event == TRACK_READY_EVENT || event == TRACK_ERRED_EVENT) {
       const data = payload as MuxTrackReadyEvent;
       const media = await this.videosAPI.adminUpdateMedia(passthrough, {
@@ -364,6 +414,7 @@ export class VideosService {
       passthrough: passthroughId,
       org: Number(org),
       payload: payload,
+      passthroughType: _type,
     });
   }
 
@@ -422,12 +473,22 @@ export class VideosService {
     await pubSub.publish(CONVERT_TO_CLIPS_TOPIC, workflowStatus);
   }
 
+  async checkSupportedFile({}) {}
+
   async startMediaUpload(
     authInfo: AuthInfo,
     args: IStartMediaUploadArgs
   ): Promise<StartUploadResponse> {
-    if (!args.filename.endsWith(SUBTITLE_FILE_EXTENSION)) {
+    if (
+      args.type == MediaType.SUBTITLE &&
+      !args.filename.endsWith(SUBTITLE_FILE_EXTENSION)
+    ) {
       throw SubtitleFileNotSupported;
+    } else if (
+      args.type == MediaType.AUDIO &&
+      !args.filename.endsWith(AUDIO_FILE_EXTENSION)
+    ) {
+      throw AudioFileNotSupported;
     }
 
     const key = `org/${authInfo.auth0?.organization_id}/media/${args.assetId}/${args.filename}`;
@@ -446,7 +507,7 @@ export class VideosService {
     }
 
     if (asset) {
-      throw new BadInputError("Media already exists in library");
+      throw new BadInputError(AppErrorCodes.MEDIA_FILE_EXISTS);
     }
 
     try {

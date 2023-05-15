@@ -16,6 +16,7 @@ export const MAX_CLIP_DURATION_ERROR = `Clips must be at most ${
 } seconds`;
 
 export const SUBTITLE_FILE_EXTENSION = "vtt";
+export const AUDIO_FILE_EXTENSION = "mp3";
 
 export const SUPPORTED_ASPECT_RATIOS = [
   "4:5",

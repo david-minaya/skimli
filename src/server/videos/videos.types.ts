@@ -289,7 +289,7 @@ export class ConvertToClipsWorkflow implements IConvertToClipsWorkflow {
   model?: string;
 
   @Field(() => Float, { nullable: true })
-  etc?: number;
+  etc?: number = 0;
 }
 
 @ObjectType()
@@ -518,10 +518,39 @@ registerEnumType(MediaType, { name: "MediaType" });
 registerEnumType(MediaStatus, { name: "MediaStatus" });
 
 @ObjectType()
-export class MediaDetails implements IMediaDetails {
+export class SubtitleMediaDetails implements IMediaDetails {
   @Field(() => String)
   sourceUrl: string;
 }
+
+@ObjectType()
+export class AudioMediaDetails implements IMediaDetails {
+  @Field(() => String)
+  sourceUrl: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: "only available if media type is a audio file",
+  })
+  muxAssetId?: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: "only available if media type is a audio file",
+  })
+  playbackId?: string;
+}
+
+export const MediaDetails = createUnionType({
+  name: "MediaDetails",
+  types: () => [SubtitleMediaDetails, AudioMediaDetails],
+  resolveType: (value) => {
+    if ("muxAssetId" in value) {
+      return AudioMediaDetails;
+    }
+    return SubtitleMediaDetails;
+  },
+});
 
 @ObjectType()
 export class MediaAssets implements IMediaAssets {
@@ -544,7 +573,7 @@ export class Media implements IMedia {
   name: string;
 
   @Field(() => MediaDetails, { nullable: true })
-  details: MediaDetails;
+  details: typeof MediaDetails;
 
   @Field(() => MediaType)
   type: MediaType;

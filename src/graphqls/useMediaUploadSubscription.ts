@@ -1,17 +1,15 @@
-import { useEffect } from 'react';
-import { gql, useApolloClient } from '@apollo/client';
-import { AssetMedia } from '~/types/assetMedia.type';
+import { useEffect } from "react";
+import { gql, useApolloClient } from "@apollo/client";
+import { AssetMedia } from "~/types/assetMedia.type";
 
 interface Response {
   mediaUploads: AssetMedia;
 }
 
 export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
-
   const client = useApolloClient();
 
   useEffect(() => {
-
     const observable = client.subscribe<Response>({
       query: gql`
         subscription MediaUploads {
@@ -20,7 +18,9 @@ export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
             org
             name
             details {
-              sourceUrl
+              ... on SubtitleMediaDetails {
+                sourceUrl
+              }
             }
             type
             status
@@ -32,10 +32,10 @@ export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
             }
           }
         }
-      `
+      `,
     });
 
-    const subscription = observable.subscribe(observer => {
+    const subscription = observable.subscribe((observer) => {
       const media = observer.data?.mediaUploads;
       if (media) {
         cb(media);
