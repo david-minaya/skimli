@@ -1,14 +1,13 @@
-import { gql } from '@apollo/client';
-import { useQuery } from '~/hooks/useQuery';
-import { AssetMedia } from '~/types/assetMedia.type';
+import { gql } from "@apollo/client";
+import { useQuery } from "~/hooks/useQuery";
+import { AssetMedia } from "~/types/assetMedia.type";
 
 export function useGetAssetMedias() {
-
   const query = useQuery();
 
   return (assetId: string) => {
     return query<AssetMedia[]>({
-      name: 'getAssetMedias',
+      name: "getAssetMedias",
       query: gql`
         query GetAssetMedias($assetId: String!) {
           getAssetMedias(assetId: $assetId) {
@@ -16,7 +15,9 @@ export function useGetAssetMedias() {
             org
             name
             details {
-              sourceUrl
+              ... on SubtitleMediaDetails {
+                sourceUrl
+              }
             }
             type
             status
@@ -30,7 +31,7 @@ export function useGetAssetMedias() {
         }
       `,
       variables: { assetId },
-      fetchPolicy: 'network-only'
+      fetchPolicy: "network-only",
     });
   };
 }
