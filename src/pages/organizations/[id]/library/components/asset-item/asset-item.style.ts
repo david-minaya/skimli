@@ -45,7 +45,8 @@ export const style = Style({
   imageContainer: {
     width: '176px',
     height: '100px',
-    position: 'relative'
+    position: 'relative',
+    flexShrink: 0
   },
   image: {
     width: '100%',
@@ -83,10 +84,14 @@ export const style = Style({
   },
   info: {
     flexGrow: 1,
-    padding: '20px'
+    padding: '20px',
+    overflow: 'hidden'
   },
   title: {
-    color: '#111827'
+    color: '#111827',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   },
   date: {
     color: '#6B7280',
@@ -95,7 +100,8 @@ export const style = Style({
   },
   status: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    flexShrink: 0
   },
   processingTagIcon: {
     width: '20px',

@@ -5,5 +5,6 @@ export type Status = (
   'CONVERTED' |
   'DELETING' |
   'ERRORED' |
-  'NO_CLIPS_FOUND'
+  'NO_CLIPS_FOUND' |
+  'TIMEOUT'
 );

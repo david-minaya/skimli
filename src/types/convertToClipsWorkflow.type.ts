@@ -10,5 +10,6 @@ export interface ConvertToClipsWorkflow {
   activityStatus: ActivityStatus;
   startTime: string;
   endTime: string;
+  etc: number;
   model: string;
 }

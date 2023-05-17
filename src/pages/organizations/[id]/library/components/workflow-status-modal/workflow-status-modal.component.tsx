@@ -101,8 +101,9 @@ export function WorkflowStatusModal(props: Props) {
     switch (status) {
       case 'CONVERTING': return t('workflowStatusModal.status.converting');
       case 'CONVERTED': return t('workflowStatusModal.status.converted');
-      case 'ERRORED': return t('workflowStatusModal.status.error');
       case 'NO_CLIPS_FOUND': return t('workflowStatusModal.status.error');
+      case 'TIMEOUT': return t('workflowStatusModal.status.timeout');
+      case 'ERRORED': return t('workflowStatusModal.status.error');
     }
   }
 
@@ -161,6 +162,16 @@ export function WorkflowStatusModal(props: Props) {
           <DetailItem
             title={t('workflowStatusModal.timeStarted')}
             text={formatDate(asset.activityStartTime)}/>
+          {asset.status !== 'CONVERTING' &&
+            <DetailItem 
+              title={t('workflowStatusModal.timeEnded')} 
+              text={formatDate(workflow?.endTime)}/>
+          }
+          {workflow?.etc &&
+            <DetailItem
+              title={t('workflowStatusModal.estimatedTime')}
+              text={formatSeconds(workflow.etc / 1000)}/>
+          }
           {asset.status === 'CONVERTING' &&
             <DetailItem
               sx={style.itemElapsedTime}
@@ -168,14 +179,9 @@ export function WorkflowStatusModal(props: Props) {
               text={formatSeconds(elapsedTime)}/>
           }
           {asset.status !== 'CONVERTING' &&
-            <Fragment>
-              <DetailItem 
-                title={t('workflowStatusModal.timeEnded')} 
-                text={formatDate(workflow?.endTime)}/>
-              <DetailItem 
-                title={t('workflowStatusModal.duration')} 
-                text={calcEndtime(workflow) || ''}/>
-            </Fragment>
+            <DetailItem 
+              title={t('workflowStatusModal.duration')} 
+              text={calcEndtime(workflow) || ''}/>
           }
         </Box>
         <Box sx={style.sectionTitle}>{t('workflowStatusModal.sourceVideoDetails')}</Box>
@@ -189,12 +195,16 @@ export function WorkflowStatusModal(props: Props) {
           <DetailItem
             title={t('workflowStatusModal.height')}
             text={videoTrack?.height}/>
-          <DetailItem
-            title={t('workflowStatusModal.aspectRatio')}
-            text={`${asset.metadata.aspectRatio.decimal} (${asset.metadata.aspectRatio.dimension})`}/>
-          <DetailItem
-            title={t('workflowStatusModal.resolution')}
-            text={`${asset.metadata.resolution.name}`}/>
+          {asset.metadata.aspectRatio &&
+            <Fragment>
+              <DetailItem
+                title={t('workflowStatusModal.aspectRatio')}
+                text={`${asset.metadata.aspectRatio.decimal} (${asset.metadata.aspectRatio.dimension})`}/>
+              <DetailItem
+                title={t('workflowStatusModal.resolution')}
+                text={`${asset.metadata.resolution.name}`}/>
+            </Fragment>
+          }
           <DetailItem
             title={t('workflowStatusModal.frameRate')}
             text={videoTrack?.frame_rate}/>

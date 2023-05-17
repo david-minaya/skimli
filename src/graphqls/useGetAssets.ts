@@ -94,6 +94,7 @@ export function useGetAssets() {
                   activityStatus
                   startTime
                   endTime
+                  etc
                   model
                 }
                 ... on PostVideoWorkflow {

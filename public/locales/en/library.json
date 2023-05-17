@@ -26,7 +26,8 @@
       "converting": "Converting to clips",
       "converted": "Converted to clips",
       "deleting": "Deleting",
-      "error": "Error"
+      "error": "Error",
+      "timeout": "Timeout"
     },
     "menu": {
       "convert": "Convert to clips",
@@ -61,7 +62,8 @@
     "status": {
       "converting": "Converting to clips",
       "converted": "Converted to clips",
-      "error": "Error"
+      "error": "Error",
+      "timeout": "Timeout"
     },
     "activityStatus": {
       "analyzing": "Analyzing",
@@ -73,6 +75,7 @@
     },
     "timeSubmitted": "Time Submitted",
     "timeStarted": "Time Started",
+    "estimatedTime": "Estimated Time",
     "timeElapsed": "Time Elapsed",
     "timeEnded": "Time Ended",
     "sourceVideoDetails": "Source Video Details",

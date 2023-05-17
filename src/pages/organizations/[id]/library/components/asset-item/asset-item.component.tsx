@@ -14,10 +14,10 @@ import { useAssets } from '~/store/assets.slice';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { Toast } from '~/components/toast/toast.component';
 import { StatusTag } from '../status-tag/status-tag.component';
-import { style } from './asset-item.style';
 import { useRouter } from 'next/router';
 import { useAccount } from '~/store/account.slice';
 import { useConversions } from '~/store/conversions.slice';
+import { style } from './asset-item.style';
 
 interface Props {
   asset: Asset;
@@ -55,7 +55,15 @@ export function AssetItem(props: Props) {
   const [openWorkflowStatusModal, setOpenWorkflowStatusModal] = useState(false);
 
   function handleStatusTagClick() {
-    if (asset.status === 'CONVERTING' || asset.status === 'CONVERTED' || asset.status === 'ERRORED') {
+
+    const canClick = (
+      asset.status === 'CONVERTING' || 
+      asset.status === 'CONVERTED' || 
+      asset.status === 'ERRORED' ||
+      asset.status === 'TIMEOUT'
+    );
+
+    if (canClick) {
       setOpenWorkflowStatusModal(true);
     }
   }

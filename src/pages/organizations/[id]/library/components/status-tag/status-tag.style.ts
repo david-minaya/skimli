@@ -7,7 +7,8 @@ export const style = Style({
     fontWeight: 500,
     cursor: 'default',
     borderRadius: '100px',
-    padding: '2px 8px'
+    padding: '2px 8px',
+    userSelect: 'none'
   },
   processing: {
     backgroundColor: '#FFB020'
