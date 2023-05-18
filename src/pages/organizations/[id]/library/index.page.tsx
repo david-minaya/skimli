@@ -108,7 +108,7 @@ function Library() {
 
       setIsLoading(false);
     }
-  }, [isLoading, assets.entities.length]);
+  }, [isLoading, search, assets.entities.length]);
 
   function getFileTypes() {
     return [
