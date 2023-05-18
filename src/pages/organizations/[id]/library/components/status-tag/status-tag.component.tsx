@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { Asset } from '~/types/assets.type';
-import { style } from './status-tag.style';
 import { mergeSx } from '~/utils/style';
+import { style } from './status-tag.style';
 
 interface Props {
   status: Asset['status'];
@@ -24,7 +24,8 @@ export function StatusTag(props: Props) {
         status === 'CONVERTED' && style.converted,
         status === 'DELETING' && style.deleting,
         status === 'ERRORED' && style.error,
-        status === 'NO_CLIPS_FOUND' && style.error
+        status === 'NO_CLIPS_FOUND' && style.error,
+        status === 'TIMEOUT' && style.error
       )}
       onClick={onClick}>
       {status === 'PROCESSING' && t('assetItem.tags.processing')}
@@ -34,6 +35,7 @@ export function StatusTag(props: Props) {
       {status === 'DELETING' && t('assetItem.tags.deleting')}
       {status === 'ERRORED' && t('assetItem.tags.error')}
       {status === 'NO_CLIPS_FOUND' && t('assetItem.tags.error')}
+      {status === 'TIMEOUT' && t('assetItem.tags.timeout')}
     </Box>
   );
 }

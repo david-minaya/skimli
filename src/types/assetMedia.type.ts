@@ -6,9 +6,6 @@ export interface AssetMedia {
   status: 'PROCSESSING' | 'READY' | 'ARCHIVED' | 'DELETED' | 'ERRORED';
   createdAt: string;
   updatedAt: string;
-  details: {
-    sourceUrl: string;
-  }
   assets: {
     ids: string[];
     count: number;

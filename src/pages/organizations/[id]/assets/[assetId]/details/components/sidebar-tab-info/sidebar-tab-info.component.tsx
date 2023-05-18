@@ -10,6 +10,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import { VideoTrack } from '~/types/videoTrack.type';
 import { AudioTrack } from '~/types/auditoTrack.type';
 import { formatSeconds } from '~/utils/formatSeconds';
+import { Fragment } from 'react';
 
 interface Props {
   asset: Asset;
@@ -51,14 +52,18 @@ export function SidebarTabInfo(props: Props) {
         sx={style.detailItem}
         title={t('infoTab.height')}
         text={videoTrack.height}/>
-      <DetailItem
-        sx={style.detailItem}
-        title={t('infoTab.aspectRatio')}
-        text={`${asset.metadata.aspectRatio.decimal} (${asset.metadata.aspectRatio.dimension})`}/>
-      <DetailItem
-        sx={style.detailItem}
-        title={t('infoTab.resolution')}
-        text={`${asset.metadata.resolution.name}`}/>
+      {asset.metadata.aspectRatio &&
+        <Fragment>
+          <DetailItem
+            sx={style.detailItem}
+            title={t('infoTab.aspectRatio')}
+            text={`${asset.metadata.aspectRatio.decimal} (${asset.metadata.aspectRatio.dimension})`}/>
+          <DetailItem
+            sx={style.detailItem}
+            title={t('infoTab.resolution')}
+            text={`${asset.metadata.resolution.name}`}/>
+        </Fragment>
+      }
       <DetailItem
         sx={style.detailItem}
         title={t('infoTab.frameRate')}

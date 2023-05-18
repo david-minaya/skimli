@@ -56,7 +56,15 @@ export const AssetItem = memo(function AssetItem(props: Props) {
   const [openWorkflowStatusModal, setOpenWorkflowStatusModal] = useState(false);
 
   function handleStatusTagClick() {
-    if (asset.status === 'CONVERTING' || asset.status === 'CONVERTED' || asset.status === 'ERRORED') {
+
+    const canClick = (
+      asset.status === 'CONVERTING' || 
+      asset.status === 'CONVERTED' || 
+      asset.status === 'ERRORED' ||
+      asset.status === 'TIMEOUT'
+    );
+
+    if (canClick) {
       setOpenWorkflowStatusModal(true);
     }
   }

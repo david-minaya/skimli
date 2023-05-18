@@ -99,6 +99,7 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
                   activityStatus
                   startTime
                   endTime
+                  etc
                   model
                 }
                 ... on PostVideoWorkflow {
