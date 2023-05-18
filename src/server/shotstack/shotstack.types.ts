@@ -38,3 +38,20 @@ export interface ShotstackWebhookBody {
   // datetime
   completed: string;
 }
+
+export interface IShotstackIngestAudioArgs {
+  url: string;
+  callbackUrl: string;
+}
+
+export enum ShotstackWebhookType {
+  SUB_ASSET = "SUB_ASSET",
+  AUDIO_MEDIA = "AUDIO_MEDIA",
+}
+
+export interface IHandleShotstackWebhookArgs {
+  id: string;
+  org: number;
+  type: ShotstackWebhookType;
+  body: ShotstackWebhookBody;
+}

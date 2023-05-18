@@ -19,7 +19,7 @@ import { auth, decodeToken } from "./auth";
 import { GraphQLContext, schema } from "./schema";
 import { listen as sqsListener } from "./sqs";
 import { muxWebhook, verifyMuxWebhookMiddleware } from "./webhooks/mux.hooks";
-import { shostackWebhook } from "./webhooks/shostack.hooks";
+import { shostackWebhook } from "./webhooks/shotstack.hooks";
 
 const port = parseInt(process.env.PORT || "3001", 10);
 const dev = process.env.NODE_ENV !== "production";

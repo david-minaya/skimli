@@ -38,7 +38,10 @@ import {
   OUTPUT_FORMAT,
   ShotstackService,
 } from "../shotstack/shotstack.service";
-import { ShotstackWebhookBody } from "../shotstack/shotstack.types";
+import {
+  IHandleShotstackWebhookArgs,
+  ShotstackWebhookType,
+} from "../shotstack/shotstack.types";
 import {
   AuthInfo,
   BadInputError,
@@ -52,6 +55,7 @@ import {
   ConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus,
   IAdjustClipArgs,
+  IAudioMediaDetails,
   IClip,
   ICreateClipArgs,
   IGetAssetMediasArgs,
@@ -264,7 +268,7 @@ export class VideosService {
 
     const media = await this.videosAPI.adminCreateMedia({
       name: filename,
-      details: { sourceUrl: `s3://${bucket}/${key}` },
+      details: { sourceUrl: `s3://${bucket}/${key}`, type: metadata.type },
       type: metadata.type,
       assets: { ids: [video?.uuid], count: 1 },
       status: MediaStatus.PROCSESSING,
@@ -294,6 +298,20 @@ export class VideosService {
       console.log(
         `audio mux asset ${muxAudioAsset.id} added for asset ${metadata.assetId}`
       );
+
+      const callbackUrl = new URL(
+        `${config.shotstack.callbackURL}/api/webhooks/shostack`
+      );
+      callbackUrl.searchParams.append("id", media.uuid);
+      callbackUrl.searchParams.append("type", ShotstackWebhookType.AUDIO_MEDIA);
+      callbackUrl.searchParams.append("org", org?.toString());
+      console.log("callback url generated is: ", callbackUrl.toString());
+
+      await this.shotstackAPI.uploadAudio({
+        url: signedObjectURL,
+        callbackUrl: callbackUrl.toString(),
+      });
+      console.log("sent audio file to shostack");
     }
   }
 
@@ -529,7 +547,8 @@ export class VideosService {
     authInfo: AuthInfo,
     args: IGetAssetMediasArgs
   ): Promise<IMedia[]> {
-    return this.videosAPI.getAssetMedias(args, authInfo.token);
+    const medias = await this.videosAPI.getAssetMedias(args, authInfo.token);
+    return medias;
   }
 
   async validateClip(args: {
@@ -752,13 +771,21 @@ export class VideosService {
     const endTime =
       args.endTime || Timecode.TimetoMilliseconds(clip.endTime) / 1000;
 
+    const callbackUrl = new URL(
+      `${config.shotstack.callbackURL}/api/webhooks/shostack`
+    );
+    callbackUrl.searchParams.append("id", subAsset.uuid);
+    callbackUrl.searchParams.append("type", ShotstackWebhookType.SUB_ASSET);
+    callbackUrl.searchParams.append("org", org?.toString());
+    console.log("callback url generated is: ", callbackUrl.toString());
+
     const renderClipResponse = await this.shotstackAPI.renderClip({
       src: signedAssetURL,
       startTime: startTime,
       endTime: endTime,
       width: width,
       height: height,
-      callbackUrl: `${config.shotstack.callbackURL}/api/webhooks/shostack?subAssetID=${subAsset.uuid}`,
+      callbackUrl: callbackUrl.toString(),
       prefix: prefix,
       filename: filename,
       muteAudio: args.muteAudio,
@@ -776,36 +803,34 @@ export class VideosService {
     return null;
   }
 
-  async handleShotstackWebhook(
-    subAssetId: string,
-    body: ShotstackWebhookBody
+  async handleShotstackSubAssetReady(
+    args: IHandleShotstackWebhookArgs
   ): Promise<void> {
-    if (!["serve", "edit"].includes(body.type)) {
-      console.warn("shotstack bad webhook request body", body);
-      return;
-    }
-
-    if (body.type != "serve") {
-      return;
-    }
-
     const subAsset = (
-      await this.videosAPI.adminGetSubAsset({ uuid: subAssetId })
+      await this.videosAPI.adminGetSubAsset({ uuid: args.id })
     ).pop();
     if (!subAsset) {
-      console.warn("subasset not found with id: ", subAssetId);
+      console.warn("subasset not found with id: ", args.id);
       return;
     }
 
-    if (body.error) {
+    if (subAsset.details?.renderId) {
+      console.log(
+        "duplicate webhook request hence ignoring ...",
+        JSON.stringify(args)
+      );
+      return;
+    }
+
+    if (args.body.error) {
       const updatedSubAsset = await this.videosAPI.adminUpdateSubAsset(
-        subAssetId,
+        args.id,
         {
           type: subAsset.type,
           details: {
             ...subAsset.details,
-            renderId: body?.render,
-            response: body,
+            renderId: args.body?.render,
+            response: args.body,
           },
           status: SubAssetStatus.FAILED,
         }
@@ -817,28 +842,86 @@ export class VideosService {
         org: subAsset.org,
       };
       await pubSub.publish(RENDER_CLIP_EVENT, payload);
+    } else {
+      const updatedSubAsset = await this.videosAPI.adminUpdateSubAsset(
+        args.id,
+        {
+          type: subAsset.type,
+          details: { ...subAsset.details, renderId: args.body?.render },
+          status: SubAssetStatus.SUCCESS,
+        }
+      );
+
+      // TODO: increment download counts and store records in db via api
+      const payload: RenderClipResponse = {
+        parentId: subAsset.parentId,
+        clipId: subAsset?.details.clipId,
+        status: updatedSubAsset.status,
+        org: subAsset.org,
+      };
+      await pubSub.publish(RENDER_CLIP_EVENT, payload);
+    }
+  }
+
+  async handleShotstackAudioMediaReady(
+    args: IHandleShotstackWebhookArgs
+  ): Promise<void> {
+    const [media] = await this.videosAPI.adminGetMedia({
+      uuid: args.id,
+      org: Number(args.org),
+    });
+    if (!media) {
+      console.warn("media not found with id: ", args.id);
       return;
     }
 
-    const updatedSubAsset = await this.videosAPI.adminUpdateSubAsset(
-      subAssetId,
-      {
-        type: subAsset.type,
-        details: { ...subAsset.details, renderId: body?.render },
-        status: SubAssetStatus.SUCCESS,
-      }
-    );
+    const mediaDetails = media.details as IAudioMediaDetails;
+    if (mediaDetails.shotstack?.render) {
+      console.log(
+        "duplicate webhook request hence ignoring ...",
+        JSON.stringify(args)
+      );
+      return;
+    }
 
-    // TODO: increment download counts and store records in db via api
-    const signedAssetURL = await this.generateSignedURL(subAsset?.render?.url);
-    const payload: RenderClipResponse = {
-      parentId: subAsset.parentId,
-      clipId: subAsset?.details.clipId,
-      status: updatedSubAsset.status,
-      downloadUrl: signedAssetURL,
-      org: subAsset.org,
-    };
-    await pubSub.publish(RENDER_CLIP_EVENT, payload);
+    const updatedMedia = await this.videosAPI.adminUpdateMedia(args.id, {
+      org: args.org,
+      details: {
+        ...media.details,
+        shotstack: {
+          ...(media.details as IAudioMediaDetails)?.shotstack,
+          id: args.body?.id ?? "",
+          url: args.body?.url ?? "",
+          status: args.body.error ? "error" : "ready",
+          render: args.body?.render ?? "",
+        },
+      },
+    });
+    await pubSub.publish(MEDIA_UPLOADED_EVENT, updatedMedia);
+    return;
+  }
+
+  async handleShotstackWebhook(
+    args: IHandleShotstackWebhookArgs
+  ): Promise<void> {
+    if (!["serve", "edit"].includes(args.body.type)) {
+      console.warn("shotstack bad webhook request body", args.body);
+      return;
+    }
+
+    if (args.body.type != "serve") {
+      return;
+    }
+
+    if (args.type == ShotstackWebhookType.SUB_ASSET) {
+      return this.handleShotstackSubAssetReady(args);
+    } else if (args.type == ShotstackWebhookType.AUDIO_MEDIA) {
+      return this.handleShotstackAudioMediaReady(args);
+    } else {
+      console.warn("shostack webhook type not found: ", args.type);
+    }
+
+    return;
   }
 
   async getObjectDetectionLabels(

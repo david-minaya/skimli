@@ -452,4 +452,14 @@ export class VideosResolver {
       await this.videosService.getObjectDetectionLabels(authInfo, args);
     return objectDetectionLabels;
   }
+
+  // TODO: delete when integration is done
+  // @Query(() => Boolean)
+  // async test() {
+  //   await this.videosService.onS3MediaUpload(
+  //     "dev-web-app-videos",
+  //     "rajith-testing/80/example-audio.mp3"
+  //   );
+  //   return true;
+  // }
 }

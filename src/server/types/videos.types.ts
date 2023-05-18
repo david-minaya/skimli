@@ -237,11 +237,28 @@ export enum MediaStatus {
   ERRORED = "ERRORED",
 }
 
-export interface IMediaDetails {
+export interface ISubtitleMediaDetails {
   sourceUrl: string;
+  type: string;
   muxAssetId?: string;
   playbackId?: string;
 }
+
+export interface IShotstackAudioMediaDetails {
+  id?: string;
+  url?: string;
+  status?: string;
+  render?: string;
+}
+export interface IAudioMediaDetails {
+  sourceUrl: string;
+  muxAssetId?: string;
+  playbackId?: string;
+  type: string;
+  shotstack?: IShotstackAudioMediaDetails;
+}
+
+export type IMediaDetails = ISubtitleMediaDetails | IAudioMediaDetails;
 
 export interface IMediaAssets {
   ids?: string[];
@@ -374,7 +391,6 @@ export interface IRenderClipResponse {
   parentId: string;
   clipId: string;
   status: SubAssetStatus;
-  downloadUrl?: string;
   org: number;
 }
 export interface AdminGetSubAssetsQuery {

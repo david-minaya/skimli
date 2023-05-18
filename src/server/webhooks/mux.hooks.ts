@@ -18,22 +18,27 @@ export function verifyMuxWebhookMiddleware(
   const signature = req.get(MUX_SIGNATURE_HEADER);
   const body = JSON.stringify(req.body);
 
-  const isValid = Mux.Webhooks.verifyHeader(
-    body,
-    signature as string,
-    AppConfig.mux.muxWebhookSigningSecret
-  );
-
-  if (!isValid) {
-    console.warn(
-      "invalid request with body and headers",
-      JSON.stringify(req.body),
-      JSON.stringify(req.headers)
+  try {
+    const isValid = Mux.Webhooks.verifyHeader(
+      body,
+      signature as string,
+      AppConfig.mux.muxWebhookSigningSecret
     );
-    return res.status(400).json({ message: "bad request" });
-  }
 
-  next();
+    if (!isValid) {
+      console.warn(
+        "invalid request with body and headers",
+        JSON.stringify(req.body),
+        JSON.stringify(req.headers)
+      );
+      return res.status(400).json({ message: "bad request" });
+    } else {
+      next();
+    }
+  } catch (e) {
+    console.warn("sig verification check failed");
+    return res.status(200).json({ message: "ok" });
+  }
 }
 
 export async function muxWebhook(req: Request, res: Response) {

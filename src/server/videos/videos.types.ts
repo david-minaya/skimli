@@ -22,6 +22,7 @@ import {
   IAssetMetadataObjectDetection,
   AssetMetadataResolution as IAssetMetadataResolution,
   IAssetMetadataTranscription,
+  IAudioMediaDetails,
   IClip,
   IClipDetails,
   IClipDetailsRender,
@@ -32,7 +33,6 @@ import {
   IInferenceDataAnalysis,
   IMedia,
   IMediaAssets,
-  IMediaDetails,
   IObjectDetectionAliase,
   IObjectDetectionBoundingBox,
   IObjectDetectionCategory,
@@ -42,10 +42,12 @@ import {
   IObjectDetectionResult,
   IPostVideoWorkflow,
   IRenderClipResponse,
+  IShotstackAudioMediaDetails,
   SourceMuxInput as ISourceMuxInput,
   SourceMuxInputFile as ISourceMuxInputFile,
   SourceMuxInputSettings as ISourceMuxInputSettings,
   SourceMuxInputTrack as ISourceMuxInputTrack,
+  ISubtitleMediaDetails,
   MediaStatus,
   MediaType,
   RenderClipQuality,
@@ -518,13 +520,31 @@ registerEnumType(MediaType, { name: "MediaType" });
 registerEnumType(MediaStatus, { name: "MediaStatus" });
 
 @ObjectType()
-export class SubtitleMediaDetails implements IMediaDetails {
+export class SubtitleMediaDetails implements ISubtitleMediaDetails {
   @Field(() => String)
   sourceUrl: string;
+
+  @Field(() => String, { nullable: true, defaultValue: MediaType.SUBTITLE })
+  type: string = MediaType.SUBTITLE;
 }
 
 @ObjectType()
-export class AudioMediaDetails implements IMediaDetails {
+export class ShostackAudioMediaDetails implements IShotstackAudioMediaDetails {
+  @Field(() => String, { nullable: true })
+  id: string;
+
+  @Field(() => String, { nullable: true })
+  url: string;
+
+  @Field(() => String, { nullable: true })
+  status: string;
+
+  @Field(() => String, { nullable: true })
+  render: string;
+}
+
+@ObjectType()
+export class AudioMediaDetails implements IAudioMediaDetails {
   @Field(() => String)
   sourceUrl: string;
 
@@ -539,13 +559,19 @@ export class AudioMediaDetails implements IMediaDetails {
     description: "only available if media type is a audio file",
   })
   playbackId?: string;
+
+  @Field(() => String, { nullable: true, defaultValue: MediaType.AUDIO })
+  type: string = MediaType.AUDIO;
+
+  @Field(() => ShostackAudioMediaDetails, { nullable: true })
+  shotstack: ShostackAudioMediaDetails;
 }
 
 export const MediaDetails = createUnionType({
   name: "MediaDetails",
   types: () => [SubtitleMediaDetails, AudioMediaDetails],
   resolveType: (value) => {
-    if ("muxAssetId" in value) {
+    if (value?.type == MediaType.AUDIO || "muxAssetId" in value) {
       return AudioMediaDetails;
     }
     return SubtitleMediaDetails;
@@ -604,12 +630,6 @@ export class RenderClipResponse implements IRenderClipResponse {
 
   @Field(() => String)
   status: SubAssetStatus;
-
-  @Field(() => String, {
-    description: "download link to rendered clip",
-    nullable: true,
-  })
-  downloadUrl?: string;
 }
 
 @ObjectType()

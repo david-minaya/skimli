@@ -12,6 +12,7 @@ import {
   axiosResponseErrorLoggerInterceptor,
 } from "../api/base.api";
 import {
+  IShotstackIngestAudioArgs,
   IShotstackRenderClipArgs,
   IShotstackRenderClipResponse,
 } from "./shotstack.types";
@@ -29,7 +30,7 @@ export class ShotstackService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: `${config.shotstack.apiBaseURL}/edit/${config.shotstack.apiEnv}`,
+      baseURL: `${config.shotstack.apiBaseURL}`,
       headers: {
         "x-api-key": config.shotstack.apikey,
       },
@@ -51,7 +52,7 @@ export class ShotstackService {
   ): Promise<IShotstackRenderClipResponse> {
     try {
       const response = await this.api.post(
-        "/render",
+        `/edit/${config.shotstack.apiEnv}/render`,
         JSON.stringify({
           timeline: {
             background: CLIP_BACKGROUND,
@@ -92,6 +93,23 @@ export class ShotstackService {
         })
       );
       return response.data;
+    } catch (e) {
+      const error = e as AxiosError;
+      console.error(JSON.stringify(error.request));
+      console.error(JSON.stringify((e as any)?.request?.data));
+      throw e;
+    }
+  }
+
+  // ingest audio
+  async uploadAudio(args: IShotstackIngestAudioArgs): Promise<{ id: string }> {
+    try {
+      const response = await this.api.post(
+        `/ingest/${config.shotstack.apiEnv}/sources`,
+        { url: args.url, callback: args.callbackUrl }
+      );
+      console.log("shotstack upload audio response: ", response?.data);
+      return { id: response?.data?.id ?? "" };
     } catch (e) {
       const error = e as AxiosError;
       console.error(JSON.stringify(error.request));

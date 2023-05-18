@@ -292,7 +292,6 @@ export class VideosAPI {
       const response = await this.api.get(`/video/v1/admin/subassets`, {
         params: { ...query },
       });
-      console.log(JSON.stringify(response?.data));
       return response?.data;
     } catch (e) {
       throw new APIError(e);
