@@ -8,7 +8,7 @@ export function useGetAssets() {
   const query = useQuery();
 
   return useCallback(
-    async (name?: string, skip = 0, take = 1000) => {
+    async (name?: string, skip = 0, take = 20) => {
       return query<Asset[]>({
         name: 'getAssets',
         query: gql`

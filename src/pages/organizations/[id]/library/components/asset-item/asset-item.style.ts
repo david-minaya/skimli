@@ -2,6 +2,7 @@ import { Style } from '~/utils/style';
 
 export const style = Style({
   container: {
+    height: '156px',
     display: 'flex',
     alignItems: 'center',
     padding: '28px 8px 28px 0px',

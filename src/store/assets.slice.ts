@@ -51,6 +51,14 @@ export const assetsSlice = createSlice({
       });
     },
 
+    addMany(state, action: PayloadAction<Asset[]>) {
+      adapter.upsertMany(state, action.payload.map(asset => ({
+        ...asset, 
+        ...processInferenceData(asset.inferenceData),
+        selected: state.selectedIds.find(id => id === asset.uuid) !== undefined,
+      })));
+    },
+
     addAll(state, action: PayloadAction<Asset[]>) {
       adapter.setAll(state, action.payload.map(asset => ({
         ...asset, 
@@ -206,6 +214,10 @@ export function useAssets() {
 
     unSelectClip(assetId: string) {
       dispatch(assetsSlice.actions.unSelectClip(assetId));
+    },
+
+    addMany(assets: Asset[]) {
+      dispatch(assetsSlice.actions.addMany(assets));
     },
 
     update(id: string, changes: Partial<Asset>) {

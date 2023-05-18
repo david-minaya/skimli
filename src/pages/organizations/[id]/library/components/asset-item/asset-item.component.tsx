@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { MoreHoriz } from '@mui/icons-material';
-import { useRef, useState } from 'react';
+import { useRef, useState, CSSProperties, memo } from 'react';
 import { Box, Checkbox, IconButton, Menu, MenuItem } from '@mui/material';
 import { formatDate } from '~/utils/formatDate';
 import { RefreshIcon } from '~/icons/refreshIcon';
@@ -14,28 +14,29 @@ import { useAssets } from '~/store/assets.slice';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { Toast } from '~/components/toast/toast.component';
 import { StatusTag } from '../status-tag/status-tag.component';
-import { style } from './asset-item.style';
 import { useRouter } from 'next/router';
 import { useAccount } from '~/store/account.slice';
 import { useConversions } from '~/store/conversions.slice';
+import { style } from './asset-item.style';
+import { areEqual } from 'react-window';
 
 interface Props {
-  asset: Asset;
-  showCheckBox: boolean;
-  onClick: (asset: Asset) => void;
+  index: number;
+  data: any;
+  style: CSSProperties;
 }
 
-export function AssetItem(props: Props) {
+export const AssetItem = memo(function AssetItem(props: Props) {
 
   const { 
-    asset: _asset,
-    showCheckBox,
-    onClick,
+    index,
+    style: inlineStyle,
+    data: { assets, showCheckBox, onClick },
   } = props;
 
   const asset: Asset = { 
-    ..._asset, 
-    status: _asset.sourceMuxAssetId ? _asset.status : 'ERRORED'
+    ...assets[index],
+    status: assets[index].sourceMuxAssetId ? assets[index].status : 'ERRORED'
   };
 
   const router = useRouter();
@@ -92,7 +93,8 @@ export function AssetItem(props: Props) {
   }
 
   return (
-    <Box 
+    <Box
+      style={inlineStyle}
       sx={[
         style.container, 
         asset.selected && style.containerSelected as any
@@ -199,4 +201,4 @@ export function AssetItem(props: Props) {
         onClose={() => setOpenWorkflowStatusModal(false)}/>
     </Box>
   );
-}
+}, areEqual);
