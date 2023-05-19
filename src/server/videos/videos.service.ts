@@ -100,6 +100,7 @@ import {
   AutoTranscriptionFailedException,
   ClipsNotFoundException,
   MediaNotSubtitleException,
+  RenderClipException,
   SubtitleFileNotSupported,
 } from "./videos.exceptions";
 import {
@@ -140,7 +141,7 @@ export class VideosService {
     }
 
     if (asset) {
-      throw new BadInputError("Video already exists in library");
+      throw new BadInputError(AppErrorCodes.ASSET_ALREADY_EXISTS);
     }
 
     try {
@@ -557,7 +558,7 @@ export class VideosService {
   }) {
     const clip = args.newOrUpdatedClip;
     const clips = args.videoAsset.clips;
-    if (clips?.length == 0) throw new BadInputError("Clips not found");
+    if (clips?.length == 0) throw ClipsNotFoundException;
 
     const duplicateClip = clips.find((c) => {
       if (clip?.uuid && clip.uuid == c.uuid) {
@@ -566,7 +567,7 @@ export class VideosService {
       return c.startTime == clip.startTime && c.endTime == clip.endTime;
     });
     if (duplicateClip) {
-      throw new BadInputError("Duplicate Clip");
+      throw new BadInputError(AppErrorCodes.DUPLICATE_CLIP);
     }
 
     const duplicateClipWithMatchingStartTime = clips.find((c) => {
@@ -576,7 +577,7 @@ export class VideosService {
       return c.startTime == clip.startTime;
     });
     if (duplicateClipWithMatchingStartTime)
-      throw new BadInputError(`Clip start time must be unique.`);
+      throw new BadInputError(AppErrorCodes.DUPLICATE_CLIP_START_TIME);
 
     let muxAsset: MuxSignedAsset | null;
     try {
@@ -637,7 +638,7 @@ export class VideosService {
 
   async adjustClip(authInfo: AuthInfo, args: IAdjustClipArgs): Promise<IClip> {
     const asset = await this.getAsset(authInfo, args.assetId);
-    if (!asset) throw new BadInputError(`Asset not found`);
+    if (!asset) throw AssetNotFoundException;
 
     const clips = asset.inferenceData?.human.clips || [];
     await this.validateClip({
@@ -722,7 +723,7 @@ export class VideosService {
     const asset = await this.getAsset(authInfo, args.assetId);
     const [inputInfo, _] = asset.sourceMuxInputInfo ?? [];
     if (!inputInfo) {
-      throw new InternalGraphQLError(`Missing input info`);
+      throw RenderClipException;
     }
 
     const clip = asset.inferenceData?.human.clips?.find(
