@@ -630,6 +630,9 @@ export class RenderClipResponse implements IRenderClipResponse {
 
   @Field(() => String)
   status: SubAssetStatus;
+
+  @Field(() => String, { nullable: true, description: "if status is SUCCESS" })
+  downloadUrl?: string;
 }
 
 @ObjectType()

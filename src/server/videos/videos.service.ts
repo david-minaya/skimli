@@ -64,6 +64,7 @@ import {
   IGetObjectDetectionArgs,
   IMedia,
   IObjectDetectionResults,
+  ISaveDownloadDetails,
   IStartMediaUploadArgs,
   MediaStatus,
   MediaType,
@@ -739,8 +740,13 @@ export class VideosService {
         (c) => c.quality == args.quality && c.muteAudio == args.muteAudio
       );
       if (renderedClip) {
-        // TODO: increment download counts and store records in db via api
-        return this.generateSignedURL(renderedClip.url);
+        const downloadUrl = await this.generateSubAssetDownloadLink({
+          assetId: asset.uuid,
+          clipId: clip.uuid,
+          downloadedAt: new Date().toUTCString(),
+          render: renderedClip,
+        });
+        return downloadUrl;
       }
     }
 
@@ -853,15 +859,32 @@ export class VideosService {
         }
       );
 
-      // TODO: increment download counts and store records in db via api
+      const downloadUrl = await this.generateSubAssetDownloadLink({
+        assetId: subAsset.parentId,
+        clipId: subAsset.details.clipId,
+        downloadedAt: new Date().toUTCString(),
+        render: subAsset.render,
+        subAssetId: subAsset.uuid,
+      });
       const payload: RenderClipResponse = {
         parentId: subAsset.parentId,
         clipId: subAsset?.details.clipId,
         status: updatedSubAsset.status,
         org: subAsset.org,
+        downloadUrl: downloadUrl,
       };
       await pubSub.publish(RENDER_CLIP_EVENT, payload);
     }
+  }
+
+  async generateSubAssetDownloadLink(
+    args: ISaveDownloadDetails
+  ): Promise<string> {
+    await this.videosAPI.adminSaveDownloadDetails(args.assetId, args);
+    if (!args?.render?.url) {
+      throw RenderClipException;
+    }
+    return this.generateSignedURL(args.render.url);
   }
 
   async handleShotstackAudioMediaReady(

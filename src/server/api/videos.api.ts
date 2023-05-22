@@ -323,4 +323,19 @@ export class VideosAPI {
       throw new APIError(e);
     }
   }
+
+  async adminSaveDownloadDetails(
+    assetId: string,
+    details: object
+  ): Promise<void> {
+    try {
+      const response = await this.api.post(
+        `/video/v1/admin/assets/${encodeURIComponent(assetId)}/downloads`,
+        { downloads: details }
+      );
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
 }

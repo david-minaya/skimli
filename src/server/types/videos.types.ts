@@ -392,6 +392,7 @@ export interface IRenderClipResponse {
   clipId: string;
   status: SubAssetStatus;
   org: number;
+  downloadUrl?: string;
 }
 export interface AdminGetSubAssetsQuery {
   uuid?: string;
@@ -466,4 +467,12 @@ export interface IAdminGetMediaArgs {
   take?: number;
   skip?: number;
   org: number;
+}
+
+export interface ISaveDownloadDetails {
+  assetId: string;
+  clipId: string;
+  render: ISubAssetRender;
+  downloadedAt: string;
+  subAssetId?: string;
 }

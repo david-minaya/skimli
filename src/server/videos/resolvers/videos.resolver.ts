@@ -400,7 +400,7 @@ export class VideosResolver {
   @Mutation(() => String, {
     nullable: true,
     description:
-      "if a clip with given quality and muteAudio is already rendered then download url (string) is returned else null value is returned indication the clip is sent for rendering",
+      "if a clip with given quality and muteAudio is already rendered then download url (string) is returned else null value is returned indicating the clip is sent for rendering",
   })
   async renderClip(
     @Ctx() ctx: GraphQLContext,
