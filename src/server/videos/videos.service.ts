@@ -71,6 +71,7 @@ import {
   MuxPassthroughType,
   SubAssetStatus,
   SubAssetType,
+  TranscriptionFileStatus,
 } from "../types/videos.types";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
 import { parseS3URL } from "./utils";
@@ -226,6 +227,11 @@ export class VideosService {
     );
     if (error) {
       Sentry.captureException(error);
+      const payload: AssetUploads = {
+        status: AssetStatus.ERRORED,
+        org: Number(org),
+      };
+      await pubSub.publish(ASSET_UPLOAD_EVENT, payload);
       return;
     }
 
@@ -368,13 +374,21 @@ export class VideosService {
             ? AssetStatus.UNCONVERTED
             : AssetStatus.ERRORED;
 
-        await this.updateAssetInfo(passthrough, data.id, status);
         const eventPayload: AssetUploads = {
           status: status,
           assetId: data.id,
           org: org,
         };
-        await pubSub.publish(ASSET_UPLOAD_EVENT, eventPayload);
+
+        try {
+          await this.updateAssetInfo(passthrough, data.id, status);
+          await pubSub.publish(ASSET_UPLOAD_EVENT, eventPayload);
+        } catch (e) {
+          await pubSub.publish(ASSET_UPLOAD_EVENT, {
+            ...eventPayload,
+            status: AssetStatus.ERRORED,
+          });
+        }
       } else if (passthroughType == MuxPassthroughType.AUDIO_MEDIA) {
         const [media] = await this.videosAPI.adminGetMedia({
           uuid: passthrough,
@@ -687,6 +701,8 @@ export class VideosService {
       if (
         asset.metadata?.transcription?.status !=
           AssetTranscriptionObjectDetectionStatus.COMPLETED ||
+        asset?.metadata?.transcription?.transcriptionFileStatus !=
+          TranscriptionFileStatus.VALID ||
         !asset?.metadata?.transcription?.sourceUrl
       ) {
         throw AutoTranscriptionFailedException;

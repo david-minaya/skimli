@@ -52,6 +52,7 @@ import {
   MediaType,
   RenderClipQuality,
   SubAssetStatus,
+  TranscriptionFileStatus,
 } from "../types/videos.types";
 
 registerEnumType(AssetStatus, {
@@ -72,6 +73,10 @@ registerEnumType(RenderClipQuality, {
 
 registerEnumType(AssetTranscriptionObjectDetectionStatus, {
   name: "AssetTranscriptionObjectDetectionStatus",
+});
+
+registerEnumType(TranscriptionFileStatus, {
+  name: "TranscriptionFileStatus",
 });
 
 @ObjectType()
@@ -223,6 +228,9 @@ export class AssetMetadataTranscription implements IAssetMetadataTranscription {
 
   @Field(() => String)
   workflowId: string;
+
+  @Field(() => TranscriptionFileStatus, { nullable: true })
+  transcriptionFileStatus?: TranscriptionFileStatus;
 }
 
 @ObjectType()

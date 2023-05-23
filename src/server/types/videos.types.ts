@@ -200,10 +200,17 @@ export enum AssetTranscriptionObjectDetectionStatus {
   RUNNING = "RUNNING",
 }
 
+export enum TranscriptionFileStatus {
+  MISSING = "MISSING",
+  VALID = "VALID",
+  INVALID = "INVALID",
+}
+
 export interface IAssetMetadataTranscription {
   status: AssetTranscriptionObjectDetectionStatus;
   sourceUrl?: string;
   workflowId: string;
+  transcriptionFileStatus?: TranscriptionFileStatus;
 }
 
 export interface IAssetMetadataObjectDetection {
