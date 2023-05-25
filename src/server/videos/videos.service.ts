@@ -62,10 +62,12 @@ import {
   IGetClipsArgs,
   IGetMediaSubtitleArgs,
   IGetObjectDetectionArgs,
+  ILinkMediasToAssetArgs,
   IMedia,
   IObjectDetectionResults,
   ISaveDownloadDetails,
   IStartMediaUploadArgs,
+  IUnlinkMediaArgs,
   MediaStatus,
   MediaType,
   MuxPassthroughType,
@@ -85,7 +87,7 @@ import {
 } from "./videos.args";
 import {
   ASSET_UPLOAD_EVENT,
-  AUDIO_FILE_EXTENSION,
+  SUPPORTED_AUDIO_FILE_EXTENSIONS,
   CONVERT_TO_CLIPS_TOPIC,
   MAX_CLIP_DURATION_ERROR,
   MAX_CLIP_DURATION_IN_MS,
@@ -93,7 +95,8 @@ import {
   MIN_CLIP_DURATION_ERROR,
   MIN_CLIP_DURATION_IN_MS,
   RENDER_CLIP_EVENT,
-  SUBTITLE_FILE_EXTENSION,
+  SUPPORTED_SUBTITLE_FILE_EXTENSIONS,
+  SUPPORTED_IMAGE_FILE_EXTENSIONS,
 } from "./videos.constants";
 import {
   AssetMediaNotFoundException,
@@ -101,6 +104,9 @@ import {
   AudioFileNotSupported,
   AutoTranscriptionFailedException,
   ClipsNotFoundException,
+  ImageFileNotSupported,
+  MediaLinkedToAssetException,
+  MediaNotFoundException,
   MediaNotSubtitleException,
   RenderClipException,
   SubtitleFileNotSupported,
@@ -113,6 +119,7 @@ import {
   RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
+import * as fs from "fs";
 @Service()
 export class VideosService {
   constructor(
@@ -264,26 +271,36 @@ export class VideosService {
       Key: key,
     });
 
-    const [video] = await this.videosAPI.adminGetAssets({
-      org: org,
-      uuid: metadata.assetId,
-    });
-    if (!video) {
-      console.warn(`video asset not found for ${metadata?.assetId}`);
-      console.warn("skipping creating media");
-      return;
+    const assetId = metadata?.assetId;
+    const assetIds: string[] = [];
+    if (assetId) {
+      assetIds.push(assetId);
     }
-
+    // assetId / assetIds refers to asset.uuid's
+    const sourceUrl = `s3://${bucket}/${key}`;
     const media = await this.videosAPI.adminCreateMedia({
       name: filename,
-      details: { sourceUrl: `s3://${bucket}/${key}`, type: metadata.type },
+      details: { sourceUrl: sourceUrl, type: metadata.type },
       type: metadata.type,
-      assets: { ids: [video?.uuid], count: 1 },
-      status: MediaStatus.PROCSESSING,
+      assets: { ids: assetIds, count: assetIds.length },
+      status:
+        metadata.type == MediaType.IMAGE
+          ? MediaStatus.READY
+          : MediaStatus.PROCSESSING,
       org: org,
     });
 
     if (metadata.type == MediaType.SUBTITLE) {
+      const [video] = await this.videosAPI.adminGetAssets({
+        org: org,
+        uuid: metadata?.assetId,
+      });
+      if (!video) {
+        console.warn(`video asset not found for ${metadata?.assetId}`);
+        console.warn("skipping creating media");
+        return;
+      }
+
       const track = await this.muxService.createTextTrack(
         video?.sourceMuxAssetId!,
         {
@@ -320,6 +337,11 @@ export class VideosService {
         callbackUrl: callbackUrl.toString(),
       });
       console.log("sent audio file to shostack");
+    } else if (metadata.type == MediaType.IMAGE) {
+      console.log(
+        `image asset uploaded and processed for ${JSON.stringify(media)}`
+      );
+      await pubSub.publish(MEDIA_UPLOADED_EVENT, media);
     }
   }
 
@@ -507,25 +529,46 @@ export class VideosService {
     await pubSub.publish(CONVERT_TO_CLIPS_TOPIC, workflowStatus);
   }
 
-  async checkSupportedFile({}) {}
+  checkSupportedMediaFile({
+    filename,
+    type,
+  }: {
+    filename: string;
+    type: MediaType;
+  }) {
+    const ext = filename.split(".").pop()?.toLowerCase() as string;
+
+    if (
+      type == MediaType.SUBTITLE &&
+      !SUPPORTED_SUBTITLE_FILE_EXTENSIONS.includes(ext)
+    ) {
+      throw SubtitleFileNotSupported;
+    } else if (
+      type == MediaType.AUDIO &&
+      !SUPPORTED_AUDIO_FILE_EXTENSIONS.includes(ext)
+    ) {
+      throw AudioFileNotSupported;
+    } else if (
+      type == MediaType.IMAGE &&
+      !SUPPORTED_IMAGE_FILE_EXTENSIONS.includes(ext)
+    ) {
+      throw ImageFileNotSupported;
+    }
+  }
 
   async startMediaUpload(
     authInfo: AuthInfo,
     args: IStartMediaUploadArgs
   ): Promise<StartUploadResponse> {
-    if (
-      args.type == MediaType.SUBTITLE &&
-      !args.filename.endsWith(SUBTITLE_FILE_EXTENSION)
-    ) {
-      throw SubtitleFileNotSupported;
-    } else if (
-      args.type == MediaType.AUDIO &&
-      !args.filename.endsWith(AUDIO_FILE_EXTENSION)
-    ) {
-      throw AudioFileNotSupported;
+    this.checkSupportedMediaFile({ filename: args.filename, type: args.type });
+
+    let key = "";
+    if (args.type == MediaType.SUBTITLE) {
+      key = `org/${authInfo.auth0?.organization_id}/media/${args.assetId}/${args.filename}`;
+    } else {
+      key = `org/${authInfo.auth0?.organization_id}/media/${args.filename}`;
     }
 
-    const key = `org/${authInfo.auth0?.organization_id}/media/${args.assetId}/${args.filename}`;
     let asset: GetObjectOutput | null = null;
     try {
       asset = await this.s3Service.getObject({
@@ -551,6 +594,7 @@ export class VideosService {
         Metadata: {
           metadata: JSON.stringify(args),
         },
+        // ContentType: "",
       });
       return { key: uploaded.Key!, uploadId: uploaded!.UploadId! };
     } catch (e) {
@@ -1000,5 +1044,39 @@ export class VideosService {
     } catch (e) {
       throw new InternalGraphQLError(`failed to parse object detection data`);
     }
+  }
+
+  async deleteMedia(authInfo: AuthInfo, mediaId: string): Promise<boolean> {
+    const [media] = await this.videosAPI.getAssetMedias(
+      { uuid: mediaId },
+      authInfo.token
+    );
+    if (!media) {
+      throw MediaNotFoundException;
+    }
+
+    if (Number(media.assets?.ids?.length) > 0) {
+      throw MediaLinkedToAssetException;
+    }
+
+    await this.videosAPI.deleteMedia(mediaId, authInfo.token);
+    return true;
+  }
+
+  async unlinkMedia(
+    authInfo: AuthInfo,
+    args: IUnlinkMediaArgs
+  ): Promise<boolean> {
+    args.count = args.assetIds.length;
+    await this.videosAPI.unlinkMedia(args, authInfo.token);
+    return true;
+  }
+
+  async linkMediasToAsset(
+    authInfo: AuthInfo,
+    args: ILinkMediasToAssetArgs
+  ): Promise<Asset> {
+    args.count = args.mediaIds.length;
+    return this.videosAPI.linkMediasToAsset(args, authInfo.token);
   }
 }

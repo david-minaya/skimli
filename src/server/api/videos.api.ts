@@ -30,6 +30,8 @@ import {
   IUpdateSubAssetArgs,
   AdminGetSubAssetsQuery,
   IAdminGetMediaArgs,
+  IUnlinkMediaArgs,
+  ILinkMediasToAssetArgs,
 } from "../types/videos.types";
 import {
   axiosRequestErrorLoggerInterceptor,
@@ -334,6 +336,51 @@ export class VideosAPI {
         { downloads: details }
       );
       return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async deleteMedia(mediaUUID: string, token: string): Promise<void> {
+    try {
+      const response = await this.api.delete(
+        `/video/v1/media/${encodeURIComponent(mediaUUID)}`,
+        { headers: { ...generateAuthHeaders(token) } }
+      );
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async unlinkMedia(args: IUnlinkMediaArgs, token: string): Promise<void> {
+    const { mediaId, assetIds, count } = args;
+    try {
+      const response = await this.api.delete(
+        `/video/v1/media/${encodeURIComponent(mediaId)}/assets`,
+        {
+          headers: { ...generateAuthHeaders(token) },
+          data: { ids: assetIds, count: count },
+        }
+      );
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async linkMediasToAsset(
+    args: ILinkMediasToAssetArgs,
+    token: string
+  ): Promise<Asset> {
+    const { assetId, mediaIds, count } = args;
+    try {
+      const response = await this.api.post(
+        `/video/v1/assets/${encodeURIComponent(assetId)}/media`,
+        { ids: mediaIds, count: count },
+        { headers: { ...generateAuthHeaders(token) } }
+      );
+      return response.data;
     } catch (e) {
       throw new APIError(e);
     }

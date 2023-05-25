@@ -28,7 +28,9 @@ import {
   IGetClipsArgs,
   IGetMediaSubtitleArgs,
   IGetObjectDetectionArgs,
+  ILinkMediasToAssetArgs,
   IStartMediaUploadArgs,
+  IUnlinkMediaArgs,
   MediaStatus,
   MediaType,
   RenderClipQuality,
@@ -181,11 +183,13 @@ export class StartMediaUploadArgs implements IStartMediaUploadArgs {
   @IsNotEmpty()
   filename: string;
 
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+    description: "required for subtitle media, otherwise is optional",
+  })
+  @IsOptional()
   @IsUUID()
-  @IsString()
-  @IsNotEmpty()
-  assetId: string;
+  assetId?: string;
 
   @Field(() => MediaType)
   @IsEnum(MediaType)
@@ -417,4 +421,37 @@ export class GetObjectDetectionLabelsArgs implements IGetObjectDetectionArgs {
   @IsBoolean()
   @IsOptional()
   withBoundingBoxes?: boolean = true;
+}
+
+@ArgsType()
+export class DeleteMediaArgs {
+  @Field(() => String)
+  @IsUUID()
+  mediaId: string;
+}
+
+@ArgsType()
+export class UnlinkMediaArgs implements IUnlinkMediaArgs {
+  @Field(() => String)
+  @IsUUID()
+  mediaId: string;
+
+  @Field(() => [String])
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @IsString({ each: true })
+  assetIds: string[];
+}
+
+@ArgsType()
+export class LinkMediasToAssetArgs implements ILinkMediasToAssetArgs {
+  @Field(() => String)
+  @IsUUID()
+  assetId: string;
+
+  @Field(() => [String!]!)
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  mediaIds: string[];
 }

@@ -27,6 +27,7 @@ import {
   ConvertToClipsArgs,
   CreateClipArgs,
   DeleteAssetsArgs,
+  DeleteMediaArgs,
   GetAssetArgs,
   GetAssetMediasArgs,
   GetAssetsArgs,
@@ -35,10 +36,12 @@ import {
   GetPartUploadURLArgs,
   GetSubtitleMediaArgs,
   GetSupportedConversionsArgs,
+  LinkMediasToAssetArgs,
   RenderClipArgs,
   StartMediaUploadArgs,
   StartUploadArgs,
   TestConvertToClipsWorkflowStatusArgs,
+  UnlinkMediaArgs,
 } from "../videos.args";
 import {
   ASSET_UPLOAD_EVENT,
@@ -46,6 +49,7 @@ import {
   MEDIA_UPLOADED_EVENT,
   RENDER_CLIP_EVENT,
 } from "../videos.constants";
+import { GetSubtitleMediaException } from "../videos.exceptions";
 import { VideosService } from "../videos.service";
 import {
   Asset,
@@ -61,7 +65,6 @@ import {
   RenderClipResponse,
   StartUploadResponse,
 } from "../videos.types";
-import { GetSubtitleMediaException } from "../videos.exceptions";
 
 @Resolver(() => ConvertToClipsWorkflowStatus)
 @Service()
@@ -439,6 +442,8 @@ export class VideosResolver {
     return response;
   }
 
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
   @Query(() => [ObjectDetectionResult], { nullable: true })
   async getObjectDetectionLabels(
     @Args() args: GetObjectDetectionLabelsArgs,
@@ -462,4 +467,43 @@ export class VideosResolver {
   //   );
   //   return true;
   // }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => Boolean)
+  async deleteMedia(
+    @Args() args: DeleteMediaArgs,
+    @Ctx() ctx: GraphQLContext
+  ): Promise<boolean> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.deleteMedia(authInfo, args.mediaId);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => Boolean)
+  async unlinkMedia(@Args() args: UnlinkMediaArgs, @Ctx() ctx: GraphQLContext) {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.unlinkMedia(authInfo, args);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => Asset)
+  async linkMediasToAsset(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: LinkMediasToAssetArgs
+  ): Promise<Asset> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.linkMediasToAsset(authInfo, args);
+  }
 }
