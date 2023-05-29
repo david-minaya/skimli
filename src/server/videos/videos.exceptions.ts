@@ -6,6 +6,14 @@ export const AssetNotFoundException = new BadInputError(
   AppErrorCodes.ASSET_NOT_FOUND
 );
 
+export const MediaNotFoundException = new BadInputError(
+  AppErrorCodes.ASSET_MEDIA_NOT_FOUND
+);
+
+export const MediaLinkedToAssetException = new BadInputError(
+  AppErrorCodes.MEDIA_LINKED_TO_ASSET
+);
+
 export const ClipsNotFoundException = new BadInputError(
   AppErrorCodes.CLIP_NOT_FOUND
 );
@@ -16,6 +24,10 @@ export const SubtitleFileNotSupported = new BadInputError(
 
 export const AudioFileNotSupported = new BadInputError(
   AppErrorCodes.AUDIO_FILE_NOT_SUPPORTED
+);
+
+export const ImageFileNotSupported = new BadInputError(
+  AppErrorCodes.IMAGE_FILE_NOT_SUPPORTED
 );
 
 export const AssetMediaNotFoundException = new BadInputError(

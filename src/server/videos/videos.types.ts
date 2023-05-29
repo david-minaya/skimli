@@ -29,6 +29,7 @@ import {
   IConvertToClipsWorkflow,
   ConvertToClipsWorkflowResponse as IConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus as IConvertToClipsWorkflowStatus,
+  IImageMediaDetails,
   IInferenceData,
   IInferenceDataAnalysis,
   IMedia,
@@ -575,12 +576,23 @@ export class AudioMediaDetails implements IAudioMediaDetails {
   shotstack: ShostackAudioMediaDetails;
 }
 
+@ObjectType()
+export class ImageMediaDetails implements IImageMediaDetails {
+  @Field(() => String)
+  sourceUrl: string;
+
+  @Field(() => String, { nullable: true, defaultValue: MediaType.IMAGE })
+  type: string = MediaType.IMAGE;
+}
+
 export const MediaDetails = createUnionType({
   name: "MediaDetails",
-  types: () => [SubtitleMediaDetails, AudioMediaDetails],
+  types: () => [SubtitleMediaDetails, AudioMediaDetails, ImageMediaDetails],
   resolveType: (value) => {
     if (value?.type == MediaType.AUDIO || "muxAssetId" in value) {
       return AudioMediaDetails;
+    } else if (value?.type == MediaType.IMAGE) {
+      return ImageMediaDetails;
     }
     return SubtitleMediaDetails;
   },

@@ -16,6 +16,7 @@ import {
   ConvertToClipsWorkflowStatusResolver,
   VideosResolver,
 } from "./videos/resolvers/videos.resolver";
+import { ImageMediaDetailsResolver } from "./videos/resolvers/image-details.resolver";
 
 export const UnAuthorizedError = new GraphQLError(
   "Access denied! You need to be authorized to perform this action!"
@@ -31,6 +32,7 @@ export const schema = buildSchemaSync({
     MuxResolver,
     CategoriesResolver,
     ConvertToClipsWorkflowStatusResolver,
+    ImageMediaDetailsResolver,
     // ClipDetailsRenderResolver,
   ],
   container: Container,

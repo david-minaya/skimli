@@ -8,6 +8,9 @@ export default class AppErrorCodes {
   // thrown when a non .mp3 file is uploaded
   public static AUDIO_FILE_NOT_SUPPORTED = "AUDIO_FILE_NOT_SUPPORTED";
 
+  // thrown when a not supporting image file is uploaded
+  public static IMAGE_FILE_NOT_SUPPORTED = "IMAGE_FILE_NOT_SUPPORTED";
+
   // thrown when a media with filename already exists
   public static MEDIA_FILE_EXISTS = "MEDIA_FILE_EXISTS";
 
@@ -37,4 +40,10 @@ export default class AppErrorCodes {
 
   // thrown when failed to render a clip
   public static RENDER_CLIP_FAILED = "RENDER_CLIP_FAILED";
+
+  // throw when calling deleteMedia mutation
+  public static UNABLE_TO_DELETE_MEDIA = "UNABLE_TO_DELETE_MEDIA";
+
+  // throw when calling deleteMedia mutation
+  public static MEDIA_LINKED_TO_ASSET = "MEDIA_LINKED_TO_ASSET";
 }

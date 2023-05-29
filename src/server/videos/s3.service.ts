@@ -3,6 +3,7 @@ import {
   GetObjectCommandInput,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl as cfGetSignedUrl } from "@aws-sdk/cloudfront-signer";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import * as AWS from "aws-sdk";
 import {
@@ -14,10 +15,11 @@ import {
   GetObjectOutput,
   GetObjectRequest,
 } from "aws-sdk/clients/s3";
+import { addDays } from "date-fns";
+import { Readable } from "stream";
 import { Service } from "typedi";
 import config from "../../config";
-import { Readable } from "stream";
-import { streamToString } from "./utils";
+import { parseS3URL, streamToString } from "./utils";
 
 AWS.config.update({
   region: config.aws.awsRegion,
@@ -40,6 +42,7 @@ export class S3Service {
       region: config.aws.awsRegion,
       signatureVersion: "v4",
     });
+
     this.s3Client = new S3Client({
       region: config.aws.awsRegion,
     });
@@ -98,5 +101,18 @@ export class S3Service {
     const { Body } = await this.s3Client.send(command);
     const bodyContents = await streamToString(Body as Readable);
     return bodyContents;
+  }
+
+  async generatedSignedCFURL(s3Url: string): Promise<string> {
+    const { key } = parseS3URL(s3Url);
+
+    const url = `${config.aws.awsCFURL}/${key}`;
+    const signedUrl = cfGetSignedUrl({
+      keyPairId: config.aws.awsCFKeyPairId,
+      privateKey: config.aws.awsCFPrivateKey,
+      url: url,
+      dateLessThan: addDays(new Date(), 3).toString(),
+    });
+    return signedUrl;
   }
 }

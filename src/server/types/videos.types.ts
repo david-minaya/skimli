@@ -234,6 +234,7 @@ export interface AssetMetadata {
 export enum MediaType {
   SUBTITLE = "SUBTITLE",
   AUDIO = "AUDIO",
+  IMAGE = "IMAGE",
 }
 
 export enum MediaStatus {
@@ -265,7 +266,15 @@ export interface IAudioMediaDetails {
   shotstack?: IShotstackAudioMediaDetails;
 }
 
-export type IMediaDetails = ISubtitleMediaDetails | IAudioMediaDetails;
+export interface IImageMediaDetails {
+  sourceUrl: string;
+  type: string;
+}
+
+export type IMediaDetails =
+  | ISubtitleMediaDetails
+  | IAudioMediaDetails
+  | IImageMediaDetails;
 
 export interface IMediaAssets {
   ids?: string[];
@@ -286,7 +295,7 @@ export interface IMedia {
 
 export interface IStartMediaUploadArgs {
   filename: string;
-  assetId: string;
+  assetId?: string;
   type: MediaType;
   languageCode?: string;
 }
@@ -482,4 +491,16 @@ export interface ISaveDownloadDetails {
   render: ISubAssetRender;
   downloadedAt: string;
   subAssetId?: string;
+}
+
+export interface IUnlinkMediaArgs {
+  mediaId: string;
+  assetIds: string[];
+  count?: number;
+}
+
+export interface ILinkMediasToAssetArgs {
+  assetId: string;
+  mediaIds: string[];
+  count?: number;
 }
