@@ -455,3 +455,10 @@ export class LinkMediasToAssetArgs implements ILinkMediasToAssetArgs {
   @IsNotEmpty({ each: true })
   mediaIds: string[];
 }
+
+@ArgsType()
+export class ResetClipArgs {
+  @Field(() => String)
+  @IsUUID()
+  clipId: string;
+}

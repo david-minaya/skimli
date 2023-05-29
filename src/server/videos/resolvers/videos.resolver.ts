@@ -38,6 +38,7 @@ import {
   GetSupportedConversionsArgs,
   LinkMediasToAssetArgs,
   RenderClipArgs,
+  ResetClipArgs,
   StartMediaUploadArgs,
   StartUploadArgs,
   TestConvertToClipsWorkflowStatusArgs,
@@ -505,5 +506,16 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.linkMediasToAsset(authInfo, args);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => Clip)
+  async resetClip(@Ctx() ctx: GraphQLContext, @Args() args: ResetClipArgs) {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.resetClip(args.clipId, authInfo);
   }
 }

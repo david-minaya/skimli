@@ -1079,4 +1079,8 @@ export class VideosService {
     args.count = args.mediaIds.length;
     return this.videosAPI.linkMediasToAsset(args, authInfo.token);
   }
+
+  async resetClip(clipId: string, authInfo: AuthInfo): Promise<IClip> {
+    return this.videosAPI.resetClip(clipId, authInfo.token);
+  }
 }

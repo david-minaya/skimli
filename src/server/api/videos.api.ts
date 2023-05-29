@@ -385,4 +385,18 @@ export class VideosAPI {
       throw new APIError(e);
     }
   }
+
+  // clip.uuid
+  async resetClip(uuid: string, token: string): Promise<IClip> {
+    try {
+      const response = await this.api.put(
+        `/video/v1/clips/${encodeURIComponent(uuid)}/reset`,
+        {},
+        { headers: { ...generateAuthHeaders(token) } }
+      );
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
 }
