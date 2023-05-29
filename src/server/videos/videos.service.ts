@@ -87,7 +87,6 @@ import {
 } from "./videos.args";
 import {
   ASSET_UPLOAD_EVENT,
-  SUPPORTED_AUDIO_FILE_EXTENSIONS,
   CONVERT_TO_CLIPS_TOPIC,
   MAX_CLIP_DURATION_ERROR,
   MAX_CLIP_DURATION_IN_MS,
@@ -95,8 +94,9 @@ import {
   MIN_CLIP_DURATION_ERROR,
   MIN_CLIP_DURATION_IN_MS,
   RENDER_CLIP_EVENT,
-  SUPPORTED_SUBTITLE_FILE_EXTENSIONS,
+  SUPPORTED_AUDIO_FILE_EXTENSIONS,
   SUPPORTED_IMAGE_FILE_EXTENSIONS,
+  SUPPORTED_SUBTITLE_FILE_EXTENSIONS,
 } from "./videos.constants";
 import {
   AssetMediaNotFoundException,
@@ -119,7 +119,6 @@ import {
   RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
-import * as fs from "fs";
 @Service()
 export class VideosService {
   constructor(
@@ -767,11 +766,18 @@ export class VideosService {
     }
   }
 
-  async generateSignedURL(s3URL: string): Promise<string> {
+  async generateSignedURL({
+    s3URL,
+    isAttachment = false,
+  }: {
+    s3URL: string;
+    isAttachment: boolean;
+  }): Promise<string> {
     const { bucket, key } = parseS3URL(s3URL);
     const signedAssetURL = await this.s3Service.getObjectSignedURL({
       Bucket: bucket,
       Key: key,
+      ResponseContentDisposition: isAttachment ? "attachment" : "inline",
     });
     return signedAssetURL;
   }
@@ -810,7 +816,10 @@ export class VideosService {
       }
     }
 
-    const signedAssetURL = await this.generateSignedURL(asset.sourceUrl);
+    const signedAssetURL = await this.generateSignedURL({
+      s3URL: asset.sourceUrl,
+      isAttachment: false,
+    });
 
     const prefix = `org/${org}/clips/${args.clipId}/renders`;
     const filename = v4();
@@ -944,7 +953,10 @@ export class VideosService {
     if (!args?.render?.url) {
       throw RenderClipException;
     }
-    return this.generateSignedURL(args.render.url);
+    return this.generateSignedURL({
+      s3URL: args.render.url,
+      isAttachment: true,
+    });
   }
 
   async handleShotstackAudioMediaReady(
