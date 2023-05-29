@@ -2,13 +2,15 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { accountSlice } from './account.slice';
 import { assetsSlice } from './assets.slice';
+import { editClipPage } from './editClipPage.slice';
 import { conversionsSlice } from './conversions.slice';
 
 export const store = configureStore({
   reducer: {
     account: accountSlice.reducer,
     conversions: conversionsSlice.reducer,
-    assets: assetsSlice.reducer
+    assets: assetsSlice.reducer,
+    editClipPage: editClipPage.reducer
   }
 });
 

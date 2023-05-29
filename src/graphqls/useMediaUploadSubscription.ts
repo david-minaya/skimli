@@ -1,12 +1,13 @@
-import { useEffect } from "react";
-import { gql, useApolloClient } from "@apollo/client";
-import { AssetMedia } from "~/types/assetMedia.type";
+import { useEffect } from 'react';
+import { gql, useApolloClient } from '@apollo/client';
+import { AssetMedia } from '~/types/assetMedia.type';
 
 interface Response {
   mediaUploads: AssetMedia;
 }
 
 export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
+  
   const client = useApolloClient();
 
   useEffect(() => {

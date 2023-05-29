@@ -80,6 +80,7 @@
     "title": "Edit Clips",
     "account": "Personal Account - {{email}}",
     "deleteOption": "Delete",
-    "errorDeleteToast": "Error deleting asset"
+    "errorDeleteToast": "Error deleting asset",
+    "renderingClip": "Rendering"
   }
 }

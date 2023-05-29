@@ -2,7 +2,7 @@ import { Style } from '~/utils/style';
 
 export const style = Style({
   container: {
-    width: '200px',
+    width: '260px',
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'white',

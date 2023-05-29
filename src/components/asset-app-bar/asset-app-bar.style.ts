@@ -34,5 +34,15 @@ export const style = Style({
   folderIcon: {
     display: 'block',
     marginRight: '8px'
+  },
+  renderingClip: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '0px 12px'
+  },
+  renderingClipTitle: {
+    fontSize: '14px',
+    color: 'black',
+    marginRight: '16px'
   }
 });

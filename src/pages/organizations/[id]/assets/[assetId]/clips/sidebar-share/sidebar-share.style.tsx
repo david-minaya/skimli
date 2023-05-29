@@ -6,6 +6,15 @@ export const style = Style({
       padding: '0px 0px 0px 8px'
     }
   }),
+  sidebarContentRenderingClip: nestedStyle({
+    title: {
+      display: 'none'
+    },
+    content: {
+      padding: '0px',
+      backgroundColor: 'backgroundColor.main'
+    }
+  }),
   container: {
     height: '100%',
     display: 'flex',
@@ -33,5 +42,27 @@ export const style = Style({
   aspectRatios: {
     flexGrow: 1,
     overflow: 'auto'
+  },
+  convertOptions: {
+    backgroundColor: 'backgroundColor.main',
+    paddingBottom: '4px'
+  },
+  convertOptionsTitle: {
+    color: 'black',
+    fontWeight: 500,
+    textAlign: 'center',
+    padding: '12px 0px 0px'
+  },
+  renderingClip: {
+    textAlign: 'center',
+    fontSize: '14px',
+    padding: '8px 20px',
+  },
+  renderingClipTitle: {
+    color: 'black',
+    fontWeight: '500',
+  },
+  renderingClipDescription: {
+    marginTop: '12px'
   }
 });

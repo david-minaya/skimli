@@ -6,6 +6,7 @@
   "adjustButton": "Adjust this clip",
   "noCaptionFound": "No caption found",
   "clipListTitle": "Clips",
+  "errorDownloadingClip": "Error downloading clip",
   "clips": {
     "menu": {
       "clips": "Clips",
@@ -22,8 +23,12 @@
     "share": "Social share",
     "download": "Download",
     "aspectRatioItems": {
+      "custom": {
+        "title": "{{width}} x {{height}} - Custom",
+        "description": "Same as source"
+      },
       "original": {
-        "title": "16:9 - Original",
+        "title": "{{aspectRatio}} - Original",
         "description": "Same as source"
       },
       "square": {
@@ -38,6 +43,10 @@
         "title": "4:5",
         "description": "Facebook Post"
       }
+    },
+    "renderingClip": {
+      "title": "Rendering...",
+      "description": "The download function is disabled while rendering."
     }
   },
   "clipDetails": {
@@ -54,5 +63,12 @@
     "saveButton": "Save",
     "confirmDialog": "You will lose unsaved changes, are you sure?",
     "captionInputTitle": "Clip caption"
+  },
+  "downloadClipModal": {
+    "title": "Download options",
+    "quality": "Quality",
+    "audio": "Mute audio track?",
+    "button": "Download",
+    "error": "Error downloading clip"
   }
 }

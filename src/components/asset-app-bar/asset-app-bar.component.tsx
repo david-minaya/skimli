@@ -1,5 +1,5 @@
 import { MoreHoriz } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem } from '@mui/material';
+import { Box, CircularProgress, IconButton, Menu, MenuItem } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { ArrowLeftIcon } from '~/icons/arrowLeftIcon';
@@ -12,6 +12,7 @@ import { useAssets } from '~/store/assets.slice';
 import { DeleteDialog } from '~/components/delete-dialog/delete-dialog.component';
 import { Toast } from '~/components/toast/toast.component';
 import { useConversions } from '~/store/conversions.slice';
+import { useEditClipPage } from '~/store/editClipPage.slice';
 
 interface Props {
   asset: Asset;
@@ -26,6 +27,7 @@ export function AssetAppBar(props: Props) {
   const Assets = useAssets();
   const Conversions = useConversions();
   const account = useAccount().get();
+  const renderingClip = useEditClipPage().getRenderingClip();
   const [openMenu, setOpenMenu] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openErrorToast, setOpenErrorToast] = useState(false);
@@ -70,6 +72,12 @@ export function AssetAppBar(props: Props) {
         </Box>
       </Box>
       <Box sx={style.right}>
+        {renderingClip &&
+          <Box sx={style.renderingClip}>
+            <Box sx={style.renderingClipTitle}>{t('assetAppBar.renderingClip')}</Box>
+            <CircularProgress size={24}/>
+          </Box>
+        }
         <IconButton 
           ref={menuRef}
           onClick={() => setOpenMenu(true)}>
