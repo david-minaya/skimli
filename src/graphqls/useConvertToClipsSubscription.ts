@@ -37,6 +37,12 @@ export function useConvertToClipsSubscription(cb: (asset: Asset) => void) {
                   decimal
                   dimension
                 }
+                transcription {
+                  status
+                  sourceUrl
+                  workflowId
+                  transcriptionFileStatus
+                }
               }
               mux {
                 asset {

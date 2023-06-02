@@ -27,6 +27,12 @@ export interface Asset {
     aspectRatio: {
       decimal: string;
       dimension: string;
+    },
+    transcription: {
+      status: 'FAILED' | 'COMPLETED' | 'RUNNING',
+      sourceUrl: string,
+      workflowId: string,
+      transcriptionFileStatus: 'MISSING' | 'VALID' | 'INVALID'
     }
   }
   sourceMuxInputInfo?: {

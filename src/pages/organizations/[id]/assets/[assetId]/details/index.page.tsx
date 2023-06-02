@@ -37,7 +37,6 @@ function Details() {
     await Assets.fetchOne(id);
   }, [id]);
 
-
   function handleTimeChange(time: number) {
     videoPlayer.updateProgress(time);
   }

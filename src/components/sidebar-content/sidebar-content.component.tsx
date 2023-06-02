@@ -7,7 +7,7 @@ import { style } from './sidebar-content.style';
 interface Props {
   sx?: Partial<typeof style>;
   id: string;
-  title: string;
+  title?: string;
   children?: ReactNode;
 }
 
@@ -26,7 +26,9 @@ export function SidebarContent(props: Props) {
 
   return (
     <Box sx={mergeSx(style.container, sx?.container)}>
-      <Box sx={mergeSx(style.title, sx?.title)}>{title}</Box>
+      {title &&
+        <Box sx={mergeSx(style.title, sx?.title)}>{title}</Box>
+      }
       <Box sx={mergeSx(style.content, sx?.content)}>
         {children}
       </Box>

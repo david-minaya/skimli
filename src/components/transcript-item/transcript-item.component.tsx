@@ -1,8 +1,9 @@
+import { WebVTT } from 'vtt.js';
 import { Box } from '@mui/material';
 import { style } from './transcript-item.style';
 import { formatSeconds } from '~/utils/formatSeconds';
 import { mergeSx } from '~/utils/style';
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 
 interface Props {
   time: number;
@@ -10,7 +11,7 @@ interface Props {
   onClick?: (time: number) => void;
 }
 
-export function TranscriptItem(props: Props) {
+export const TranscriptItem = memo(function TranscriptItem(props: Props) {
 
   const {
     time, 
@@ -40,7 +41,19 @@ export function TranscriptItem(props: Props) {
       ref={ref}
       onClick={handleClick}>
       <Box sx={style.time}>{formatSeconds(cue.startTime)}</Box>
-      <Box sx={style.text}>{cue.text}</Box>
+      <Box sx={style.text} dangerouslySetInnerHTML={{__html: WebVTT.convertCueToDOMTree(window, cue.text).innerHTML }}/>
     </Box>
+  );
+}, areEqual);
+
+function areEqual(prevProps: Props, nextProps: Props) {
+  const prevActive = prevProps.time >= prevProps.cue.startTime && prevProps.time <= prevProps.cue.endTime;
+  const nextActive = nextProps.time >= nextProps.cue.startTime && nextProps.time <= nextProps.cue.endTime;
+  return (
+    prevActive === nextActive &&
+    prevProps.cue.startTime === nextProps.cue.startTime &&
+    prevProps.cue.endTime === nextProps.cue.endTime &&
+    prevProps.cue.text === nextProps.cue.text &&
+    prevProps.onClick === nextProps.onClick
   );
 }

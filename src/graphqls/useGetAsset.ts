@@ -32,6 +32,12 @@ export function useGetAsset() {
                   decimal
                   dimension
                 }
+                transcription {
+                  status
+                  sourceUrl
+                  workflowId
+                  transcriptionFileStatus
+                }
               }
               mux {
                 asset {

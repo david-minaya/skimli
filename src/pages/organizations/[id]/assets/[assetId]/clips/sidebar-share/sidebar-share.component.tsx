@@ -29,7 +29,7 @@ export function SidebarShare(props: Props) {
   const clip = Assets.getClip(asset.uuid);
   const renderingClip = editClipPageState.getRenderingClip();
   const aspectRatios = useGetSupportedConversions(asset.metadata.aspectRatio.dimension);
-  const thumbnail = useGetThumbnail(asset.mux!.asset.playback_ids[0].id, undefined, undefined, clip?.startTime);
+  const thumbnail = useGetThumbnail(asset.mux!.asset.playback_ids[0].id, 170, 170, clip?.startTime);
   const tracks = asset.sourceMuxInputInfo?.[0].file.tracks;
   const videoTrack = tracks?.find((track): track is VideoTrack => track.type === 'video');
 
