@@ -20,6 +20,8 @@ import { GraphQLContext, schema } from "./schema";
 import { listen as sqsListener } from "./sqs";
 import { muxWebhook, verifyMuxWebhookMiddleware } from "./webhooks/mux.hooks";
 import { shostackWebhook } from "./webhooks/shotstack.hooks";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import config from "../config";
 
 const port = parseInt(process.env.PORT || "3001", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -114,6 +116,19 @@ async function bootstrap() {
   );
 
   expressApp.post("/api/webhooks/shostack", bodyParser.json(), shostackWebhook);
+
+  expressApp.all(
+    "/api/proxy/webhooks/shostack",
+    createProxyMiddleware({
+      target: config.api.videosAPIURL,
+      logLevel: "debug",
+      onError: (err, req, res) => {
+        console.error("proxy error: ", JSON.stringify(err));
+        return res.status(500).json({ error: true });
+      },
+      pathRewrite: (_, __) => "/video/v1/webhooks/shotstack",
+    })
+  );
 
   expressApp.all("*", (req: Request, res: Response) => {
     return handle(req, res);

@@ -56,6 +56,7 @@
     "graphql": "^16.6.0",
     "graphql-type-json": "^0.3.2",
     "graphql-ws": "^5.11.3",
+    "http-proxy-middleware": "^2.0.6",
     "i18next": "^22.4.9",
     "immer": "^9.0.18",
     "jsonwebtoken": "^9.0.0",
