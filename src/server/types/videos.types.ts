@@ -232,6 +232,7 @@ export interface AssetMetadata {
 }
 
 export enum MediaType {
+  AUTO_SUBTITLE = "AUTO_SUBTITLE",
   SUBTITLE = "SUBTITLE",
   AUDIO = "AUDIO",
   IMAGE = "IMAGE",
