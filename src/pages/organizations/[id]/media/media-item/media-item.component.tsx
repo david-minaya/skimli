@@ -16,12 +16,13 @@ import { ImageModal } from '../image-modal/image-modal.component';
 import { PlayIcon } from '~/icons/playIcon';
 import { PauseIcon } from '~/icons/pauseIcon';
 import { AudioAssetMedia } from '~/types/audioAssetMedia.type';
+import { AssetMedia } from '~/types/assetMedia.type';
 
 interface Props {
   index: number;
   style: CSSProperties;
   data: { 
-    medias: (ImageMedia | AudioAssetMedia)[];
+    medias: AssetMedia[];
     showCheckBox: boolean; 
   }
 }
