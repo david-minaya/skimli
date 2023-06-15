@@ -255,9 +255,9 @@ export class VideosService {
       Bucket: bucket,
       Key: key,
     });
-    const metadata: IStartMediaUploadArgs = JSON.parse(
-      object.Metadata?.metadata || "null"
-    );
+
+    const decoded = Buffer.from(object.Metadata?.metadata!, "hex").toString();
+    const metadata: IStartMediaUploadArgs = JSON.parse(decoded || "null");
     if (!metadata) {
       console.warn(`metadata not found for: ${bucket}/${key}`);
       return;
@@ -591,7 +591,7 @@ export class VideosService {
         Bucket: config.aws.assetsS3Bucket,
         Key: key,
         Metadata: {
-          metadata: JSON.stringify(args),
+          metadata: Buffer.from(JSON.stringify(args)).toString("hex"),
         },
         // ContentType: "",
       });
