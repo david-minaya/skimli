@@ -36,6 +36,7 @@ export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
                 sourceUrl
                 muxAssetId
                 playbackId
+                muxToken
                 shotstack {
                   id
                   url

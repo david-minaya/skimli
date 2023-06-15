@@ -2629,6 +2629,14 @@
     react-transition-group "^4.4.5"
     rifm "^0.12.1"
 
+"@mux/mux-audio-react@^0.6.13":
+  version "0.6.13"
+  resolved "https://registry.yarnpkg.com/@mux/mux-audio-react/-/mux-audio-react-0.6.13.tgz#0d22f69f7ea9c67ec219a3dac76cba3df47ca231"
+  integrity sha512-bTLo0/1D9Y1MqozpKbua+sLNOfm925kpFqJg24jNK4Gikk/lV2/bPrDkPHWozSwHAlnraV7L0zdaSNFLo0Jv9w==
+  dependencies:
+    "@mux/playback-core" "0.18.3"
+    prop-types "^15.7.2"
+
 "@mux/mux-node@^7.3.0":
   version "7.3.0"
   resolved "https://registry.yarnpkg.com/@mux/mux-node/-/mux-node-7.3.0.tgz#fcf1e323c9161ac55e14e49dc0d2c87f6401f74e"
@@ -2652,6 +2660,14 @@
   integrity sha512-apBkbf341UgEPT2UcaSK3jyk1gxud2uW+aT6o4ZQI+PUUSsq2eWMejBD2CSzRR589mwfWH7bOa0oxEZnBuduww==
   dependencies:
     hls.js "1.4.1"
+    mux-embed "^4.24.0"
+
+"@mux/playback-core@0.18.3":
+  version "0.18.3"
+  resolved "https://registry.yarnpkg.com/@mux/playback-core/-/playback-core-0.18.3.tgz#7fe70037184346a3146c6156a9c7f03b63960fe8"
+  integrity sha512-Ql88867IJJBN9qYVEwdlQTRnOwgpTMRDLaYW9hM0USu/AjGKpcKzYs4qq+tNl/2oHK/eZP4UrjTAbmm6wn/uag==
+  dependencies:
+    hls.js "1.4.5"
     mux-embed "^4.24.0"
 
 "@next/env@13.2.3":
@@ -5641,6 +5657,11 @@ hls.js@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.1.tgz#0792582650e5dd4517f7ebbf8cd3ca3b6f900bb9"
   integrity sha512-7/RBLhnmWbEVj/UxkqBK3rcqr/a2QAbSdjdp74iRKaPLosJoPwLw9mcjl5EOv6jutd0yHL8yGH3pSuUjNzRMyA==
+
+hls.js@1.4.5:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.5.tgz#33b2d6cbebb4797bd61763c87c2f15c7ef080632"
+  integrity sha512-xb7IiSM9apU3tJWb5rdSStobXPNJJykHTwSy7JnLF5y/kLJXWjoR/fEpNBlwYxkKcDiiSfO9SQI8yFravZJxIg==
 
 hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"

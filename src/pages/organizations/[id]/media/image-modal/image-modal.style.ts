@@ -3,19 +3,23 @@ import { Style } from '~/utils/style';
 export const style = Style({
   dialog: {
     '& .MuiDialog-paper': {
+      minWidth: '300px',
+      minHeight: '300px',
       maxWidth: '1000px',
-      height: '800px',
       borderRadius: '8px'
     }
   },
   content: {
-    padding: '20px'
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
   },
   dialogTitle: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '12px 12px 16px 24px'
+    padding: '8px 8px 8px 20px'
   },
   title: {
     fontSize: '16px',
@@ -34,10 +38,9 @@ export const style = Style({
     height: '16px'
   },
   image: {
-    width: '100%',
-    height: '100%',
+    maxWidth: '100%',
+    maxHeight: '600px',
     display: 'block',
-    objectFit: 'contain',
     margin: 'auto'
   }
 });

@@ -43,6 +43,7 @@ export function useGetAssetMedias() {
                 type
                 sourceUrl
                 muxAssetId
+                muxToken
                 playbackId
                 shotstack {
                   id

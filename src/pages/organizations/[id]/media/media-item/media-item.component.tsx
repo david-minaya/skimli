@@ -1,3 +1,4 @@
+import Audio from '@mux/mux-audio-react';
 import { Fragment, useRef, useState, CSSProperties, memo } from 'react';
 import { useTranslation } from 'next-i18next';
 import { areEqual } from 'react-window';
@@ -7,7 +8,6 @@ import { formatDate } from '~/utils/formatDate';
 import { DeleteDialog } from '~/components/delete-dialog/delete-dialog.component';
 import { StatusTag } from '~/components/status-tag/status-tag.component';
 import { Toast } from '~/components/toast/toast.component';
-import { AssetMedia } from '~/types/assetMedia.type';
 import { useAssetMedias } from '~/store/assetMedias.slice';
 import { mergeSx } from '~/utils/style';
 import { style } from './media-item.style';
@@ -21,7 +21,7 @@ interface Props {
   index: number;
   style: CSSProperties;
   data: { 
-    medias: AssetMedia[];
+    medias: (ImageMedia | AudioAssetMedia)[];
     showCheckBox: boolean; 
   }
 }
@@ -34,11 +34,11 @@ export const MediaItem = memo(function AssetItem(props: Props) {
     data: { medias, showCheckBox },
   } = props;
 
-  const media: AssetMedia = medias[index];
+  const { t } = useTranslation('media');
+  const media = medias[index];
   const AssetMedias = useAssetMedias();
   const menuOptionRef = useRef<HTMLButtonElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const { t } = useTranslation('media');
   const [audioPaused, setAudioPaused] = useState(true);
   const [audioDuration, setAudioDuration] = useState(0);
   const [audioProgress, setAudioProgress] = useState(0);
@@ -115,9 +115,10 @@ export const MediaItem = memo(function AssetItem(props: Props) {
               variant='determinate' 
               value={(audioProgress / audioDuration) * 100}/>
           }
-          <audio
+          {/* @ts-ignore */}
+          <Audio
             ref={audioRef}
-            src={(media as AudioAssetMedia).details.shotstack.url}
+            playbackId={`${(media as AudioAssetMedia).details?.playbackId}?token=${(media as AudioAssetMedia).details?.muxToken}`}
             onPlay={() => setAudioPaused(false)}
             onPause={() => setAudioPaused(true)}
             onDurationChange={(e) => setAudioDuration(e.currentTarget.duration)}
