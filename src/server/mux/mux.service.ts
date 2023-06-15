@@ -13,10 +13,14 @@ import {
   MuxSignedAsset,
 } from "./mux.types";
 
-const TOKEN_TYPE_VIDEO = "video";
-const TOKEN_TYPE_THUMBNAIL = "thumbnail";
 const TOKEN_TYPE_STORYBOARD = "storyboard";
 const MUX_THUMBNAIL_BASE_URL = "https://image.mux.com";
+
+export enum MuxTokenType {
+  TOKEN_TYPE_VIDEO = "video",
+  TOKEN_TYPE_STORYBOARD = "storyboard",
+  TOKEN_TYPE_THUMBNAIL = "thumbnail",
+}
 
 @Service()
 export class MuxService {
@@ -40,9 +44,15 @@ export class MuxService {
     storyboard: string;
   } {
     return {
-      video: this.generateToken(playbackId, TOKEN_TYPE_VIDEO),
-      thumbnail: this.generateToken(playbackId, TOKEN_TYPE_THUMBNAIL),
-      storyboard: this.generateToken(playbackId, TOKEN_TYPE_STORYBOARD),
+      video: this.generateToken(playbackId, MuxTokenType.TOKEN_TYPE_VIDEO),
+      thumbnail: this.generateToken(
+        playbackId,
+        MuxTokenType.TOKEN_TYPE_THUMBNAIL
+      ),
+      storyboard: this.generateToken(
+        playbackId,
+        MuxTokenType.TOKEN_TYPE_STORYBOARD
+      ),
     };
   }
 
