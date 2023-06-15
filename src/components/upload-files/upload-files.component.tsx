@@ -1,16 +1,20 @@
 import { Close } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
 import { Box, IconButton, LinearProgress, Paper } from '@mui/material';
-import { useUploadFiles, useUploadFilesProgress } from '~/utils/UploadFilesProvider';
+import { UploadFilesProgress } from '~/hooks/useUploadFile';
 import { style } from './upload-files.style';
 
-export function UploadFiles() {
+interface Props {
+  uploadProgress: UploadFilesProgress,
+  onCancel: () => void;
+}
+
+export function UploadFiles(props: Props) {
 
   const { t } = useTranslation('components');
-  const { cancel } = useUploadFiles();
+  const { uploadProgress, onCancel } = props;
 
-  const { 
-    hidden,
+  const {
     inProgress,
     percent,
     progress,
@@ -18,19 +22,15 @@ export function UploadFiles() {
     totalSize,
     uploadedFilesCounter,
     totalFiles
-  } = useUploadFilesProgress();
-
-  if (!inProgress || hidden) {
-    return null;
-  }
-
-  async function handleCancel() {
-    await cancel();
-  }
+  } = uploadProgress;
 
   function getTime() {
     if (duration >= 60) return `${Math.trunc(duration / 60)}m`;
     if (duration < 60) return `${duration}s`;
+  }
+
+  if (!inProgress) {
+    return null;
   }
 
   return (
@@ -53,7 +53,7 @@ export function UploadFiles() {
           <IconButton
             sx={style.cancelButton}
             size='small'
-            onClick={handleCancel}>
+            onClick={onCancel}>
             <Close sx={style.cancelIcon}/>
           </IconButton>
         </Box>

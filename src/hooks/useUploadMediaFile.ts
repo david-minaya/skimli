@@ -22,7 +22,7 @@ export function useUploadMediaFile() {
     setFailed(false);
 
     const onStartUpload = async (file: File): Promise<{ key: string, uploadId: string }> => {
-      return startMediaUpload(file.name, assetId, 'SUBTITLE', 'en');
+      return startMediaUpload(file.name, 'SUBTITLE', assetId, 'en');
     };
 
     const uploadFile = new UploadFile(

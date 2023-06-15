@@ -20,19 +20,19 @@ export const style = Style({
     fontSize: '14px',
     marginTop: '10px'
   },
-  emptyLibrary: {
+  emptyList: {
     textAlign: 'center'
   },
-  emptyLibraryImage: {
+  emptyListImage: {
     width: '460px',
     marginTop: '24px'
   },
-  emptyLibraryTitle: {
+  emptyListTitle: {
     fontSize: '20px',
     fontWeight: 'bold',
     marginTop: '12px'
   },
-  emptyLibraryDescription: {
+  emptyListDescription: {
     maxWidth: '520px',
     fontSize: '15px',
     margin: '12px auto'

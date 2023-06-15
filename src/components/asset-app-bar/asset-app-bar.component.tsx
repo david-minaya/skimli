@@ -95,6 +95,10 @@ export function AssetAppBar(props: Props) {
       </Box>
       <DeleteDialog
         open={openDeleteDialog}
+        title={t('assetAppBar.deleteDialog.title')}
+        description={t('assetAppBar.deleteDialog.description')}
+        confirmButton={t('assetAppBar.deleteDialog.confirmButton')}
+        cancelButton={t('assetAppBar.deleteDialog.cancelButton')}
         onConfirm={handleDelete}
         onClose={() => setOpenDeleteDialog(false)}/>
       <Toast

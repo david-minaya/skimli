@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next';
 import { Close } from '@mui/icons-material';
 import { style } from './delete-dialog.style';
 
@@ -14,6 +13,10 @@ import {
 
 interface Props {
   open: boolean;
+  title: string;
+  description: string;
+  cancelButton: string;
+  confirmButton: string;
   onConfirm: () => void;
   onClose: () => void;
 }
@@ -22,18 +25,20 @@ export function DeleteDialog(props: Props) {
 
   const {
     open,
+    title,
+    description,
+    cancelButton,
+    confirmButton,
     onConfirm,
     onClose
   } = props;
-
-  const { t } = useTranslation('components');
 
   return (
     <Dialog
       open={open}
       onClose={onClose}>
       <DialogTitle sx={style.title}>
-        {t('deleteDialog.title')}
+        {title}
         <IconButton 
           size='small'
           onClick={onClose}>
@@ -42,19 +47,19 @@ export function DeleteDialog(props: Props) {
       </DialogTitle>
       <DialogContent>
         <DialogContentText sx={style.description}>
-          {t('deleteDialog.description')}
+          {description}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button 
           sx={style.cancelButton}
           onClick={onClose}>
-          {t('deleteDialog.cancelButton')}
+          {cancelButton}
         </Button>
         <Button 
           autoFocus
           onClick={onConfirm}>
-          {t('deleteDialog.confirmButton')}
+          {confirmButton}
         </Button>
       </DialogActions>
     </Dialog>

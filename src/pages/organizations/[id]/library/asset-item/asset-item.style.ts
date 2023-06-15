@@ -104,6 +104,35 @@ export const style = Style({
     alignItems: 'center',
     flexShrink: 0
   },
+  PROCESSING: {
+    backgroundColor: '#FFB020'
+  },
+  UNCONVERTED: {
+    backgroundColor: '#3551BD'
+  },
+  CONVERTING: {
+    backgroundColor: '#FD6B35',
+    cursor: 'pointer'
+  },
+  CONVERTED: {
+    backgroundColor: 'green.main',
+    cursor: 'pointer'
+  },
+  DELETING: {
+    backgroundColor: '#D14343'
+  },
+  ERRORED: {
+    backgroundColor: '#D14343',
+    cursor: 'pointer'
+  },
+  NO_CLIPS_FOUND: {
+    backgroundColor: '#D14343',
+    cursor: 'pointer'
+  },
+  TIMEOUT: {
+    backgroundColor: '#D14343',
+    cursor: 'pointer'
+  },
   processingTagIcon: {
     width: '20px',
     height: '20px',

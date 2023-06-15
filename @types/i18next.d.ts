@@ -3,6 +3,7 @@ import 'i18next'
 import type common from '../public/locales/en/common.json';
 import type components from '../public/locales/en/components.json';
 import type library from '../public/locales/en/library.json';
+import type media from '../public/locales/en/media.json';
 import type billing from '../public/locales/en/billing.json';
 import type profile from '../public/locales/en/profile.json';
 import type onboarding from '../public/locales/en/onboarding.json';
@@ -19,6 +20,7 @@ declare module 'i18next' {
     resources: {
       common: typeof common
       library: typeof library
+      media: typeof media
       billing: typeof billing
       profile: typeof profile
       onboarding: typeof onboarding

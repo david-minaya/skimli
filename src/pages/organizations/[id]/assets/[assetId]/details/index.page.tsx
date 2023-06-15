@@ -21,8 +21,8 @@ import { Timeline } from './components/timeline/timeline.component';
 import { TranscriptIcon } from '~/icons/transcriptIcon';
 import { InfoIcon } from '~/icons/infoIcon';
 import { SidebarTranscript } from './components/sidebar-transcript/sidebar-transcript.component';
-import { UploadFiles } from '~/components/upload-files/upload-files.component';
 import { CaptionButton } from '~/components/caption-button/caption-button.component';
+import { UploadMediaFilesProvider } from '~/providers/UploadMediaFilesProvider';
 
 function Details() {
 
@@ -88,7 +88,7 @@ function Details() {
             <SidebarTabInfo asset={asset}/>
           </Sidebar>
         </Box>
-        <UploadFiles/>
+        {/* <UploadFiles/> */}
       </Box>
     </Main>
   );
@@ -97,9 +97,11 @@ function Details() {
 export default function Page() {
   return (
     <ProtectedRoute>
-      <VideoPlayerProvider>
-        <Details/>
-      </VideoPlayerProvider>
+      <UploadMediaFilesProvider>
+        <VideoPlayerProvider>
+          <Details/>
+        </VideoPlayerProvider>
+      </UploadMediaFilesProvider>
     </ProtectedRoute>
   );
 }

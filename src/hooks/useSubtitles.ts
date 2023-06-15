@@ -33,7 +33,7 @@ export function useSubtitles(asset: Asset) {
 
     try {
 
-      const medias = await getAssetMedias(asset.uuid);
+      const medias = await getAssetMedias({ assetId: asset.uuid });
       const subtitleMedia = medias.find(media => media.type === 'SUBTITLE');
 
       if (subtitleMedia) {

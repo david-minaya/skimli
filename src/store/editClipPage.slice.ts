@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useMemo } from 'react';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from './store';

@@ -29,11 +29,11 @@ export function LeftSidebar(props: Props) {
   const getAssetMedias = useGetAssetMedias();
 
   useAsyncEffect(async () => {
-    setMedias(await getAssetMedias(asset.uuid));
+    setMedias(await getAssetMedias({ assetId: asset.uuid }));
   }, [asset.uuid]);
 
   useMediaUploadSubscription(async () => {
-    setMedias(await getAssetMedias(asset.uuid));
+    setMedias(await getAssetMedias({ assetId: asset.uuid }));
   });
 
   return (

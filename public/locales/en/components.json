@@ -3,14 +3,17 @@
     "title": "{{counter}}/{{total}} Conversions",
     "tooltip": "You have a maximum of {{total}} conversions with your current plan. Upgrade to Skimli Pro to get unlimited conversions"
   },
+  "appBar": {
+    "counter": "{{count}} selected",
+    "dropDown": "New",
+    "uploadOption": "Upload"
+  },
   "navBar": {
     "options": {
-      "profile": {
-        "tooltip": "My Profile"
-      },
-      "helpMenu": {
-        "tooltip": "Help"
-      }
+      "home": "Home",
+      "media": "Media",
+      "profile": "My Profile",
+      "help": "Help"
     }
   },
   "profile": {
@@ -28,28 +31,29 @@
     "counter": "{{counter}} of {{total}} files uploaded - ",
     "progress": "{{progress}} MB of {{size}} MB - {{time}}"
   },
-  "uploadFilesProvider": {
+  "uploadVideoProvider": {
     "preventPageExit": "If you leave the pages the upload files will be cancelled",
-    "fileAlreadyExistsError": {
-      "title": "Error uploading file {{name}}",
-      "description": "File already exists"
-    },
-    "unsupportedVideoFileError": {
-      "title": "Error uploading file {{name}}",
-      "description": "Unsupported video file"
-    },
-    "maxSizeError": {
-      "title": "Error uploading file {{name}}",
-      "description": "Videos must be smaller than {{maxSize}} GB"
-    },
-    "minDurationError": {
-      "title": "Error uploading file {{name}}",
-      "description": "Videos must be longer than {{duration}} minutes"
-    },
-    "uploadingError": {
-      "title": "Error uploading file {{name}}",
-      "description": "An error occurred while uploading the file"
-    },
+    "errorTitle": "Error uploading file {{name}}",
+    "fileAlreadyExistsError": "File already exists",
+    "unsupportedFileError": "Unsupported video file",
+    "maxSizeError": "Videos must be smaller than {{maxSize}} GB",
+    "minDurationError": "Videos must be longer than {{duration}} minutes",
+    "uploadingError": "An error occurred while uploading the file",
+    "filesUploadCompleted": {
+      "title": "Files upload completed",
+      "description_one": "{{count}} file uploaded successfully",
+      "description_other": "{{count}} files uploaded successfully"
+    }
+  },
+  "uploadMediaProvider": {
+    "errorTitle": "Error uploading file {{name}}",
+    "fileAlreadyExistsError": "File already exists",
+    "unsupportedFileError": "Unsupported file",
+    "unsupportedImageError": "Unsupported image file",
+    "unsupportedAudioError": "Unsupported audio file",
+    "imageMaxSizeError": "Image must be smaller than {{maxSize}} GB",
+    "audioMaxSizeError": "Audio must be smaller than {{maxSize}} GB",
+    "uploadingError": "An error occurred while uploading the file",
     "filesUploadCompleted": {
       "title": "Files upload completed",
       "description_one": "{{count}} file uploaded successfully",
@@ -58,12 +62,6 @@
   },
   "searchField": {
     "placeholder": "Search"
-  },
-  "deleteDialog": {
-    "title": "Are you sure you want to do that?",
-    "description": "Your video(s) will be removed from your library, and cannot be recovered after you click delete. Your conversions will not appear in any places where they are embedded, and anyone you previously shared the link with will not be able to access your content.",
-    "cancelButton": "Cancel",
-    "confirmButton": "Confirm"
   },
   "clipDuration": "New clip length",
   "confirmDialog": {
@@ -81,6 +79,12 @@
     "account": "Personal Account - {{email}}",
     "deleteOption": "Delete",
     "errorDeleteToast": "Error deleting asset",
-    "renderingClip": "Rendering"
+    "renderingClip": "Rendering",
+    "deleteDialog": {
+      "title": "Are you sure you want to do that?",
+      "description": "Are you sure you want to delete these files? This action cannot be undone.",
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm"
+    }
   }
 }

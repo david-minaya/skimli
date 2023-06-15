@@ -26,6 +26,12 @@
         "react/jsx-tag-spacing": ["warn", { "beforeSelfClosing": "never" }],
         "react/jsx-max-props-per-line": ["warn", { "when": "multiline" }]
       }
+    },
+    {
+      "files": ["src/store/*.ts"],
+      "rules": {
+        "react-hooks/rules-of-hooks": "off"
+      }
     }
   ]
 }

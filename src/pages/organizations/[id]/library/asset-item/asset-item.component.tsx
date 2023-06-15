@@ -13,12 +13,13 @@ import { WorkflowStatusModal } from '../workflow-status-modal/workflow-status-mo
 import { useAssets } from '~/store/assets.slice';
 import { useGetThumbnail } from '~/graphqls/useGetThumbnail';
 import { Toast } from '~/components/toast/toast.component';
-import { StatusTag } from '../status-tag/status-tag.component';
+import { StatusTag } from '~/components/status-tag/status-tag.component';
 import { useRouter } from 'next/router';
 import { useAccount } from '~/store/account.slice';
 import { useConversions } from '~/store/conversions.slice';
-import { style } from './asset-item.style';
+import { Status } from '~/types/status.type';
 import { areEqual } from 'react-window';
+import { style } from './asset-item.style';
 
 interface Props {
   index: number;
@@ -100,6 +101,20 @@ export const AssetItem = memo(function AssetItem(props: Props) {
     }
   }
 
+  function getStatus(status: Status) {
+    switch (status) {
+      case 'PROCESSING': return t('assetItem.tags.processing');
+      case 'UNCONVERTED': return t('assetItem.tags.unconverted');
+      case 'CONVERTING': return t('assetItem.tags.converting');
+      case 'CONVERTED': return t('assetItem.tags.converted');
+      case 'DELETING': return t('assetItem.tags.deleting');
+      case 'ERRORED': return t('assetItem.tags.error');
+      case 'NO_CLIPS_FOUND': return t('assetItem.tags.error');
+      case 'TIMEOUT': return t('assetItem.tags.timeout');
+      default: return 'unknown';
+    }
+  }
+
   return (
     <Box
       style={inlineStyle}
@@ -154,8 +169,9 @@ export const AssetItem = memo(function AssetItem(props: Props) {
         {asset.status === 'PROCESSING' &&
           <RefreshIcon sx={style.processingTagIcon}/>
         }
-        <StatusTag 
-          status={asset.status}
+        <StatusTag
+          sx={style[asset.status]}
+          text={getStatus(asset.status)}
           onClick={handleStatusTagClick}/>
         {asset.status !== 'PROCESSING' &&
           <IconButton 
@@ -197,6 +213,10 @@ export const AssetItem = memo(function AssetItem(props: Props) {
         onClose={() => setOpenErrorToast(false)}/>
       <DeleteDialog
         open={openDeleteDialog}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description')}
+        confirmButton={t('deleteDialog.confirmButton')}
+        cancelButton={t('deleteDialog.cancelButton')}
         onConfirm={handleDelete}
         onClose={() => setOpenDeleteDialog(false)}/>
       <ConvertToClipsModal

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useCallback, useMemo } from 'react';
 import { createSlice } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from './store';

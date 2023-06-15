@@ -5,5 +5,11 @@ export interface AudioAssetMedia extends AssetMedia {
     sourceUrl: string;
     muxAssetId: string;
     playbackId: string;
+    shotstack: {
+      id: string;
+      url: string;
+      status: string;
+      render: string;
+    }
   }
 }

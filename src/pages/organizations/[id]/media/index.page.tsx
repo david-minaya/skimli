@@ -7,70 +7,57 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Box, Container, InputBase } from '@mui/material';
 import { Main } from '~/components/main/main.component';
 import { ProtectedRoute } from '../protected-route/protected-route.component';
-import { ConversionsCounter } from '~/components/conversions-counter/conversions-counter.component';
 import { DropArea } from '../../../../components/drop-area/drop-area.component';
-import { useAseetsUploaded } from '~/graphqls/useAssetsUploaded';
-import { useConvertToClipsSubscription } from '~/graphqls/useConvertToClipsSubscription';
-import { AssetItem } from './asset-item/asset-item.component';
-import { VideoModal } from './video-modal/video-modal.component';
+import { MediaItem } from './media-item/media-item.component';
 import { NoResultsFound } from '../../../../components/no-results-found/no-results-found.component';
 import { AppBar } from '~/components/app-bar/app-bar.component';
-import { Asset } from '~/types/assets.type';
-import { useAssets } from '~/store/assets.slice';
-import { style } from './index.style';
-import { useConversions } from '~/store/conversions.slice';
 import { FixedSizeList } from 'react-window';
-import { useGetAssets } from '~/graphqls/useGetAssets';
 import { Toast } from '~/components/toast/toast.component';
 import { EmptyList } from '~/components/empty-list/empty-list.component';
-import { useUploadVideoFiles } from '~/providers/UploadVideoFilesProvider';
-import { UploadVideoFileProgress } from './upload-video-file-progress/upload-video-file-progress.component';
+import { useAssetMedias } from '~/store/assetMedias.slice';
+import { useGetAssetMedias } from '~/graphqls/useGetAssetMedias';
+import { UploadMediaFilesProvider, useUploadMediaFiles } from '~/providers/UploadMediaFilesProvider';
+import { UploadMediaFileProgress } from '~/components/upload-media-file-progress/upload-media-file-progress.component';
+import { style } from './index.style';
+import { useMediaUploadSubscription } from '~/graphqls/useMediaUploadSubscription';
 import { DeleteDialog } from '~/components/delete-dialog/delete-dialog.component';
 
-function Library() {
+function Media() {
 
-  const Assets = useAssets();
-  const Conversions = useConversions();
-  const uploadVideoFiles = useUploadVideoFiles();
-  const assets = Assets.getAll();
-  const areAssetsSelected = Assets.areSelected();
+  const AssetMedias = useAssetMedias();
+  const uploadMediaFiles = useUploadMediaFiles();
+  const assetMedias = AssetMedias.getAll();
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
-  const selectedIds = Assets.getSelectedIds();
-  const getAssets = useGetAssets();
+  const selectedIds = AssetMedias.getSelectedIds();
+  const getAssetMedias = useGetAssetMedias();
 
-  const { t } = useTranslation('library');
+  const { t } = useTranslation('media');
   const { user } = useUser();
   const [showDropArea, setShowDropArea] = useState(false);
-  const [asset, setAsset] = useState<Asset>();
   const [search, setSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [assetListHeight, setAssetListHeight] = useState(0);
+  const [listHeight, setListHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openDeleteErrorToast, setOpenDeleteErrorToast] = useState(false);
 
   useEffect(() => {
-    Assets.fetchAll();
+    AssetMedias.fetchAll();
   }, []);
 
-  useAseetsUploaded(() => {
-    Assets.fetchAll();
+  useMediaUploadSubscription((media) => {
+    AssetMedias.add(media);
   });
 
-  useConvertToClipsSubscription(asset => {
-    Assets.update(asset.uuid, asset);
-    Conversions.fetch();
-  });
-
-  const handleAssetListRef = useCallback((element: HTMLDivElement) => {
+  const handleListRef = useCallback((element: HTMLDivElement) => {
     if (element) {
-      setAssetListHeight(element.getBoundingClientRect().height);
+      setListHeight(element.getBoundingClientRect().height);
     }
   }, []);
 
   function handleInputFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
-      uploadVideoFiles.upload(event.target.files);
+      uploadMediaFiles.upload(event.target.files);
     }
   }
 
@@ -82,8 +69,8 @@ function Library() {
 
     event.preventDefault();
 
-    if (event.dataTransfer.files && !uploadVideoFiles.inProgress) {
-      uploadVideoFiles.upload(event.dataTransfer.files);
+    if (event.dataTransfer.files && !uploadMediaFiles.inProgress) {
+      uploadMediaFiles.upload(event.dataTransfer.files);
     }
     
     setShowDropArea(false);
@@ -92,20 +79,25 @@ function Library() {
   async function handleSearchChange(value?: string) {
     setIsSearching(value !== undefined && value !== '');
     setSearch(value || '');
-    await Assets.fetchAll(value);
+    await AssetMedias.fetchAll(value);
   }
 
-  const handleAssetItemClick = useCallback((asset: Asset) => {
-    setAsset(asset);
-  }, []);
-
-  const handleLoadMoreAssets = useCallback(async () => {
+  const handleLoadMoreAssetMedias = useCallback(async () => {
     
     try {
       
       if (!isLoading) {
+
         setIsLoading(true);
-        Assets.addMany(await getAssets(search, assets.entities.length, 20));
+
+        const medias = await getAssetMedias({ 
+          name: search, 
+          skip: assetMedias.entities.length, 
+          take: 20 
+        });
+        
+        AssetMedias.addMany(medias.filter(media => media.type === 'IMAGE' || media.type === 'AUDIO'));
+        
         setIsLoading(false);
       }
 
@@ -113,10 +105,10 @@ function Library() {
 
       setIsLoading(false);
     }
-  }, [isLoading, search, assets.entities.length]);
+  }, [isLoading, search, assetMedias.entities.length]);
 
   function handleUnselectAll() {
-    Assets.unSelectAll();
+    AssetMedias.unSelectAll();
   }
 
   async function handleDelete() {
@@ -124,31 +116,27 @@ function Library() {
     setOpenDeleteDialog(false);
 
     try {
-
-      await Assets.deleteMany(selectedIds);
-      await Assets.fetchAll();
-      await Conversions.fetch();
-    
+      await AssetMedias.deleteMany(selectedIds);
+      AssetMedias.unSelectAll();
     } catch (err: any) {
-
-      await Assets.fetchAll();
       setOpenDeleteErrorToast(true);
-      Assets.unSelectAll();
+      AssetMedias.unSelectAll();
     }
   }
 
   function getFileTypes() {
     return [
-      ...process.env.NEXT_PUBLIC_SUPPORTED_MIMETYPES?.split(', ') || ['video/mp4'],
-      ...process.env.NEXT_PUBLIC_SUPPORTED_FILES_EXT?.split(', ') || ['.mp4']
+      ...process.env.NEXT_PUBLIC_IMAGE_EXTS?.split(', ') || [],
+      ...process.env.NEXT_PUBLIC_IMAGE_MIMETYPES?.split(', ') || [],
+      ...process.env.NEXT_PUBLIC_AUDIO_EXTS?.split(', ') || [],
+      ...process.env.NEXT_PUBLIC_AUDIO_MIMETYPES?.split(', ') || []
     ].join(',');
   }
 
-  const assetItemProps = useMemo(() => ({
-    assets: assets.entities, 
-    showCheckBox: areAssetsSelected,
-    onClick: handleAssetItemClick
-  }), [assets.entities, areAssetsSelected, handleAssetItemClick]);
+  const mediaItemProps = useMemo(() => ({
+    medias: assetMedias.entities, 
+    showCheckBox: selectedIds.length > 0
+  }), [assetMedias.entities, selectedIds.length]);
 
   return (
     <Main>
@@ -163,7 +151,7 @@ function Library() {
         <AppBar
           title={t('appBarTitle')}
           selectedItemsCounter={selectedIds.length}
-          disableUploadOption={uploadVideoFiles.inProgress}
+          disableUploadOption={uploadMediaFiles.inProgress}
           onSearchChange={handleSearchChange}
           onUploadFile={handleOpenFilePicker}
           onUnselect={handleUnselectAll}
@@ -172,59 +160,60 @@ function Library() {
           {!isSearching &&
             <Box sx={style.toolbar}>
               <Box>{t('toolbarTitle', { email: user?.email })}</Box>
-              <ConversionsCounter/>
+              <Box sx={style.filesQuantity}>
+                {t('filesQuantity', { count: assetMedias.entities.length })}
+              </Box>
             </Box>
           }
           {isSearching &&
             <Box sx={style.toolbar}>
               <Box sx={style.searchTitle}>{t('searchTitle')}</Box>
-              {assets.success &&
-                <Box 
-                  sx={style.results}>
-                  {t('searchResults', { count: assets.entities.length })}
+              {assetMedias.success &&
+                <Box sx={style.results}>
+                  {t('searchResults', { count: assetMedias.entities.length })}
                 </Box>
               }
             </Box>
           }
-          {(assets.loading || assets.entities.length > 0 || isSearching) &&
+          {(assetMedias.loading || assetMedias.entities.length > 0 || isSearching) &&
             <Box sx={style.assetsContainer}>
-              <Box sx={style.assetTitle}>{t('assetTitle')}</Box>
-              {assets.entities.length > 0 &&
+              <Box sx={style.assetTitle}>{t('listTitle')}</Box>
+              {assetMedias.entities.length > 0 &&
                 <Box 
                   sx={style.assets}
-                  ref={handleAssetListRef}>
+                  ref={handleListRef}>
                   <InfiniteLoader
-                    isItemLoaded={(index) => assets.entities[index] !== undefined}
+                    isItemLoaded={(index) => assetMedias.entities[index] !== undefined}
                     itemCount={1000}
-                    loadMoreItems={handleLoadMoreAssets}>
+                    loadMoreItems={handleLoadMoreAssetMedias}>
                     {({ onItemsRendered, ref }) => (
                       <FixedSizeList
                         ref={ref}
                         width='100%'
-                        height={assetListHeight}
-                        itemCount={assets.entities.length}
+                        height={listHeight}
+                        itemCount={assetMedias.entities.length}
                         itemSize={156}
-                        itemData={assetItemProps}
+                        itemData={mediaItemProps}
                         onItemsRendered={onItemsRendered}>
-                        {AssetItem}
+                        {MediaItem}
                       </FixedSizeList>
                     )}
                   </InfiniteLoader>
                 </Box>
               }
               <NoResultsFound
-                show={isSearching && !assets.loading && assets.entities.length === 0}
+                show={isSearching && !assetMedias.loading && assetMedias.entities.length === 0}
                 image='/images/no-results-found.svg'
-                description={t('noResultsFound.description', { search })}/>
+                description={t('noResultsFound', { search })}/>
             </Box>
           }
           <EmptyList
-            show={assets.success && assets.entities.length === 0 && !isSearching}
-            image={'/images/empty-library.svg'}
+            show={assetMedias.success && assetMedias.entities.length === 0 && !isSearching}
+            image={'/images/empty-media.png'}
             cardTitle={t('cardTitle')}
             cardDescription={t('cardDescription')}
             button={t('button')}
-            disableButton={uploadVideoFiles.inProgress}
+            disableButton={uploadMediaFiles.inProgress}
             title={t('emptyLibraryTitle')}
             description={t('emptyLibraryDescription')}
             onUploadFile={handleOpenFilePicker}/>
@@ -234,7 +223,13 @@ function Library() {
             onHide={() => setShowDropArea(false)}/>
         </Container>
       </Box>
-      <UploadVideoFileProgress/>
+      <UploadMediaFileProgress/>
+      <InputBase
+        sx={style.hiddenFileInput}
+        type='file'
+        inputRef={hiddenFileInputRef}
+        inputProps={{ accept: getFileTypes(), multiple: true }}
+        onChange={handleInputFileChange}/>
       <DeleteDialog
         open={openDeleteDialog}
         title={t('deleteDialog.title')}
@@ -243,15 +238,6 @@ function Library() {
         cancelButton={t('deleteDialog.cancelButton')}
         onConfirm={handleDelete}
         onClose={() => setOpenDeleteDialog(false)}/>
-      <VideoModal 
-        asset={asset}
-        onClose={() => setAsset(undefined)}/>
-      <InputBase
-        sx={style.hiddenFileInput}
-        type='file'
-        inputRef={hiddenFileInputRef}
-        inputProps={{ accept: getFileTypes(), multiple: true }}
-        onChange={handleInputFileChange}/>
       <Toast
         open={openDeleteErrorToast}
         severity='error'
@@ -264,7 +250,9 @@ function Library() {
 export default function Page() {
   return (
     <ProtectedRoute>
-      <Library/>
+      <UploadMediaFilesProvider>
+        <Media/>
+      </UploadMediaFilesProvider>
     </ProtectedRoute>
   );
 }
@@ -272,7 +260,7 @@ export default function Page() {
 export async function getServerSideProps({ locale }) {
   return {
     props: { 
-      ...(await serverSideTranslations(locale, ['library', 'components']))
+      ...(await serverSideTranslations(locale, ['media', 'components']))
     }
   };
 }

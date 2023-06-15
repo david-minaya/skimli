@@ -1,20 +1,19 @@
 import { Box } from '@mui/material';
-import { useTranslation } from 'next-i18next';
 import { style } from './no-results-found.style';
 
 interface Props {
   show: boolean;
-  search: string;
+  image: string;
+  description: string;
 }
 
 export function NoResultsFound(props: Props) {
 
   const {
     show,
-    search
+    image,
+    description
   } = props;
-
-  const { t } = useTranslation('library');
 
   if (!show) return null;
 
@@ -23,10 +22,10 @@ export function NoResultsFound(props: Props) {
       <Box
         component='img'
         sx={style.image}
-        src='/images/no-results-found.svg'/>
+        src={image}/>
       <Box 
         sx={style.title}>
-        {t('noResultsFound.description', { search })}
+        {description}
       </Box>
     </Box>
   );

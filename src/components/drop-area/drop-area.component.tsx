@@ -1,9 +1,9 @@
 import { Box } from '@mui/system';
-import { useTranslation } from 'next-i18next';
 import { style } from './drop-area.style';
 
 interface Props {
   show: boolean;
+  description: string;
   onHide: () => void;
 }
 
@@ -11,10 +11,9 @@ export function DropArea(props: Props) {
 
   const {
     show,
+    description,
     onHide
   } = props;
-
-  const { t } = useTranslation('library');
 
   if (!show) {
     return null;
@@ -30,7 +29,7 @@ export function DropArea(props: Props) {
           component='img'
           src='/images/upload-file.svg'/>
         <Box sx={style.title}>
-          {t('dropAreaTitle')}
+          {description}
         </Box>
       </Box>
     </Box>

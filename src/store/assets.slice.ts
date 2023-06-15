@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useMemo } from 'react';
 import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, useAppDispatch, useAppSelector } from './store';

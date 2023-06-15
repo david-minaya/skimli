@@ -1,34 +1,31 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, ReactElement, useRef, useState, Children, cloneElement } from 'react';
 import { ExpandMore } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
-import { Popper, Paper, ClickAwayListener, MenuList, MenuItem } from '@mui/material';
+import { Popper, Paper, ClickAwayListener, MenuList } from '@mui/material';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
-import { useUploadFiles } from '~/utils/UploadFilesProvider';
+import { mergeSx } from '~/utils/style';
 import { style } from './drop-down-button.style';
 
 interface Props {
-  onUploadFile: () => void;
+  title: string;
+  children: ReactElement | ReactElement[];
 }
 
 export function DropDownButton(props: Props) {
 
-  const { onUploadFile } = props;
-  const { t } = useTranslation('library');
-  const { inProgress } = useUploadFiles();
+  const {
+    title,
+    children
+  } = props;
+
   const [openPopup, setOpenPopup] = useState(false);
   const newButtonRef = useRef<HTMLButtonElement>(null);
-
-  function handleUpload() {
-    setOpenPopup(false);
-    onUploadFile();
-  }
 
   return (
     <Fragment>
       <OutlinedButton
         sx={style.button}
         refButton={newButtonRef}
-        title={t('newButton')}
+        title={title}
         secondaryIcon={ExpandMore}
         onClick={() => setOpenPopup(true)}/>
       {/* @ts-ignore */}
@@ -41,12 +38,17 @@ export function DropDownButton(props: Props) {
           elevation={2}>
           <ClickAwayListener onClickAway={() => setOpenPopup(false)}>
             <MenuList autoFocusItem>
-              <MenuItem
-                sx={style.menuItem}
-                disabled={inProgress}
-                onClick={handleUpload}>
-                {t('uploadOption')}
-              </MenuItem>
+              {
+                Children.map(children, child =>
+                  cloneElement(child, { 
+                    sx: mergeSx(style.menuItem, child.props.sx),
+                    onClick: () => {
+                      setOpenPopup(false);
+                      child.props.onClick?.();
+                    } 
+                  })
+                )
+              }
             </MenuList>
           </ClickAwayListener>
         </Paper>

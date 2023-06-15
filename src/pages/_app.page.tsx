@@ -22,8 +22,8 @@ import { createEmotionCache } from '../utils';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { useApollo } from '~/graphqls/useApollo';
 import { appWithTranslation } from 'next-i18next';
-import { UploadFilesProvider } from '~/utils/UploadFilesProvider';
 import { Provider as ReduxProvider } from 'react-redux';
+import { UploadVideoFilesProvider } from '~/providers/UploadVideoFilesProvider';
 import { store } from '../store/store';
 
 Router.events.on('routeChangeStart', nProgress.start);
@@ -55,9 +55,9 @@ const App = (props) => {
           <ReduxProvider store={store}>
             <UserProvider>
               <ApolloProvider client={apollo}>
-                <UploadFilesProvider>
+                <UploadVideoFilesProvider>
                   <Component {...pageProps}/>
-                </UploadFilesProvider>
+                </UploadVideoFilesProvider>
               </ApolloProvider>
             </UserProvider>
           </ReduxProvider>

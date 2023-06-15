@@ -18,11 +18,6 @@ export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
             uuid
             org
             name
-            details {
-              ... on SubtitleMediaDetails {
-                sourceUrl
-              }
-            }
             type
             status
             createdAt
@@ -30,6 +25,29 @@ export function useMediaUploadSubscription(cb: (media: AssetMedia) => void) {
             assets {
               ids
               count
+            }
+            details {
+              ... on SubtitleMediaDetails {
+                type
+                sourceUrl
+              }
+              ... on AudioMediaDetails {
+                type
+                sourceUrl
+                muxAssetId
+                playbackId
+                shotstack {
+                  id
+                  url
+                  status
+                  render
+                }
+              }
+              ... on ImageMediaDetails {
+                type
+                sourceUrl
+                cdnUrl
+              }
             }
           }
         }
