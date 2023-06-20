@@ -14,7 +14,7 @@ export function ProtectedRoute(props: Props) {
   const router = useRouter();
   const account = accountStore.get();
   const checkUserExists = useCheckUserExists();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(account === undefined || account === null);
 
   useEffect(() => {
 

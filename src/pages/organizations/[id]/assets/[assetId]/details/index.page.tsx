@@ -88,7 +88,6 @@ function Details() {
             <SidebarTabInfo asset={asset}/>
           </Sidebar>
         </Box>
-        {/* <UploadFiles/> */}
       </Box>
     </Main>
   );

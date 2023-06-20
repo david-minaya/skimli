@@ -22,16 +22,22 @@ import { TranscriptIcon } from '~/icons/transcriptIcon';
 import { ObjectDetectionIcon } from '~/icons/objectDetectionIcon';
 import { SidebarTranscript } from './sidebar-transcript/sidebar-transcript.component';
 import { useRenderClipSubscription } from '~/graphqls/useRenderClipSubscription';
+import { useMediaUploadSubscription } from '~/graphqls/useMediaUploadSubscription';
 import { useEditClipPage } from '~/store/editClipPage.slice';
+import { useAssetMedias } from '~/store/assetMedias.slice';
 import { download } from '~/utils/download';
-import { style } from './index.style';
+import { UploadMediaFileProgress } from '~/components/upload-media-file-progress/upload-media-file-progress.component';
+import { SidebarAudio } from './sidebar-audio/sidebar-audio.component';
 import { Toast } from '~/components/toast/toast.component';
+import { style } from './index.style';
+import { UploadMediaFilesProvider } from '~/providers/UploadMediaFilesProvider';
 
 function EditClips() {
 
   const router = useRouter();
   const id = router.query.assetId as string;
   const assetsStore = useAssets();
+  const AssetMedias = useAssetMedias();
   const editClipPageState = useEditClipPage();
   const asset = assetsStore.getById(id);
   const clip = assetsStore.getClip(id);
@@ -44,6 +50,10 @@ function EditClips() {
     assetsStore.selectFirstClip(id);
     return () => assetsStore.unSelectClip(id);
   }, [id]);
+
+  useMediaUploadSubscription((media) => {
+    AssetMedias.add(media);
+  });
 
   useRenderClipSubscription((renderStatus) => {
 
@@ -68,7 +78,7 @@ function EditClips() {
           <VideoPlayerProvider>
             <Clips asset={asset}/>
             <ClipDetails asset={asset}/>
-            <Sidebar defaultTab='share'>
+            <Sidebar defaultTab='audio'>
               <SidebarTabs>
                 <SidebarTab id='share' icon={<ShareIcon/>}/>
                 <SidebarTab id='audio' icon={<AudioIcon/>}/>
@@ -79,7 +89,7 @@ function EditClips() {
               </SidebarTabs>
               <SidebarShare asset={asset}/>
               <SidebarTranscript asset={asset}/>
-              <SidebarContent id='audio' title='Audio'/>
+              <SidebarAudio asset={asset}/>
               <SidebarContent id='text' title='Text'/>
               <SidebarContent id='stitch' title='Stitch'/>
               <SidebarContent id='object-detection' title='Object detection'/>
@@ -87,6 +97,7 @@ function EditClips() {
           </VideoPlayerProvider>
         </Box>
       </Box>
+      <UploadMediaFileProgress/>
       <Toast
         open={openErrorToast}
         severity='error'
@@ -99,7 +110,9 @@ function EditClips() {
 export default function Page() {
   return (
     <ProtectedRoute>
-      <EditClips/>
+      <UploadMediaFilesProvider>
+        <EditClips/>
+      </UploadMediaFilesProvider>
     </ProtectedRoute>
   );
 }

@@ -106,6 +106,14 @@ export function useAssetMedias() {
       return useAppSelector(state => ({ ...state.assetMedias, entities: selectors.selectAll(state)}));
     },
 
+    get<T>(query: { name?: string, type?: AssetMedia['type'] }) {
+      return useAppSelector(state => 
+        selectors.selectAll(state)
+          .filter(media => query.type ? media.type === query.type : true)
+          .filter(media => media.name.includes(query.name || ''))
+      ) as T[];
+    },
+
     getById(id: string) {
       return useAppSelector(state => selectors.selectById(state, id));
     },

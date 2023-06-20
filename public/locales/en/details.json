@@ -22,10 +22,11 @@
     "channels": "Channels"
   },
   "sidebarTranscript": {
-    "emptyTitle": "Upload a file",
-    "emptyTextPart1": "Click to",
-    "emptyLink": "browse",
-    "emptyTextPart2": ", or drag & drop a file here",
-    "emptyBottomText": "WebVTT files only"
+    "uploadFile": {
+      "title": "Upload a file",
+      "description": "Click to <link/>, or drag & drop a file here",
+      "link": "browse",
+      "footer": "WebVTT files only"
+    }
   }
 }
