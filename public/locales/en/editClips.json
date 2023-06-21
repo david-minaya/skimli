@@ -63,6 +63,20 @@
       "footer": "MP3 files only"
     }
   },
+  "sidebarImage": {
+    "title": "Image",
+    "media": {
+      "title": "Media",
+      "searchResult": "Search Results",
+      "notFoundResults": "No search results found for \"{{name}}\""
+    },
+    "uploadFile": {
+      "title": "Upload a file",
+      "description": "Click to <link/>, or drag & drop a file here",
+      "link": "browse",
+      "footer": "JPG and PNG files only"
+    }
+  },
   "clipDetails": {
     "duplicatedToast": {
       "title": "Clip overlaps another clip",

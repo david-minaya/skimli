@@ -29,8 +29,10 @@ import { download } from '~/utils/download';
 import { UploadMediaFileProgress } from '~/components/upload-media-file-progress/upload-media-file-progress.component';
 import { SidebarAudio } from './sidebar-audio/sidebar-audio.component';
 import { Toast } from '~/components/toast/toast.component';
-import { style } from './index.style';
 import { UploadMediaFilesProvider } from '~/providers/UploadMediaFilesProvider';
+import { ImageIcon } from '~/icons/imageIcon';
+import { SidebarImage } from './sidebar-image/sidebar-image.component';
+import { style } from './index.style';
 
 function EditClips() {
 
@@ -78,10 +80,11 @@ function EditClips() {
           <VideoPlayerProvider>
             <Clips asset={asset}/>
             <ClipDetails asset={asset}/>
-            <Sidebar defaultTab='audio'>
+            <Sidebar defaultTab='share'>
               <SidebarTabs>
                 <SidebarTab id='share' icon={<ShareIcon/>}/>
                 <SidebarTab id='audio' icon={<AudioIcon/>}/>
+                <SidebarTab id='image' icon={<ImageIcon/>}/>
                 <SidebarTab id='text' icon={<TextIcon/>}/>
                 <SidebarTab id='stitch' icon={<StitchIcon/>}/>
                 <SidebarTab id='transcript' icon={<TranscriptIcon/>}/>
@@ -89,7 +92,8 @@ function EditClips() {
               </SidebarTabs>
               <SidebarShare asset={asset}/>
               <SidebarTranscript asset={asset}/>
-              <SidebarAudio asset={asset}/>
+              <SidebarAudio/>
+              <SidebarImage/>
               <SidebarContent id='text' title='Text'/>
               <SidebarContent id='stitch' title='Stitch'/>
               <SidebarContent id='object-detection' title='Object detection'/>

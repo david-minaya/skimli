@@ -36,7 +36,7 @@ export const style = Style({
     textAlign: 'center',
     margin: '8px 4px 4px'
   },
-  audioList: {
+  imageList: {
     flexGrow: 1,
     overflow: 'auto'
   }

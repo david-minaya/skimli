@@ -6,7 +6,7 @@ import { style } from './sidebar-mini-file-uploader.style';
 
 interface Props {
   sx?: typeof style['container'];
-  show: boolean;
+  show?: boolean;
   assetId?: string;
   title: string;
   accept?: string;
@@ -17,7 +17,7 @@ export function SidebarMiniFileUploader(props: Props) {
 
   const { 
     sx, 
-    show,
+    show = true,
     assetId,
     title,
     accept,

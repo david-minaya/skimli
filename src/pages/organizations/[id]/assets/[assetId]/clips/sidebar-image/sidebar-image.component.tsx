@@ -1,7 +1,7 @@
 import { useState, Fragment } from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import { AudioAssetMedia } from '~/types/audioAssetMedia.type';
+import { ImageMedia } from '~/types/imageMedia.type';
 import { useAssetMedias } from '~/store/assetMedias.slice';
 import { useAsyncEffect } from '~/hooks/useAsyncEffect';
 import { SearchField } from '~/components/search-field/search-field.component';
@@ -9,18 +9,18 @@ import { ExpandPanel } from '~/components/expand-panel/expand-panel.component';
 import { ExpandPanels } from '~/components/expand-panels/expand-panels.component';
 import { SidebarContent } from '~/components/sidebar-content/sidebar-content.component';
 import { SidebarUploadFile } from '~/components/sidebar-upload-file/sidebar-upload-file.component copy';
-import { AudioItem } from '../audio-item/audio-item.component';
 import { SidebarMiniFileUploader } from '~/components/sidebar-mini-file-uploader/sidebar-mini-file-uploader.component copy';
-import { style } from './sidebar-audio.style';
+import { ImageItem } from '../image-item/image-item.components';
+import { style } from './sidebar-image.style';
 
-export function SidebarAudio() {
+export function SidebarImage() {
 
   const { t } = useTranslation('editClips');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(true);
   const AssetMedias = useAssetMedias();
-  const audioAssets = AssetMedias.get<AudioAssetMedia>({ name, type: 'AUDIO' });
-  const isNotEmpty = (name === '' && audioAssets.length !== 0) || name !== '';
+  const imageAssets = AssetMedias.get<ImageMedia>({ name, type: 'IMAGE' });
+  const isNotEmpty = (name === '' && imageAssets.length !== 0) || name !== '';
 
   useAsyncEffect(async () => {
     await AssetMedias.fetchAll();
@@ -32,31 +32,31 @@ export function SidebarAudio() {
   }
 
   const fileTypes = [
-    ...process.env.NEXT_PUBLIC_AUDIO_EXTS?.split(', ') || [],
-    ...process.env.NEXT_PUBLIC_AUDIO_MIMETYPES?.split(', ') || []
+    ...process.env.NEXT_PUBLIC_IMAGE_EXTS?.split(', ') || [],
+    ...process.env.NEXT_PUBLIC_IMAGE_MIMETYPES?.split(', ') || []
   ].join(',');
 
   return (
     <SidebarContent
+      id='image'
       sx={style.sidebarContent}
-      id='audio'
-      title={t('sidebarAudio.title')}>
+      title={t('sidebarImage.title')}>
       <ExpandPanels defaultPanel='media'>
         <ExpandPanel
-          sx={style.expandPanel} 
           id='media' 
-          title={t('sidebarAudio.media.title')}>
+          sx={style.expandPanel} 
+          title={t('sidebarImage.media.title')}>
           {!loading &&
             <Fragment>
               <SidebarUploadFile
                 sx={style.sidebarUploadFile}
-                show={name === '' && audioAssets.length === 0}
+                show={name === '' && imageAssets.length === 0}
                 accept={fileTypes}
                 multiple={true}
-                title={t('sidebarAudio.uploadFile.title')}
-                description={t('sidebarAudio.uploadFile.description')}
-                link={t('sidebarAudio.uploadFile.link')}
-                footer={t('sidebarAudio.uploadFile.footer')}/>
+                title={t('sidebarImage.uploadFile.title')}
+                description={t('sidebarImage.uploadFile.description')}
+                link={t('sidebarImage.uploadFile.link')}
+                footer={t('sidebarImage.uploadFile.footer')}/>
               {isNotEmpty &&
                 <Fragment>
                   <SidebarMiniFileUploader
@@ -69,16 +69,16 @@ export function SidebarAudio() {
                 </Fragment>
               }
               {name !== '' &&
-                <Box sx={style.searchResults}>{t('sidebarAudio.media.searchResult')}</Box>
+                <Box sx={style.searchResults}>{t('sidebarImage.media.searchResult')}</Box>
               }
-              {name !== '' && audioAssets.length === 0 &&
-                <Box sx={style.notFoundResults}>{t('sidebarAudio.media.notFoundResults', { name })}</Box>
+              {name !== '' && imageAssets.length === 0 &&
+                <Box sx={style.notFoundResults}>{t('sidebarImage.media.notFoundResults', { name })}</Box>
               }
-              <Box sx={style.audioList}>
-                {audioAssets.map(audioAsset =>
-                  <AudioItem
-                    key={audioAsset.uuid} 
-                    audioAsset={audioAsset}/>
+              <Box sx={style.imageList}>
+                {imageAssets.map(imageAsset =>
+                  <ImageItem
+                    key={imageAsset.uuid} 
+                    imageAsset={imageAsset}/>
                 )}
               </Box>
             </Fragment>
