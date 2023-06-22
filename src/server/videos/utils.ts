@@ -1,4 +1,5 @@
 import { Readable } from "stream";
+import * as _l from "lodash";
 
 export const streamToString = (stream: Readable): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -20,4 +21,34 @@ export function parseS3URL(sourceUrl: string): {
   const bucket = url.hostname;
   const key = decodeS3Key(url.pathname.substring(1));
   return { key, bucket };
+}
+
+export function deepCompare({
+  object,
+  other,
+  ignore,
+}: {
+  object: any;
+  other: any;
+  ignore: string[];
+}) {
+  const customizer: _l.IsEqualCustomizer = (
+    _: any,
+    __: any,
+    key: _l.PropertyName | undefined
+  ) => {
+    if (ignore.includes(key as any)) {
+      return true;
+    }
+    return undefined;
+  };
+
+  const sortedObject = JSON.parse(JSON.stringify(object ?? {}));
+  const sortedOther = JSON.parse(JSON.stringify(other ?? {}));
+
+  return _l.isEqualWith(
+    _l.omit(sortedObject, ...ignore),
+    _l.omit(sortedOther, ...ignore),
+    customizer
+  );
 }

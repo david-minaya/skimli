@@ -13,10 +13,10 @@ import {
   Validate,
   ValidateNested,
 } from "class-validator";
-import { ArgsType, Field, Float, InputType, Int } from "type-graphql";
-import { IsValidCategory } from "../common/category.validator";
-import { IsValidClipTitle } from "../common/clip-title.validator";
-import { IsValidFilename } from "../common/filename.validator";
+import { ArgsType, Field, InputType, Int } from "type-graphql";
+import { IsValidCategory } from "../../common/category.validator";
+import { IsValidClipTitle } from "../../common/clip-title.validator";
+import { IsValidFilename } from "../../common/filename.validator";
 import {
   ActivityStatus,
   AssetStatus,
@@ -33,8 +33,7 @@ import {
   IUnlinkMediaArgs,
   MediaStatus,
   MediaType,
-  RenderClipQuality,
-} from "../types/videos.types";
+} from "../../types/videos.types";
 
 @ArgsType()
 export class StartUploadArgs {
@@ -145,27 +144,6 @@ export class ConvertToClipsArgs {
   @IsNotEmpty()
   @IsString()
   category: string;
-}
-
-// TODO: remove once convert to workflow integrated on web-app client
-@ArgsType()
-export class TestConvertToClipsWorkflowStatusArgs
-  implements IConvertToClipsWorkflowStatus
-{
-  @Field(() => ActivityStatus)
-  activityStatus: ActivityStatus;
-
-  @Field(() => String)
-  assetId: string;
-
-  @Field(() => Int)
-  org: number;
-
-  @Field(() => String)
-  startTime: string;
-
-  @Field(() => AssetStatus)
-  status: AssetStatus;
 }
 
 @ArgsType()
@@ -345,56 +323,6 @@ export class GetSupportedConversionsArgs {
 }
 
 @ArgsType()
-export class RenderClipArgs {
-  @Field(() => String, { description: "video asset uuid" })
-  @IsUUID()
-  assetId: string;
-
-  @Field(() => RenderClipQuality, { defaultValue: RenderClipQuality.MEDIUM })
-  quality: RenderClipQuality;
-
-  @Field(() => Boolean, {
-    defaultValue: false,
-  })
-  @IsBoolean()
-  muteAudio: boolean = false;
-
-  @Field(() => String, { description: "clip's uuid" })
-  @IsUUID()
-  clipId: string;
-
-  @Field(() => Float, {
-    nullable: true,
-    description: "clip's startTime in seconds",
-  })
-  @IsOptional()
-  @IsNumber()
-  startTime?: number;
-
-  @Field(() => Float, {
-    nullable: true,
-    description: "clip's endTime in seconds",
-  })
-  @IsOptional()
-  @IsNumber()
-  endTime?: number;
-
-  @Field(() => Int, {
-    nullable: true,
-  })
-  @IsOptional()
-  @IsInt()
-  width?: number;
-
-  @Field(() => Int, {
-    nullable: true,
-  })
-  @IsOptional()
-  @IsInt()
-  height?: number;
-}
-
-@ArgsType()
 export class GetSubtitleMediaArgs implements IGetMediaSubtitleArgs {
   @Field(() => String, { nullable: true })
   @IsOptional()
@@ -461,4 +389,20 @@ export class ResetClipArgs {
   @Field(() => String)
   @IsUUID()
   clipId: string;
+}
+
+@ArgsType()
+export class GetMediaSourceUrlArgs {
+  @Field(() => String)
+  @IsUUID()
+  @IsString()
+  mediaId: string;
+}
+
+@ArgsType()
+export class GetAssetSourceUrlArgs {
+  @Field(() => String)
+  @IsUUID()
+  @IsString()
+  assetId: string;
 }

@@ -55,6 +55,7 @@ import {
   SubAssetStatus,
   TranscriptionFileStatus,
 } from "../types/videos.types";
+import type { IRenderTimelineDetails } from "../types/render.types";
 
 registerEnumType(AssetStatus, {
   name: "AssetStatus",
@@ -135,6 +136,12 @@ export class ClipDetailsRender implements IClipDetailsRender {
 export class ClipDetails implements IClipDetails {
   @Field(() => [ClipDetailsRender], { nullable: true })
   renders: ClipDetailsRender[];
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  currentTimeline?: IRenderTimelineDetails;
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  renderedTimeline?: IRenderTimelineDetails;
 }
 
 @ObjectType()

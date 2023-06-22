@@ -1,6 +1,5 @@
 import { GraphQLError } from "graphql";
 import {
-  Arg,
   Args,
   Authorized,
   Ctx,
@@ -14,12 +13,10 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 import conversionsMapping from "../../../../aspect-ration-conversions.json";
-import pubSub from "../../common/pubsub";
 import { IsAppUserGuard } from "../../middlewares/app-user.guard";
 import type { GraphQLContext } from "../../schema";
 import { AuthInfo } from "../../types/base.types";
-import { AssetStatus } from "../../types/videos.types";
-import { getAspectRatio } from "../video-utils";
+import { RenderClipArgs, UpdateClipTimelineArgs } from "../args/render.args";
 import {
   AbortUploadArgs,
   AdjustClipArgs,
@@ -30,20 +27,21 @@ import {
   DeleteMediaArgs,
   GetAssetArgs,
   GetAssetMediasArgs,
+  GetAssetSourceUrlArgs,
   GetAssetsArgs,
   GetClipsArgs,
+  GetMediaSourceUrlArgs,
   GetObjectDetectionLabelsArgs,
   GetPartUploadURLArgs,
   GetSubtitleMediaArgs,
   GetSupportedConversionsArgs,
   LinkMediasToAssetArgs,
-  RenderClipArgs,
   ResetClipArgs,
   StartMediaUploadArgs,
   StartUploadArgs,
-  TestConvertToClipsWorkflowStatusArgs,
   UnlinkMediaArgs,
-} from "../videos.args";
+} from "../args/videos.args";
+import { getAspectRatio } from "../video-utils";
 import {
   ASSET_UPLOAD_EVENT,
   CONVERT_TO_CLIPS_TOPIC,
@@ -173,17 +171,6 @@ export class VideosResolver {
     return assetUpload;
   }
 
-  // TODO: remove after supporting subscriptions on infrastructure
-  @Query(() => Boolean)
-  async testAssetUpload(@Arg("org") org: number) {
-    await pubSub.publish("assetUploads", {
-      assetId: Math.floor(Math.random() * 10000).toString(),
-      status: AssetStatus.CONVERTING,
-      org: org,
-    });
-    return true;
-  }
-
   @UseMiddleware(IsAppUserGuard)
   @Authorized()
   @Query(() => [Asset])
@@ -266,15 +253,6 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.getAsset(authInfo, args.uuid);
-  }
-
-  // TODO: remove once integrated, added for easily testing the workflow
-  @Mutation(() => Boolean)
-  async testConvertToClipsWorkflowStatus(
-    @Args() args: TestConvertToClipsWorkflowStatusArgs
-  ): Promise<Boolean> {
-    await pubSub.publish(CONVERT_TO_CLIPS_TOPIC, args);
-    return true;
   }
 
   @UseMiddleware(IsAppUserGuard)
@@ -459,16 +437,6 @@ export class VideosResolver {
     return objectDetectionLabels;
   }
 
-  // TODO: delete when integration is done
-  // @Query(() => Boolean)
-  // async test() {
-  //   await this.videosService.onS3MediaUpload(
-  //     "dev-web-app-videos",
-  //     "rajith-testing/80/example-audio.mp3"
-  //   );
-  //   return true;
-  // }
-
   @UseMiddleware(IsAppUserGuard)
   @Authorized()
   @Mutation(() => Boolean)
@@ -517,5 +485,47 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.resetClip(args.clipId, authInfo);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => String)
+  async getMediaSourceUrl(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: GetMediaSourceUrlArgs
+  ) {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.getMediaSourceUrl(args.mediaId, authInfo);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => String)
+  async getAssetSourceUrl(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: GetAssetSourceUrlArgs
+  ) {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.getAssetSourceUrl(args.assetId, authInfo);
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => Clip)
+  async updateClipTimeline(
+    @Ctx() ctx: GraphQLContext,
+    @Args() args: UpdateClipTimelineArgs
+  ): Promise<Clip> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.videosService.updateClipTimeline(args, authInfo);
   }
 }

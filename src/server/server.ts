@@ -117,18 +117,20 @@ async function bootstrap() {
 
   expressApp.post("/api/webhooks/shostack", bodyParser.json(), shostackWebhook);
 
-  expressApp.all(
-    "/api/proxy/webhooks/shostack",
-    createProxyMiddleware({
-      target: config.api.videosAPIURL,
-      logLevel: "debug",
-      onError: (err, req, res) => {
-        console.error("proxy error: ", JSON.stringify(err));
-        return res.status(500).json({ error: true });
-      },
-      pathRewrite: (_, __) => "/video/v1/webhooks/shotstack",
-    })
-  );
+  if (config.proxyEnabled) {
+    expressApp.all(
+      "/api/proxy/webhooks/shostack",
+      createProxyMiddleware({
+        target: config.api.videosAPIURL,
+        logLevel: "debug",
+        onError: (err, req, res) => {
+          console.error("proxy error: ", JSON.stringify(err));
+          return res.status(500).json({ error: true });
+        },
+        pathRewrite: (_, __) => "/video/v1/webhooks/shotstack",
+      })
+    );
+  }
 
   expressApp.all("*", (req: Request, res: Response) => {
     return handle(req, res);

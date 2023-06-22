@@ -20,6 +20,7 @@ import { Readable } from "stream";
 import { Service } from "typedi";
 import config from "../../config";
 import { parseS3URL, streamToString } from "./utils";
+import { DEFAULT_GET_OBJECT_SIGNED_URL_EXPIRATION_SECONDS } from "./videos.constants";
 
 AWS.config.update({
   region: config.aws.awsRegion,
@@ -85,7 +86,7 @@ export class S3Service {
 
   async getObjectSignedURL(
     params: GetObjectCommandInput,
-    expiresIn = 10000
+    expiresIn = DEFAULT_GET_OBJECT_SIGNED_URL_EXPIRATION_SECONDS
   ): Promise<string> {
     const command = new GetObjectCommand({ ...params });
     const url = await getSignedUrl(this.s3Client, command, {

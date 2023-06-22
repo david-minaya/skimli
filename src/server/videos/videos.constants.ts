@@ -27,3 +27,9 @@ export const SUPPORTED_ASPECT_RATIOS = [
   "16:9",
   "3:2",
 ];
+
+export const IGNORE_RENDER_PROPERTIES = ["src"];
+
+// in seconds
+export const DEFAULT_GET_OBJECT_SIGNED_URL_EXPIRATION_SECONDS = 10000;
+export const TWLEVE_HOURS_IN_SECONDS = 43200;

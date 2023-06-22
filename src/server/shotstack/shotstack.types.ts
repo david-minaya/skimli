@@ -1,15 +1,15 @@
-export interface IShotstackRenderClipArgs {
-  src: string;
-  width: number;
-  height: number;
-  muteAudio: boolean;
-  quality: string;
-  startTime: number;
-  endTime: number;
-  callbackUrl: string;
-  prefix: string;
-  filename: string;
-}
+// export interface IShotstackRenderClipArgs {
+//   src: string;
+//   width: number;
+//   height: number;
+//   muteAudio: boolean;
+//   quality: string;
+//   startTime: number;
+//   endTime: number;
+//   callbackUrl: string;
+//   prefix: string;
+//   filename: string;
+// }
 
 export interface IShotstackRenderClipResponse {
   success: boolean;

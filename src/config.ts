@@ -62,6 +62,7 @@ const config = {
     apikey: process.env.SHOTSTACK_API_KEY ?? "",
     callbackURL: process.env.SHOTSTACK_BASE_CALLBACK_URL ?? "",
   },
+  proxyEnabled: process.env.PROXY_ENABLED ?? true,
 };
 
 export default config;

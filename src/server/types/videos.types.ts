@@ -1,5 +1,6 @@
 import { InputInfo } from "@mux/mux-node";
 import { AxiosError } from "axios";
+import { IRenderTimelineDetails } from "./render.types";
 
 export enum AssetStatus {
   PROCESSING = "PROCESSING",
@@ -109,6 +110,8 @@ export interface IClipDetailsRender {
 
 export interface IClipDetails {
   renders: IClipDetailsRender[];
+  currentTimeline?: IRenderTimelineDetails;
+  renderedTimeline?: IRenderTimelineDetails;
 }
 
 export interface IClip {
@@ -366,15 +369,15 @@ export interface ISubAssetDetails {
   clipId: string;
   renderId?: string;
   response?: any;
+  timeline: IRenderTimelineDetails;
 }
 
 export interface ISubAssetRender {
-  quality: string;
-  muteAudio: boolean;
   url: string; // s3 url of rendered clip from shotstack
 }
 
 export interface ICreateSubAssetArgs {
+  uuid?: string;
   parentId: string; // video asset id
   clipId: string; // clip id
   details: ISubAssetDetails;
@@ -504,4 +507,9 @@ export interface ILinkMediasToAssetArgs {
   assetId: string;
   mediaIds: string[];
   count?: number;
+}
+
+export interface IUpdateClipArgs {
+  uuid: string;
+  details?: Partial<IClipDetails>;
 }

@@ -32,6 +32,8 @@ import {
   IAdminGetMediaArgs,
   IUnlinkMediaArgs,
   ILinkMediasToAssetArgs,
+  IAdjustClipArgs,
+  IUpdateClipArgs,
 } from "../types/videos.types";
 import {
   axiosRequestErrorLoggerInterceptor,
@@ -393,6 +395,38 @@ export class VideosAPI {
         `/video/v1/clips/${encodeURIComponent(uuid)}/reset`,
         {},
         { headers: { ...generateAuthHeaders(token) } }
+      );
+      return response?.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async adminUpdateClip(args: IUpdateClipArgs): Promise<IClip> {
+    const { uuid, ...params } = args;
+    try {
+      const response = await this.api.put(
+        `/video/v1/admin/clips/${encodeURIComponent(uuid)}`,
+        params
+      );
+      return response.data;
+    } catch (e) {
+      throw new APIError(e);
+    }
+  }
+
+  async updateClip(
+    args: Partial<IUpdateClipArgs>,
+    token: string
+  ): Promise<IClip> {
+    try {
+      const { uuid, ...rest } = args;
+      const response = await this.api.put(
+        `/video/v1/clips/${encodeURIComponent(uuid!)}`,
+        rest,
+        {
+          headers: { ...generateAuthHeaders(token) },
+        }
       );
       return response?.data;
     } catch (e) {

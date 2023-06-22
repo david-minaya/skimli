@@ -35,7 +35,10 @@ import {
   VideoTrack,
 } from "../mux/mux.types";
 import {
+  CLIP_BACKGROUND,
   OUTPUT_FORMAT,
+  S3_ACL,
+  S3_PROVIDER,
   ShotstackService,
 } from "../shotstack/shotstack.service";
 import {
@@ -49,12 +52,18 @@ import {
   MuxError,
 } from "../types/base.types";
 import {
+  IRenderTimeline,
+  IRenderTimelineDetails,
+  ITimelineOutput,
+} from "../types/render.types";
+import {
   AssetStatus,
   AssetTranscriptionObjectDetectionStatus,
   ConvertToClipsArgs,
   ConvertToClipsWorkflowResponse,
   ConvertToClipsWorkflowStatus,
   IAdjustClipArgs,
+  Asset as IAsset,
   IAudioMediaDetails,
   IClip,
   ICreateClipArgs,
@@ -75,19 +84,21 @@ import {
   SubAssetType,
   TranscriptionFileStatus,
 } from "../types/videos.types";
-import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
-import { parseS3URL } from "./utils";
+import { RenderClipArgs, UpdateClipTimelineArgs } from "./args/render.args";
 import {
   AbortUploadArgs,
   CompleteUploadArgs,
   GetAssetsArgs,
   GetPartUploadURLArgs as GetPartUploadArgs,
-  RenderClipArgs,
   StartUploadArgs,
-} from "./videos.args";
+} from "./args/videos.args";
+import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
+import { deepCompare, parseS3URL } from "./utils";
 import {
   ASSET_UPLOAD_EVENT,
   CONVERT_TO_CLIPS_TOPIC,
+  DEFAULT_GET_OBJECT_SIGNED_URL_EXPIRATION_SECONDS,
+  IGNORE_RENDER_PROPERTIES,
   MAX_CLIP_DURATION_ERROR,
   MAX_CLIP_DURATION_IN_MS,
   MEDIA_UPLOADED_EVENT,
@@ -97,6 +108,7 @@ import {
   SUPPORTED_AUDIO_FILE_EXTENSIONS,
   SUPPORTED_IMAGE_FILE_EXTENSIONS,
   SUPPORTED_SUBTITLE_FILE_EXTENSIONS,
+  TWLEVE_HOURS_IN_SECONDS,
 } from "./videos.constants";
 import {
   AssetMediaNotFoundException,
@@ -112,13 +124,13 @@ import {
   SubtitleFileNotSupported,
 } from "./videos.exceptions";
 import {
-  Asset,
   AssetUploads,
   GetPartUploadResponse,
   MuxData,
   RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
+
 @Service()
 export class VideosService {
   constructor(
@@ -473,12 +485,12 @@ export class VideosService {
     });
   }
 
-  async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<Asset[]> {
+  async getAssets(authInfo: AuthInfo, args: GetAssetsArgs): Promise<IAsset[]> {
     const assets = await this.videosAPI.getAssets(args, authInfo.token);
     return assets;
   }
 
-  async getAsset(authInfo: AuthInfo, assetId: string): Promise<Asset> {
+  async getAsset(authInfo: AuthInfo, assetId: string): Promise<IAsset> {
     const assetsList = await this.videosAPI.getAssets(
       { uuid: assetId },
       authInfo.token
@@ -769,17 +781,51 @@ export class VideosService {
   async generateSignedURL({
     s3URL,
     isAttachment = false,
+    expiresIn = DEFAULT_GET_OBJECT_SIGNED_URL_EXPIRATION_SECONDS,
   }: {
     s3URL: string;
     isAttachment: boolean;
+    expiresIn?: number;
   }): Promise<string> {
     const { bucket, key } = parseS3URL(s3URL);
-    const signedAssetURL = await this.s3Service.getObjectSignedURL({
-      Bucket: bucket,
-      Key: key,
-      ResponseContentDisposition: isAttachment ? "attachment" : "inline",
-    });
+    const signedAssetURL = await this.s3Service.getObjectSignedURL(
+      {
+        Bucket: bucket,
+        Key: key,
+        ResponseContentDisposition: isAttachment ? "attachment" : "inline",
+      },
+      expiresIn
+    );
     return signedAssetURL;
+  }
+
+  generateRenderOutput({
+    width,
+    height,
+    prefix,
+    filename,
+  }: {
+    width: number;
+    height: number;
+    prefix: string;
+    filename: string;
+  }): ITimelineOutput {
+    return {
+      size: { width: width, height: height },
+      format: OUTPUT_FORMAT,
+      destinations: [
+        {
+          provider: S3_PROVIDER,
+          options: {
+            region: config.aws.awsRegion,
+            bucket: config.aws.assetsS3Bucket,
+            prefix: prefix,
+            filename: filename,
+            acl: S3_ACL,
+          },
+        },
+      ],
+    };
   }
 
   async renderClip(
@@ -788,11 +834,6 @@ export class VideosService {
   ): Promise<null | string> {
     const org = Number(authInfo.auth0.organization_id);
     const asset = await this.getAsset(authInfo, args.assetId);
-    const [inputInfo, _] = asset.sourceMuxInputInfo ?? [];
-    if (!inputInfo) {
-      throw RenderClipException;
-    }
-
     const clip = asset.inferenceData?.human.clips?.find(
       (c) => c.uuid == args.clipId
     );
@@ -800,74 +841,90 @@ export class VideosService {
       throw ClipsNotFoundException;
     }
 
-    // prevent re-render
-    if (clip?.details?.renders) {
-      const renderedClip = clip.details?.renders?.find(
-        (c) => c.quality == args.quality && c.muteAudio == args.muteAudio
-      );
-      if (renderedClip) {
-        const downloadUrl = await this.generateSubAssetDownloadLink({
-          assetId: asset.uuid,
-          clipId: clip.uuid,
-          downloadedAt: new Date().toUTCString(),
-          render: renderedClip,
-        });
-        return downloadUrl;
-      }
+    if (!clip.details?.currentTimeline && !clip.details?.renderedTimeline) {
+      throw new BadInputError(`No saved timeline`);
     }
 
-    const signedAssetURL = await this.generateSignedURL({
-      s3URL: asset.sourceUrl,
-      isAttachment: false,
+    // check if render json is same or not, if same return download link else do a new render
+    const isRendered = deepCompare({
+      object: clip.details?.currentTimeline,
+      other: clip.details?.renderedTimeline,
+      ignore: IGNORE_RENDER_PROPERTIES,
     });
 
+    if (isRendered) {
+      const renderedClip = clip.details?.renders.pop();
+      if (!renderedClip)
+        throw new InternalGraphQLError(`Rendered Clip Not Found`);
+
+      const downloadUrl = await this.generateSubAssetDownloadLink({
+        assetId: asset.uuid,
+        clipId: clip.uuid,
+        downloadedAt: new Date().toUTCString(),
+        render: renderedClip,
+      });
+      return downloadUrl;
+    }
+
+    const subAssetID = v4();
     const prefix = `org/${org}/clips/${args.clipId}/renders`;
     const filename = v4();
+    const { width, height } = clip.details.currentTimeline?.output?.size || {};
+
+    const renderOutput = this.generateRenderOutput({
+      width: width!,
+      prefix: prefix,
+      height: height!,
+      filename: filename,
+    });
+
+    const callbackUrl = new URL(
+      `${config.shotstack.callbackURL}/api/webhooks/shostack`
+    );
+    callbackUrl.searchParams.append("id", subAssetID);
+    callbackUrl.searchParams.append("type", ShotstackWebhookType.SUB_ASSET);
+    callbackUrl.searchParams.append("org", org?.toString());
+
+    const previousTimeline = clip.details?.currentTimeline?.timeline;
+    const timeline: IRenderTimeline = {
+      ...previousTimeline,
+      background: CLIP_BACKGROUND,
+      tracks: [...(previousTimeline?.tracks ?? [])],
+    };
+    const renderJSON: IRenderTimelineDetails = {
+      timeline: timeline,
+      output: renderOutput,
+      callback: callbackUrl.toString(),
+    };
+
+    const renderClipResponse = await this.shotstackAPI.renderClip(renderJSON);
+    console.log("render clip response: ", JSON.stringify(renderClipResponse));
+
+    await this.videosAPI.adminUpdateClip({
+      uuid: clip.uuid,
+      details: {
+        ...clip.details,
+        currentTimeline: renderJSON,
+        renderedTimeline: renderJSON,
+      },
+    });
+
     const subAsset = await this.videosAPI.adminCreateSubAsset({
+      uuid: subAssetID,
       clipId: args.clipId,
       parentId: args.assetId,
       type: SubAssetType.CLIP,
       details: {
         clipId: args.clipId,
+        timeline: renderJSON,
+        response: renderClipResponse,
       },
       org: org,
       status: SubAssetStatus.PROCESSING,
       render: {
-        quality: args.quality,
-        muteAudio: args.muteAudio,
         url: `s3://${config.aws.assetsS3Bucket}/${prefix}/${filename}.${OUTPUT_FORMAT}`,
       },
     });
-
-    const videoTrack = inputInfo.file.tracks.find((t) => t.type == "video");
-    const width = args?.width || videoTrack?.width!;
-    const height = args.height || videoTrack?.height!;
-    const startTime =
-      args.startTime || Timecode.TimetoMilliseconds(clip.startTime) / 1000;
-    const endTime =
-      args.endTime || Timecode.TimetoMilliseconds(clip.endTime) / 1000;
-
-    const callbackUrl = new URL(
-      `${config.shotstack.callbackURL}/api/webhooks/shostack`
-    );
-    callbackUrl.searchParams.append("id", subAsset.uuid);
-    callbackUrl.searchParams.append("type", ShotstackWebhookType.SUB_ASSET);
-    callbackUrl.searchParams.append("org", org?.toString());
-    console.log("callback url generated is: ", callbackUrl.toString());
-
-    const renderClipResponse = await this.shotstackAPI.renderClip({
-      src: signedAssetURL,
-      startTime: startTime,
-      endTime: endTime,
-      width: width,
-      height: height,
-      callbackUrl: callbackUrl.toString(),
-      prefix: prefix,
-      filename: filename,
-      muteAudio: args.muteAudio,
-      quality: args.quality,
-    });
-    console.log("render clip response: ", JSON.stringify(renderClipResponse));
 
     const payload: RenderClipResponse = {
       parentId: subAsset.parentId,
@@ -1087,12 +1144,86 @@ export class VideosService {
   async linkMediasToAsset(
     authInfo: AuthInfo,
     args: ILinkMediasToAssetArgs
-  ): Promise<Asset> {
+  ): Promise<IAsset> {
     args.count = args.mediaIds.length;
     return this.videosAPI.linkMediasToAsset(args, authInfo.token);
   }
 
   async resetClip(clipId: string, authInfo: AuthInfo): Promise<IClip> {
     return this.videosAPI.resetClip(clipId, authInfo.token);
+  }
+
+  async getMediaSourceUrl(
+    mediaId: string,
+    authInfo: AuthInfo
+  ): Promise<string> {
+    const [media] = await this.videosAPI.getAssetMedias(
+      { uuid: mediaId },
+      authInfo.token
+    );
+    if (!media) {
+      throw MediaNotFoundException;
+    }
+
+    return this.generateSignedURL({
+      isAttachment: false,
+      s3URL: media.details?.sourceUrl,
+      expiresIn: TWLEVE_HOURS_IN_SECONDS,
+    });
+  }
+
+  async getAssetSourceUrl(
+    assetId: string,
+    authInfo: AuthInfo
+  ): Promise<string> {
+    const [asset] = await this.videosAPI.getAssets(
+      { uuid: assetId },
+      authInfo.token
+    );
+    if (!asset) {
+      throw AssetNotFoundException;
+    }
+
+    return this.generateSignedURL({
+      isAttachment: false,
+      s3URL: asset.sourceUrl,
+      expiresIn: TWLEVE_HOURS_IN_SECONDS,
+    });
+  }
+
+  async updateClipTimeline(args: UpdateClipTimelineArgs, authInfo: AuthInfo) {
+    const asset = await this.getAsset(authInfo, args.assetId);
+    const clip = asset.inferenceData?.human.clips?.find(
+      (c) => c.uuid == args.clipId
+    );
+    if (!clip) {
+      throw ClipsNotFoundException;
+    }
+
+    // generate a full render based on stored render
+    const timeline: IRenderTimelineDetails = {
+      ...args.render,
+      timeline: {
+        ...args.render.timeline,
+        background:
+          clip.details?.currentTimeline?.timeline?.background ??
+          CLIP_BACKGROUND,
+      },
+      output: {
+        ...args.render.output,
+        destinations: clip.details?.currentTimeline?.output?.destinations ?? [],
+        format: clip.details?.currentTimeline?.output?.format ?? "",
+      },
+      callback: clip.details?.currentTimeline?.callback ?? "",
+    };
+
+    const updatedClip = await this.videosAPI.updateClip(
+      {
+        uuid: clip.uuid,
+        details: { ...clip.details, currentTimeline: timeline },
+      },
+      authInfo.token
+    );
+    return updatedClip;
   }
 }
