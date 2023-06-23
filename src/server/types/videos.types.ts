@@ -1,0 +1,507 @@
+import { InputInfo } from "@mux/mux-node";
+import { AxiosError } from "axios";
+
+export enum AssetStatus {
+  PROCESSING = "PROCESSING",
+  UNCONVERTED = "UNCONVERTED",
+  CONVERTING = "CONVERTING",
+  CONVERTED = "CONVERTED",
+  DELETING = "DELETING",
+  ERRORED = "ERRORED",
+  NO_CLIPS_FOUND = "NO_CLIPS_FOUND",
+  TIMEOUT = "TIMEOUT",
+}
+
+export interface IConvertToClipsWorkflow {
+  workflowId: string;
+  runId: string;
+  status: AssetStatus;
+  category: string;
+  activityStatus: ActivityStatus;
+  startTime?: string;
+  endTime?: string;
+  model?: string;
+  etc?: number; // etc in ms
+}
+
+export interface IPostVideoWorkflow {
+  workflowId: string;
+  runId: string;
+}
+
+export type IAssetWorkflow = IConvertToClipsWorkflow | IPostVideoWorkflow;
+
+export interface Asset {
+  uuid: string;
+  createdAt: string;
+  updatedAt: string;
+  org: number;
+  name: string;
+  status: AssetStatus;
+  sourceUrl: string;
+  sourceMuxAssetId?: string;
+  sourceMuxInputInfo?: SourceMuxInput[];
+  sourceMuxAssetData?: object;
+  activityStartTime?: string;
+  activityStatus?: ActivityStatus;
+  medias?: object;
+  inferenceData?: IInferenceData;
+  metadata?: AssetMetadata;
+  workflows?: IAssetWorkflow[];
+}
+
+export interface CreateAssetRequest {
+  name: string;
+  status: AssetStatus;
+  sourceUrl: string;
+  sourceMuxAssetId?: string;
+  sourceMuxInputInfo?: InputInfo[];
+  sourceMuxAssetData?: object;
+}
+
+export interface UpdateAssetRequest extends Partial<CreateAssetRequest> {}
+
+export type CreateAssetResponse = [Asset | null, AxiosError | null];
+export type UpdateAssetResponse = CreateAssetResponse;
+
+export interface GetAssetsArgs {
+  take?: number;
+  skip?: number;
+  name?: string;
+  uuid?: string;
+}
+
+export interface IAdminGetAssetsArgs {
+  take?: number;
+  skip?: number;
+  name?: string;
+  uuid?: string;
+  org: number;
+}
+
+export enum ActivityStatus {
+  QUEUED = "QUEUED",
+  DOWNLOADING = "DOWNLOADING",
+  ANALYZING = "ANALYZING",
+  ASSEMBLING = "ASSEMBLING",
+  PUBLISHING = "PUBLISHING",
+  FINISHED = "FINISHED",
+}
+
+export interface ConvertToClipsArgs {
+  assetId: string;
+  category: string;
+  model: string;
+  userId?: string;
+}
+
+export enum ClipSourceType {
+  MODEL = "MODEL",
+  HUMAN = "HUMAN",
+  AUTOMATIC = "AUTOMATIC",
+}
+
+export interface IClipDetailsRender {
+  quality: RenderClipQuality;
+  muteAudio: boolean;
+  url: string;
+}
+
+export interface IClipDetails {
+  renders: IClipDetailsRender[];
+}
+
+export interface IClip {
+  uuid: string;
+  caption?: string;
+  startTime: string;
+  endTime: string;
+  duration: string;
+  startFrame: number;
+  endFrame: number;
+  source: ClipSourceType;
+  createdAt: string;
+  editedAt: string;
+  assetId?: string;
+  details?: IClipDetails;
+}
+
+export interface IInferenceDataAnalysis {
+  clips: IClip[];
+  model: string;
+  createdAt: string;
+}
+
+export interface IHumanInferenceData {
+  clips?: IClip[];
+}
+
+export interface IInferenceData {
+  human: IHumanInferenceData;
+  analysis: IInferenceDataAnalysis;
+}
+
+export interface SourceMuxInput {
+  file: SourceMuxInputFile;
+  settings: SourceMuxInputSettings;
+}
+
+export interface SourceMuxInputFile {
+  tracks: SourceMuxInputTrack[];
+  container_format: string;
+}
+
+export interface SourceMuxInputTrack {
+  type: string;
+  width?: number;
+  height?: number;
+  duration: number;
+  encoding: string;
+  frame_rate?: number;
+  channels?: number;
+  sample_rate?: number;
+}
+
+export interface SourceMuxInputSettings {
+  url: string;
+}
+
+export interface ConvertToClipsWorkflowResponse {
+  workflow: string;
+  asset: string;
+}
+
+export interface ConvertToClipsWorkflowStatus {
+  activityStatus?: ActivityStatus;
+  assetId: string;
+  org: number;
+  startTime: string;
+  status?: AssetStatus;
+}
+
+export interface DeleteAssetArgs {
+  assetIds: string[];
+  userId: string;
+  token: string;
+}
+
+export interface AssetMetadataResolution {
+  name: string;
+}
+
+export interface AssetMetadataAspectRatio {
+  decimal: string;
+  dimension: string;
+}
+
+export enum AssetTranscriptionObjectDetectionStatus {
+  FAILED = "FAILED",
+  COMPLETED = "COMPLETED",
+  RUNNING = "RUNNING",
+}
+
+export enum TranscriptionFileStatus {
+  MISSING = "MISSING",
+  VALID = "VALID",
+  INVALID = "INVALID",
+}
+
+export interface IAssetMetadataTranscription {
+  status: AssetTranscriptionObjectDetectionStatus;
+  sourceUrl?: string;
+  workflowId: string;
+  transcriptionFileStatus?: TranscriptionFileStatus;
+}
+
+export interface IAssetMetadataObjectDetection {
+  status: AssetTranscriptionObjectDetectionStatus;
+  sourceUrl?: string;
+  workflowId: string;
+  labelCount: number;
+}
+
+export interface AssetMetadata {
+  size?: number;
+  resolution?: AssetMetadataResolution;
+  aspectRatio?: AssetMetadataAspectRatio;
+  transcription?: IAssetMetadataTranscription;
+  objectDetection?: IAssetMetadataObjectDetection;
+  // labels?: IObjectDetectionResult[];
+  // // this will be s3 url of autogenerated transcription file
+  // vtt_output_path?: string;
+}
+
+export enum MediaType {
+  AUTO_SUBTITLE = "AUTO_SUBTITLE",
+  SUBTITLE = "SUBTITLE",
+  AUDIO = "AUDIO",
+  IMAGE = "IMAGE",
+}
+
+export enum MediaStatus {
+  PROCSESSING = "PROCSESSING",
+  READY = "READY",
+  ARCHIVED = "ARCHIVED",
+  DELETED = "DELETED",
+  ERRORED = "ERRORED",
+}
+
+export interface ISubtitleMediaDetails {
+  sourceUrl: string;
+  type: string;
+  muxAssetId?: string;
+  playbackId?: string;
+}
+
+export interface IShotstackAudioMediaDetails {
+  id?: string;
+  url?: string;
+  status?: string;
+  render?: string;
+}
+export interface IAudioMediaDetails {
+  sourceUrl: string;
+  muxAssetId?: string;
+  playbackId?: string;
+  type: string;
+  shotstack?: IShotstackAudioMediaDetails;
+}
+
+export interface IImageMediaDetails {
+  sourceUrl: string;
+  type: string;
+}
+
+export type IMediaDetails =
+  | ISubtitleMediaDetails
+  | IAudioMediaDetails
+  | IImageMediaDetails;
+
+export interface IMediaAssets {
+  ids?: string[];
+  count: number;
+}
+
+export interface IMedia {
+  uuid: string;
+  org: number;
+  name: string;
+  details: IMediaDetails;
+  type: MediaType;
+  status: MediaStatus;
+  createdAt: string;
+  updatedAt: string;
+  assets?: IMediaAssets;
+}
+
+export interface IStartMediaUploadArgs {
+  filename: string;
+  assetId?: string;
+  type: MediaType;
+  languageCode?: string;
+}
+
+export interface ICreateMediaArgs {
+  name: string;
+  type: MediaType;
+  details: IMediaDetails;
+  status: MediaStatus;
+  assets?: { ids: string[]; count: number };
+  org: number;
+}
+
+export interface IGetAssetMediasArgs {
+  // is the video asset id
+  assetId?: string;
+  // uuid of the media to get media by id
+  uuid?: string;
+  name?: string;
+  type?: MediaType;
+  status?: MediaStatus;
+  skip?: number;
+  take?: number;
+}
+
+export interface ICreateClipArgs {
+  caption: string;
+  startTime: string;
+  endTime: string;
+  assetId: string;
+  duration: string;
+  startFrame: number;
+  endFrame: number;
+  source: ClipSourceType;
+}
+
+export interface IAdjustClipArgs {
+  uuid: string;
+  assetId: string;
+  caption?: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface IGetClipsArgs {
+  uuid?: string;
+  skip?: number;
+  take?: number;
+  caption?: string;
+  source?: ClipSourceType;
+  uuids?: string[];
+}
+
+export enum RenderClipQuality {
+  LOW = "sd",
+  MEDIUM = "hd",
+  HIGH = "1080",
+}
+
+export enum SubAssetType {
+  CLIP = "CLIP",
+  ASSET = "ASSET",
+  STITCH = "STITCH",
+}
+
+export interface ISubAssetDetails {
+  clipId: string;
+  renderId?: string;
+  response?: any;
+}
+
+export interface ISubAssetRender {
+  quality: string;
+  muteAudio: boolean;
+  url: string; // s3 url of rendered clip from shotstack
+}
+
+export interface ICreateSubAssetArgs {
+  parentId: string; // video asset id
+  clipId: string; // clip id
+  details: ISubAssetDetails;
+  type: SubAssetType;
+  org: number;
+  status: SubAssetStatus;
+  render: ISubAssetRender;
+}
+
+export type IUpdateSubAssetArgs = Partial<ICreateSubAssetArgs>;
+
+export enum SubAssetStatus {
+  PROCESSING = "PROCESSING",
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+}
+
+export class ISubAsset {
+  uuid: string;
+  parentId: string;
+  org: number;
+  type: SubAssetType;
+  details: ISubAssetDetails;
+  createdAt: string;
+  updatedAt: string;
+  status: SubAssetStatus;
+  render: ISubAssetRender;
+}
+
+export interface IRenderClipResponse {
+  parentId: string;
+  clipId: string;
+  status: SubAssetStatus;
+  org: number;
+  downloadUrl?: string;
+}
+export interface AdminGetSubAssetsQuery {
+  uuid?: string;
+  clipId?: string;
+  parentId?: string;
+  type?: SubAssetType;
+}
+
+export type IObjectDetectionResults = IObjectDetectionResult[];
+
+export interface IObjectDetectionResult {
+  Label: IObjectDetectionLabel;
+  Timestamp: number;
+}
+
+export interface IObjectDetectionLabel {
+  Name: string;
+  Aliases: IObjectDetectionAliase[];
+  Parents: IObjectDetectionParent[];
+  Instances: IObjectDetectionInstance[];
+  Categories: IObjectDetectionCategory[];
+  Confidence: number;
+}
+
+export interface IObjectDetectionAliase {
+  Name: string;
+}
+
+export interface IObjectDetectionParent {
+  Name: string;
+}
+
+export interface IObjectDetectionInstance {
+  Confidence: number;
+  BoundingBox: IObjectDetectionBoundingBox;
+}
+
+export interface IObjectDetectionBoundingBox {
+  Top: number;
+  Left: number;
+  Width: number;
+  Height: number;
+}
+
+export interface IObjectDetectionCategory {
+  Name: string;
+}
+
+export interface IGetMediaSubtitleArgs {
+  mediaId?: string;
+  assetId?: string;
+}
+
+export interface IGetObjectDetectionArgs {
+  assetId: string;
+  withBoundingBoxes?: boolean;
+}
+
+// TODO: later change to better name
+export enum MuxPassthroughType {
+  VIDEO_ASSET = "video",
+  AUDIO_MEDIA = "audio-media",
+  SUBTITLE_MEDIA = "subtitle-media",
+}
+
+export interface IAdminGetMediaArgs {
+  assetId?: string;
+  uuid?: string;
+  name?: string;
+  type?: MediaType;
+  status?: MediaStatus;
+  take?: number;
+  skip?: number;
+  org: number;
+}
+
+export interface ISaveDownloadDetails {
+  assetId: string;
+  clipId: string;
+  render: ISubAssetRender;
+  downloadedAt: string;
+  subAssetId?: string;
+}
+
+export interface IUnlinkMediaArgs {
+  mediaId: string;
+  assetIds: string[];
+  count?: number;
+}
+
+export interface ILinkMediasToAssetArgs {
+  assetId: string;
+  mediaIds: string[];
+  count?: number;
+}

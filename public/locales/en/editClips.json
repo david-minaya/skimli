@@ -1,0 +1,102 @@
+{
+  "addButton": "Add a clip",
+  "stitchButton": "Stitch clips",
+  "dateTitle": "Created",
+  "resetButton": "Reset to AI version",
+  "adjustButton": "Adjust this clip",
+  "noCaptionFound": "No caption found",
+  "clipListTitle": "Clips",
+  "errorDownloadingClip": "Error downloading clip",
+  "clips": {
+    "menu": {
+      "clips": "Clips",
+      "sourceView": "Source view"
+    },
+    "counter_one": "{{count}} Clip",
+    "counter_other": "{{count}} Clips",
+    "searchResultsTitle": "Search Results",
+    "searchResultsCounter_one": "{{count}} result",
+    "searchResultsCounter_other": "{{count}} results",
+    "notFoundResults": "No search results found for \"caption\""
+  },
+  "shareTab": {
+    "share": "Social share",
+    "download": "Download",
+    "aspectRatioItems": {
+      "custom": {
+        "title": "{{width}} x {{height}} - Custom",
+        "description": "Same as source"
+      },
+      "original": {
+        "title": "{{aspectRatio}} - Original",
+        "description": "Same as source"
+      },
+      "square": {
+        "title": "1:1 - Square",
+        "description": "Facebook Post"
+      },
+      "portrait": {
+        "title": "9:16 - Portrait",
+        "description": "IG Reel, TkTok, YT Shorts"
+      },
+      "rect": {
+        "title": "4:5",
+        "description": "Facebook Post"
+      }
+    },
+    "renderingClip": {
+      "title": "Rendering...",
+      "description": "The download function is disabled while rendering."
+    }
+  },
+  "sidebarAudio": {
+    "title": "Audio",
+    "media": {
+      "title": "Media",
+      "searchResult": "Search Results",
+      "notFoundResults": "No search results found for \"{{name}}\""
+    },
+    "uploadFile": {
+      "title": "Upload a file",
+      "description": "Click to <link/>, or drag & drop a file here",
+      "link": "browse",
+      "footer": "MP3 files only"
+    }
+  },
+  "sidebarImage": {
+    "title": "Image",
+    "media": {
+      "title": "Media",
+      "searchResult": "Search Results",
+      "notFoundResults": "No search results found for \"{{name}}\""
+    },
+    "uploadFile": {
+      "title": "Upload a file",
+      "description": "Click to <link/>, or drag & drop a file here",
+      "link": "browse",
+      "footer": "JPG and PNG files only"
+    }
+  },
+  "clipDetails": {
+    "duplicatedToast": {
+      "title": "Clip overlaps another clip",
+      "description": "Try adjusting the clip so it does not overlap with the \"{{caption}}\" which has the time code between {{startTime}} and {{endTime}}."
+    },
+    "addErrorToast": "Error adding clip",
+    "editErrorToast": "Error updating clip"
+  },
+  "editClipModal": {
+    "resetButton": "Reset to original version",
+    "cancelButton": "Cancel",
+    "saveButton": "Save",
+    "confirmDialog": "You will lose unsaved changes, are you sure?",
+    "captionInputTitle": "Clip caption"
+  },
+  "downloadClipModal": {
+    "title": "Download options",
+    "quality": "Quality",
+    "audio": "Mute audio track?",
+    "button": "Download",
+    "error": "Error downloading clip"
+  }
+}

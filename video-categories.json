@@ -1,0 +1,116 @@
+{
+  "version": 1.0,
+  "releaseDate": "2023-04-03",
+  "categories": [
+    {
+      "code": "VIDEO-CATEGORY-OTHER",
+      "archived": false,
+      "label": "Other",
+      "model": "default"
+    },
+    {
+      "code": "VIDEO-CATEGORY-TRAVEL-EVENTS",
+      "archived": false,
+      "label": "Travel & Events",
+      "model": "travel-and-events"
+    },
+    {
+      "code": "VIDEO-CATEGORY-ENTERTAINMENT",
+      "archived": false,
+      "label": "Entertainment",
+      "model": "entertainment"
+    },
+    {
+      "code": "VIDEO-CATEGORY-AUTOS-VEHICLES",
+      "archived": false,
+      "label": "Autos & Vehicles",
+      "model": "autos-and-vehicles"
+    },
+    {
+      "code": "VIDEO-CATEGORY-HOWTO-STYLE",
+      "archived": false,
+      "label": "Howto & Style",
+      "model": "howto-and-style"
+    },
+    {
+      "code": "VIDEO-CATEGORY-SCIENCE-TECHNOLOGY",
+      "archived": false,
+      "label": "Science & Technology",
+      "model": "science-and-technology"
+    },
+    {
+      "code": "VIDEO-CATEGORY-SPORTS",
+      "archived": false,
+      "label": "Sports",
+      "model": "sports"
+    },
+    {
+      "code": "VIDEO-CATEGORY-PETS-ANIMALS",
+      "archived": false,
+      "label": "Pets & Animals",
+      "model": "pets-and-animals"
+    },
+    {
+      "code": "VIDEO-CATEGORY-COMEDY",
+      "archived": false,
+      "label": "Comedy",
+      "model": "comedy"
+    },
+    {
+      "code": "VIDEO-CATEGORY-EDUCATION",
+      "archived": false,
+      "label": "Education",
+      "model": "education"
+    },
+    {
+      "code": "VIDEO-CATEGORY-MUSIC",
+      "archived": false,
+      "label": "Music",
+      "model": "music"
+    },
+    {
+      "code": "VIDEO-CATEGORY-NEWS-POLITICS",
+      "archived": false,
+      "label": "News & Politics",
+      "model": "news-and-politics"
+    },
+    {
+      "code": "VIDEO-CATEGORY-NONPROFITS-ACTIVISM",
+      "archived": false,
+      "label": "Nonprofits & Activism",
+      "model": "nonprofits-and-activism"
+    },
+    {
+      "code": "VIDEO-CATEGORY-PEOPLE-BLOGS",
+      "archived": false,
+      "label": "People & Blogs",
+      "model": "people-and-blogs"
+    },
+    {
+      "code": "VIDEO-CATEGORY-GAMING",
+      "archived": false,
+      "label": "Gaming",
+      "model": "gaming"
+    },
+    {
+      "code": "VIDEO-CATEGORY-FILM-AND-ANIMATION",
+      "archived": false,
+      "label": "Film & Animation",
+      "model": "film-and-animation"
+    },
+    {
+      "code": "VIDEO-CATEGORY-OTHER-ANCHOR-BASED",
+      "archived": false,
+      "label": "Other - Anchor Based",
+      "model": "default-anchor-based",
+      "skimliOnly": true
+    },
+    {
+      "code": "VIDEO-CATEGORY-UFC",
+      "archived": false,
+      "label": "UFC",
+      "model": "ufc",
+      "skimliOnly": true
+    }
+  ]
+}

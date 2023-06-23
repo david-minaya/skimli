@@ -1,0 +1,42 @@
+{
+  "tabTitle": "Skimli | Webapp",
+  "appBarTitle": "Media",
+  "toolbarTitle": "Personal Account - {{email}}",
+  "filesQuantity_one": "{{count}} file",
+  "filesQuantity_other": "{{count}} files",
+  "cardTitle": "Upload your first media!",
+  "cardDescription": "Get started by uploading a video by dragging and dropping",
+  "button": "Upload Media",
+  "emptyLibraryTitle": "Hmm… Looks like you don’t have any Media yet!",
+  "emptyLibraryDescription": "Your audio and image files will appear here in the media library. Drag and drop a media file or click the upload button to get started!",
+  "newButton": "New",
+  "uploadOption": "Upload",
+  "dropAreaTitle": "Drag your video files here to upload.",
+  "listTitle": "Files",
+  "searchTitle": "Search Results",
+  "searchResults_one": "{{count}} result",
+  "searchResults_other": "{{count}} results",
+  "deleteErrorToast": "Error deleting media",
+  "noResultsFound": "No search results found for “{{search}}”",
+  "mediaItem": {
+    "errorToast": "Error deleting media",
+    "tags": {
+      "notAttached": "Not Attached"
+    },
+    "menu": {
+      "delete": "Delete"
+    },
+    "deleteDialog": {
+      "title": "Are you sure you want to do that?",
+      "description": "Are you sure you want to delete the file named {{name}}? This action cannot be undone.",
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm"
+    }
+  },
+  "deleteDialog": {
+    "title": "Are you sure you want to do that?",
+    "description": "Are you sure you want to delete these files? This action cannot be undone.",
+    "cancelButton": "Cancel",
+    "confirmButton": "Confirm"
+  }
+}

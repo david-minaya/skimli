@@ -1,0 +1,102 @@
+{
+  "tabTitle": "Skimli | Webapp",
+  "toolbarTitle": "Personal Account - {{email}}",
+  "cardTitle": "Convert your first video!",
+  "cardDescription": "Get started by uploading a video by dragging and dropping",
+  "button": "Upload Video",
+  "emptyLibraryTitle": "Hmm… Looks like you don’t have any Skim Videos yet!",
+  "emptyLibraryDescription": "You new conversions will appear here in the library. Drag and drop a video file or click the upload button to get started!",
+  "newButton": "New",
+  "uploadOption": "Upload",
+  "dropAreaTitle": "Drag your video files here to upload.",
+  "assetTitle": "Videos",
+  "searchTitle": "Search Results",
+  "searchResults_one": "{{count}} result",
+  "searchResults_other": "{{count}} results",
+  "appBarTitle": "Library",
+  "deleteErrorToast": "Error deleting assets",
+  "assetItem": {
+    "errorToast": "Error deleting asset",
+    "tags": {
+      "processing": "Processing",
+      "unconverted": "Convert to clips",
+      "converting": "Converting to clips",
+      "converted": "Converted to clips",
+      "deleting": "Deleting",
+      "error": "Error",
+      "timeout": "Timeout"
+    },
+    "menu": {
+      "convert": "Convert to clips",
+      "seeClips": "See clips",
+      "delete": "Delete"
+    }
+  },
+  "convertToClipsModal": {
+    "title": "Select options",
+    "selectCategory":{
+      "title": "Video category",
+      "tooltip": "Choose other if your video does not fit any category.",
+      "error": "Select a category"
+    },
+    "uploadFile": {
+      "title": "Add subtitles",
+      "tooltip": "WebVTT files supported",
+      "button": "Choose file",
+      "progress": "Uploading file...",
+      "error": "Error uploading file"
+    },
+    "error": "Error converting to clips",
+    "button": "Submit"
+  },
+  "workflowStatusModal": {
+    "assetIdTitle": "Asset ID",
+    "workflowDetails": "Workflow Details",
+    "id": "ID",
+    "videoCategory": "Video Category",
+    "statusTitle": "Status",
+    "activityStatusTitle": "Activity",
+    "status": {
+      "converting": "Converting to clips",
+      "converted": "Converted to clips",
+      "error": "Error",
+      "timeout": "Timeout"
+    },
+    "activityStatus": {
+      "analyzing": "Analyzing",
+      "queued": "Queued",
+      "downloading": "Downloading",
+      "assembling": "Assembling",
+      "publishing": "Publishing",
+      "finished": "Finished"
+    },
+    "timeSubmitted": "Time Submitted",
+    "timeStarted": "Time Started",
+    "estimatedTime": "Estimated Time",
+    "timeElapsed": "Time Elapsed",
+    "timeEnded": "Time Ended",
+    "sourceVideoDetails": "Source Video Details",
+    "container": "Container",
+    "width": "Width",
+    "height": "Height",
+    "aspectRatio": "Aspect Ratio",
+    "resolution": "Resolution",
+    "frameRate": "Frame Rate",
+    "encoding": "Encoding",
+    "duration": "Duration",
+    "size": "Size",
+    "audioTrackTitle": "Main Audio Track",
+    "sampleRatio": "Sample ratio",
+    "channels": "Channels",
+    "noClipsFounds": "No clips found"
+  },
+  "deleteDialog": {
+    "title": "Are you sure you want to do that?",
+    "description": "Your video(s) will be removed from your library, and cannot be recovered after you click delete. Your conversions will not appear in any places where they are embedded, and anyone you previously shared the link with will not be able to access your content.",
+    "cancelButton": "Cancel",
+    "confirmButton": "Confirm"
+  },
+  "noResultsFound": {
+    "description": "No search results found for “{{search}}”"
+  }
+}
