@@ -16,10 +16,10 @@ import {
   ConvertToClipsWorkflowStatusResolver,
   VideosResolver,
 } from "./videos/resolvers/videos.resolver";
-import { AudioMediaDetails } from "./videos/videos.types";
 import {
   AudioMediaDetailsResolver,
   ImageMediaDetailsResolver,
+  SubtitleMediaDetailsResolver,
 } from "./videos/resolvers/medias.resolver";
 
 export const UnAuthorizedError = new GraphQLError(
@@ -38,6 +38,7 @@ export const schema = buildSchemaSync({
     ConvertToClipsWorkflowStatusResolver,
     ImageMediaDetailsResolver,
     AudioMediaDetailsResolver,
+    SubtitleMediaDetailsResolver,
     // ClipDetailsRenderResolver,
   ],
   container: Container,
