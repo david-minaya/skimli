@@ -488,9 +488,9 @@ export class VideosResolver {
     return this.videosService.resetClip(args.clipId, authInfo);
   }
 
-  // @UseMiddleware(IsAppUserGuard)
-  // @Authorized()
-  // @Query(() => String)
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => String)
   async getMediaSourceUrl(
     @Ctx() ctx: GraphQLContext,
     @Args() args: GetMediaSourceUrlArgs
@@ -502,9 +502,9 @@ export class VideosResolver {
     return this.videosService.getMediaSourceUrl(args.mediaId, authInfo);
   }
 
-  // @UseMiddleware(IsAppUserGuard)
-  // @Authorized()
-  // @Query(() => String)
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Query(() => String)
   async getAssetSourceUrl(
     @Ctx() ctx: GraphQLContext,
     @Args() args: GetAssetSourceUrlArgs
