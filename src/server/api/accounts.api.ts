@@ -11,7 +11,7 @@ import {
   CheckUserExistsResponse,
   CreateUserRequest,
   CreateUserResponse,
-  Entitlements,
+  IUser,
   Products,
   UpdateUserRequest,
   UpdateUserResponse,
@@ -22,7 +22,12 @@ import {
   axiosRequestLoggerInterceptor,
   axiosResponseErrorLoggerInterceptor,
   generateAuthHeaders,
+  getAppServicesM2MToken,
+  isAdminURL,
 } from "./base.api";
+
+// TODO: refactor admin endpoints to be shared
+let APP_SERVICES_M2M_TOKEN = "";
 
 @Service()
 export class AccountsAPI {
@@ -38,8 +43,27 @@ export class AccountsAPI {
 
     this.api.interceptors.request.use((request: AxiosRequestConfig) => {
       request.headers!["Content-Type"] = "application/json";
+      if (isAdminURL(request.url!)) {
+        request.headers!["Authorization"] = `Bearer ${APP_SERVICES_M2M_TOKEN}`;
+      }
       return request;
     });
+
+    this.api.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      async (error: AxiosError) => {
+        const config = error.config!;
+        if (
+          isAdminURL(error.config?.url!) &&
+          error.response &&
+          error.response.status === 401
+        ) {
+          APP_SERVICES_M2M_TOKEN = await getAppServicesM2MToken();
+          return this.api(config);
+        }
+        return Promise.reject(error);
+      }
+    );
 
     this.api.interceptors.request.use(
       (request: AxiosRequestConfig) => axiosRequestLoggerInterceptor(request),
@@ -71,7 +95,7 @@ export class AccountsAPI {
   ): Promise<CreateUserResponse> {
     try {
       const response = await this.api.post("/account/v1/users", body, {
-        headers: generateAuthHeaders(token),
+        headers: { ...generateAuthHeaders(token) },
       });
       return [response.data, null];
     } catch (e) {
@@ -85,7 +109,7 @@ export class AccountsAPI {
   ): Promise<UpdateUserResponse> {
     try {
       const response = await this.api.put("/account/v1/users", body, {
-        headers: generateAuthHeaders(token),
+        headers: { ...generateAuthHeaders(token) },
       });
       return [response.data, null];
     } catch (e) {
@@ -96,7 +120,7 @@ export class AccountsAPI {
   async getProducts(token: string): Promise<Products> {
     try {
       const response = await this.api.get("/account/v1/products", {
-        headers: generateAuthHeaders(token),
+        headers: { ...generateAuthHeaders(token) },
       });
       return response?.data;
     } catch (e) {
@@ -104,12 +128,19 @@ export class AccountsAPI {
     }
   }
 
-  async getEntitlements(token: string): Promise<Entitlements> {
+  async adminUpdateUser({
+    uuid,
+    data,
+  }: {
+    uuid: string;
+    data: UpdateUserRequest;
+  }): Promise<IUser> {
     try {
-      const response = await this.api.get("/account/v1/entitlements", {
-        headers: generateAuthHeaders(token),
-      });
-      return response?.data;
+      const response = await this.api.put(
+        `/account/v1/admin/users/${encodeURIComponent(uuid)}`,
+        data
+      );
+      return response.data;
     } catch (e) {
       throw new APIError(e);
     }

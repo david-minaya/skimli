@@ -46,4 +46,34 @@ export default class AppErrorCodes {
 
   // throw when calling deleteMedia mutation
   public static MEDIA_LINKED_TO_ASSET = "MEDIA_LINKED_TO_ASSET";
+
+  // throw when calling billing mutations
+  public static PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND";
+
+  // throw when calling billing mutations
+  public static PLAN_NOT_FOUND = "PLAN_NOT_FOUND";
+
+  // not supposed to happen
+  public static USER_NOT_FOUND = "USER_NOT_FOUND";
+
+  // invalid product id passed for user account type
+  public static USER_NOT_ELIGIBLE_FOR_PRODUCT = "USER_NOT_ELIGIBLE_FOR_PRODUCT";
+
+  // invalid product id passed for user account type
+  public static PLAN_SUBSCRIPTION_FAILED = "PLAN_SUBSCRIPTION_FAILED";
+
+  // invalid product id passed for user account type
+  public static SUBSCRIPTION_ALREADY_ACTIVE = "SUBSCRIPTION_ALREADY_ACTIVE";
+
+  // multiple lago invoices returned
+  public static FOUND_MULTIPLE_INVOICES = "FOUND_MULTIPLE_INVOICES";
+
+  // no lago invoices returned
+  public static NO_INVOICES_FOUND = "NO_INVOICES_FOUND";
+
+  // payment status failed
+  public static PAYMENT_FAILED = "PAYMENT_FAILED";
+
+  // payment status pending
+  public static PAYMENT_PENDING = "PAYMENT_PENDING";
 }

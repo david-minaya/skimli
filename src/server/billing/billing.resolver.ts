@@ -23,7 +23,8 @@ export class BillingResolver {
     try {
       const authInfo: AuthInfo = { auth0: ctx.auth0, token: ctx.token };
       const user = await this.billingService.subscribeToPlan(authInfo, args);
-      return user;
+      // TODO
+      return user!;
     } catch (e) {
       if (!(e instanceof GraphQLError)) {
         Sentry.captureException(e);
@@ -35,8 +36,7 @@ export class BillingResolver {
 
   @Authorized()
   @Query(() => Conversions)
-  async getConversions(@Ctx() ctx: GraphQLContext): Promise<Conversions> {
-    const authInfo: AuthInfo = { auth0: ctx.auth0, token: ctx.token };
-    return this.billingService.getConversions(authInfo);
+  async getConversions(): Promise<Conversions> {
+    return this.billingService.getConversions();
   }
 }

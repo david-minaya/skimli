@@ -7,13 +7,14 @@ import axios, {
 import { Service } from "typedi";
 import config from "../../config";
 import {
-  CreateWalletResponse,
+  ILagoGetInvoicesParams,
+  LagoInvoice,
   LagoAPIError,
   LagoAssignPlanToCustomerRequest,
   LagoAssignPlanToCustomerResponse,
   LagoCreateCustomerRequest,
   LagoCreateCustomerResponse,
-  LagoCreateWalletRequest,
+  LagoCustomer,
 } from "../types/lago.types";
 import {
   axiosRequestErrorLoggerInterceptor,
@@ -75,14 +76,25 @@ export class LagoAPI {
     }
   }
 
-  async createWallet(
-    data: LagoCreateWalletRequest
-  ): Promise<CreateWalletResponse> {
+  async getInvoices(params: ILagoGetInvoicesParams): Promise<LagoInvoice[]> {
     try {
-      const response = await this.api.post("/api/v1/wallets", { wallet: data });
-      return [response?.data?.wallet, null];
+      const response = await this.api.get("/api/v1/invoices", {
+        params: params,
+      });
+      return response.data?.invoices;
     } catch (e) {
-      return [null, (e as AxiosError)?.response?.data as LagoAPIError];
+      return [];
+    }
+  }
+
+  async getCustomer(org: string): Promise<LagoCustomer> {
+    try {
+      const response = await this.api.get(
+        `/api/v1/customers/${encodeURIComponent(org)}`
+      );
+      return response.data;
+    } catch (e) {
+      throw (e as AxiosError).response?.data;
     }
   }
 }

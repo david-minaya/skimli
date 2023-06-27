@@ -30,6 +30,10 @@ const config = {
   lago: {
     lagoAPIKey: process.env.LAGO_API_KEY ?? "",
     lagoAPIURL: process.env.LAGO_API_URL ?? "",
+    lagoPollMaxAttempts: Number(process.env.LAGO_POLL_MAX_ATTEMPTS) || 3,
+    // `lagoPollInvoiceMinDelay` 2 seconds
+    lagoPollInvoiceMinDelay:
+      Number(process.env.LAGO_POLL_INVOICE_MIN_DELAY_MS) || 2000,
   },
   aws: {
     assetsS3Bucket: process.env.AWS_S3_ASSET_UPLOADS_BUCKET ?? "",
