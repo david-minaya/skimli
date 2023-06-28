@@ -23,6 +23,7 @@ import {
 } from "../types/lago.types";
 import { SubscribeToPlanArgs } from "./billing.args";
 import {
+  PaymentFailedException,
   PlanNotFoundException,
   PlanSubscriptionFailedException,
   ProductNotFoundException,
@@ -30,14 +31,22 @@ import {
   UserNotEligilbeForProductException,
 } from "./billing.exceptions";
 import { Conversions } from "./billing.types";
+import Stripe from "stripe";
+import { SetupIntent } from "@stripe/stripe-js";
 @Service()
 export class BillingService {
+  private stripe: Stripe;
+
   constructor(
     private readonly lagoAPI: LagoAPI,
     private readonly accountsService: AccountsService,
     private readonly accountsAPI: AccountsAPI,
     private readonly auth0Service: Auth0Service
-  ) {}
+  ) {
+    this.stripe = new Stripe(config.stripe.apiKey, {
+      apiVersion: "2022-11-15",
+    });
+  }
 
   async assignPlanToCustomer(
     params: LagoAssignPlanToCustomerRequest
@@ -84,6 +93,21 @@ export class BillingService {
   }
 
   async subscribeToPlan(authInfo: AuthInfo, args: SubscribeToPlanArgs) {
+    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
+    if (!user) throw UserNotFoundException;
+    if (user?.subscriptionId) throw SubscriptionAlreadyActiveException;
+
+    if (args.sessionId && args.isPaid) {
+      try {
+        await this.attachStripePaymentIdToCustomer({
+          sessionId: args.sessionId,
+          customerId: user?.paymentMethod?.providerId!,
+        });
+      } catch (e) {
+        throw PaymentFailedException;
+      }
+    }
+
     const products = await this.accountsAPI.getProducts(authInfo.token);
     const product = products.find((p) => p.code == args.productCode);
     if (
@@ -96,10 +120,6 @@ export class BillingService {
 
     const plan = product.plans.find((plan) => plan.code == args.planCode);
     if (!plan) throw PlanNotFoundException;
-
-    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
-    if (!user) throw UserNotFoundException;
-    if (user?.subscriptionId) throw SubscriptionAlreadyActiveException;
 
     if (product.eligibleAccount != user.account)
       throw UserNotEligilbeForProductException;
@@ -157,7 +177,6 @@ export class BillingService {
       subscriptionId: updatedUser!.subscriptionId,
       features: product.features,
     });
-
     return updatedUser;
   }
 
@@ -166,5 +185,40 @@ export class BillingService {
       conversions: 0,
       grantedConversions: 100,
     };
+  }
+
+  async createStripeSession(authInfo: AuthInfo): Promise<string | null> {
+    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
+    if (!user || !user.paymentMethod?.providerId) {
+      return null;
+    }
+
+    const baseUrl = `${config.baseUrl}/onboarding`;
+    const session = await this.stripe.checkout.sessions.create({
+      mode: "setup",
+      success_url: `${baseUrl}?success={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}?cancelled=true`,
+      // TODO: update later ...
+      payment_method_types: ["card"],
+    });
+    return session.url;
+  }
+
+  async attachStripePaymentIdToCustomer({
+    sessionId,
+    customerId,
+  }: {
+    sessionId: string;
+    customerId: string;
+  }) {
+    const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["setup_intent"],
+    });
+    const paymentMethodId: string = (session.setup_intent as SetupIntent)[
+      "payment_method"
+    ] as string;
+    return this.stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerId,
+    });
   }
 }

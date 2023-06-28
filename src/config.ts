@@ -66,7 +66,11 @@ const config = {
     apikey: process.env.SHOTSTACK_API_KEY ?? "",
     callbackURL: process.env.SHOTSTACK_BASE_CALLBACK_URL ?? "",
   },
+  stripe: {
+    apiKey: process.env.STRIPE_API_KEY ?? "",
+  },
   proxyEnabled: process.env.PROXY_ENABLED ?? true,
+  baseUrl: process.env.BASE_URL ?? "",
 };
 
 export default config;

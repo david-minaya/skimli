@@ -4,105 +4,94 @@
  * o not distribute outside Skimli LLC.
  */
 
-import {useEffect, useState} from 'react';
-import {Box} from '@mui/material';
-import {useUser} from '@auth0/nextjs-auth0/client';
-import {useRouter} from 'next/router';
-import {useTranslation} from 'next-i18next';
-import {serverSideTranslations} from 'next-i18next/serverSideTranslations';
-import {useCheckUserExists} from '~/graphqls/useCheckUserExists';
-import {ProfileStep} from './profile-step/profile-step.component';
-import {PricingStep} from './pricing-step/pricing-step.component';
-import {LibraryStep} from './library-step/library-step.component';
-import {Loading} from '~/components/loading/loading.component';
-import {Step} from './components/step/step.component';
-import {style} from './index.style';
-import {PlanStep} from "./plan-step/plan-step.component";
+import { useEffect, useState } from 'react';
+import { Box } from '@mui/material';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useCheckUserExists } from '~/graphqls/useCheckUserExists';
+import { ProfileStep } from './profile-step/profile-step.component';
+import { LibraryStep } from './library-step/library-step.component';
+import { Loading } from '~/components/loading/loading.component';
+import { Step } from './components/step/step.component';
+import { style } from './index.style';
+import { PlanStep } from './plan-step/plan-step.component';
 
 export default function Onboarding() {
+  const router = useRouter();
+  const { t } = useTranslation('onboarding');
+  const { user, isLoading } = useUser();
+  const [index, setIndex] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-    const router = useRouter();
-    const {t} = useTranslation('onboarding');
-    const {user, isLoading} = useUser();
-    const [index, setIndex] = useState(1);
-    const [loading, setLoading] = useState(true);
+  const checkUserExists = useCheckUserExists();
 
-    const checkUserExists = useCheckUserExists();
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const success = query.get('success');
+    const cancelled = query.get('success');
+    if (success || cancelled) return;
 
-    useEffect(() => {
-        if (!isLoading && !user) {
-            router.push('/');
+    if (!isLoading && !user) {
+      router.push('/');
+    }
+  }, [isLoading, user, router]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const account = await checkUserExists();
+
+        if (account && !account.subscriptionId) {
+          setIndex(2);
+          setLoading(false);
+          return;
         }
-    }, [isLoading, user, router]);
 
-    useEffect(() => {
+        if (account) {
+          setIndex(3);
+          setLoading(false);
+          return;
+        }
 
-        (async () => {
+        setLoading(false);
+      } catch (err: any) {
+        setLoading(false);
+      }
+    })();
+  }, [checkUserExists, router]);
 
-            try {
+  if (!user || loading) return <Loading/>;
 
-                const account = await checkUserExists();
-
-                if (account && !account.subscriptionId) {
-                    setIndex(2);
-                    setLoading(false);
-                    return;
-                }
-
-                if (account) {
-                    setIndex(3);
-                    setLoading(false);
-                    return;
-                }
-
-                setLoading(false);
-
-            } catch (err: any) {
-
-                setLoading(false);
-            }
-
-        })();
-    }, [checkUserExists, router]);
-
-    if (!user || loading) return <Loading/>;
-
-    return (<Box sx={style.container}>
-            <Box sx={style.steps}>
-                <Step
-                    value={1}
-                    index={index}
-                    warning={user.email_verified !== null && !user.email_verified}
-                    title={t('profile.step')}/>
-                <Step
-                    value={2}
-                    index={index}
-                    title={t('pricing.step')}/>
-                <Step
-                    value={3}
-                    index={index}
-                    title={t('library.step')}/>
-            </Box>
-            <Box sx={style.content}>
-                <ProfileStep
-                    show={index === 1}
-                    onNext={() => setIndex(2)}/>
-                <PlanStep
-                    show={index === 2}
-                    onNext={() => setIndex(3)}/>
-                {/*<PricingStep
+  return (
+    <Box sx={style.container}>
+      <Box sx={style.steps}>
+        <Step
+          value={1}
+          index={index}
+          warning={user.email_verified !== null && !user.email_verified}
+          title={t('profile.step')}
+        />
+        <Step value={2} index={index} title={t('pricing.step')}/>
+        <Step value={3} index={index} title={t('library.step')}/>
+      </Box>
+      <Box sx={style.content}>
+        <ProfileStep show={index === 1} onNext={() => setIndex(2)}/>
+        <PlanStep show={index === 2} onNext={() => setIndex(3)}/>
+        {/*<PricingStep
                     show={index === 2}
                     onNext={() => setIndex(3)}/>*/}
-                <LibraryStep
-                    show={index === 3}/>
-            </Box>
-        </Box>);
+        <LibraryStep show={index === 3}/>
+      </Box>
+    </Box>
+  );
 }
 
-export async function getServerSideProps({locale}) {
-    return {
-        props: {
-            ...(await serverSideTranslations(locale, ['onboarding', 'components']))
-        }
-    };
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['onboarding', 'components'])),
+    },
+  };
 }

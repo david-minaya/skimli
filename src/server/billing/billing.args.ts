@@ -31,4 +31,7 @@ export class SubscribeToPlanArgs implements ISubscribeToPlanArgs {
 
   @Field(() => String, { nullable: true })
   paymentMethodId?: string;
+
+  @Field(() => String, { nullable: true })
+  sessionId?: string;
 }
