@@ -4,9 +4,9 @@
  * o not distribute outside Skimli LLC.
  */
 
-import { Product } from "~/graphqls/contentful/types/product";
-import { PlanDetails } from "./plan-details.component";
-import { useState } from "react";
+import { Product } from '~/graphqls/contentful/types/product';
+import { PlanDetails } from './plan-details.component';
+import { useState } from 'react';
 import {
   Button,
   Divider,
@@ -16,10 +16,10 @@ import {
   Select,
   SelectChangeEvent,
   Typography,
-} from "@mui/material";
-import { Plan } from "~/graphqls/contentful/types/plan";
-import { EastRounded } from "@mui/icons-material";
-import { ISubscribeToPlanArgs } from "../../../../graphqls/useSubscribeToPlan";
+} from '@mui/material';
+import { Plan } from '~/graphqls/contentful/types/plan';
+import { EastRounded } from '@mui/icons-material';
+import { ISubscribeToPlanArgs } from '../../../../graphqls/useSubscribeToPlan';
 
 interface Props {
   product: Product;
@@ -47,28 +47,28 @@ export function ProductCard(props: Props) {
         planCode: plan.code,
         productCode: product.code,
         isPaid: product.creditCardRequired,
-        provider: "STRIPE",
-        paymentMethodId: "",
+        provider: 'STRIPE',
+        paymentMethodId: '',
       });
     }
   }
 
   return (
     <Paper
-      variant="outlined"
+      variant='outlined'
       sx={{
-        borderTop: "10px solid #FC4603",
-        borderLeft: "1px solid #FC4603",
-        borderRight: "1px solid #FC4603",
-        borderBottom: "1px solid #FC4603",
+        borderTop: '10px solid #FC4603',
+        borderLeft: '1px solid #FC4603',
+        borderRight: '1px solid #FC4603',
+        borderBottom: '1px solid #FC4603',
       }}
     >
-      <Typography variant="h6" align="center" mt={1}>
+      <Typography variant='h6' align='center' mt={1}>
         {product?.name}
       </Typography>
       <Typography
-        variant="body2"
-        align="center"
+        variant='body2'
+        align='center'
         my={0}
         sx={{
           px: { xs: 0, sm: 0, lg: 6 },
@@ -76,21 +76,21 @@ export function ProductCard(props: Props) {
       >
         {product?.description}
       </Typography>
-      <Divider variant="middle" sx={{ border: "1px solid #FC4603", mt: 0.5 }} />
+      <Divider variant='middle' sx={{ border: '1px solid #FC4603', mt: 0.5 }}/>
       <Grid
         container
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
+        display='flex'
+        flexDirection='column'
+        justifyContent='center'
+        alignItems='center'
       >
-        {plan && <PlanDetails plan={plan} />}
+        {plan && <PlanDetails plan={plan}/>}
         {product?.plansCollection?.items?.length > 1 && (
           <Grid item mt={1}>
             <Select
               value={plan?.code}
               onChange={handleChange}
-              variant="standard"
+              variant='standard'
             >
               {product?.plansCollection?.items?.map((plan) => (
                 <MenuItem key={plan?.code} value={plan?.code}>
@@ -105,20 +105,20 @@ export function ProductCard(props: Props) {
             disabled={disabled || !plan}
             onClick={handleClick}
             sx={{
-              width: "100%",
-              backgroundColor: "primary.main",
-              borderColor: "primary.main",
-              fontSize: "17px",
+              width: '100%',
+              backgroundColor: 'primary.main',
+              borderColor: 'primary.main',
+              fontSize: '17px',
               fontWeight: 600,
-              color: "white",
-              ":hover": {
-                backgroundColor: "primary.dark",
-                borderColor: "primary.dark",
+              color: 'white',
+              ':hover': {
+                backgroundColor: 'primary.dark',
+                borderColor: 'primary.dark',
               },
             }}
           >
             {product?.buttonCta}
-            <EastRounded />
+            <EastRounded/>
           </Button>
         </Grid>
       </Grid>

@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { TypedDocumentNode as DocumentNode, ResultOf } from '@graphql-typed-document-node/core';
 
-
 export type FragmentType<TDocumentType extends DocumentNode<any, any>> = TDocumentType extends DocumentNode<
   infer TType,
   any
@@ -40,7 +39,6 @@ export function useFragment<TType>(
 ): TType | ReadonlyArray<TType> | null | undefined {
   return fragmentType as any
 }
-
 
 export function makeFragmentData<
   F extends DocumentNode,

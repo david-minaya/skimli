@@ -7,17 +7,17 @@
 import {useEffect, useState} from 'react';
 import {gql} from '@apollo/client';
 import {contentful} from './contentful';
-import {PricingPage} from "./types/pricingPage";
+import {PricingPage} from './types/pricingPage';
 
 export function usePricingPage() {
-    const [state, setState] = useState<PricingPage>();
+  const [state, setState] = useState<PricingPage>();
 
-    useEffect(() => {
-        (async () => {
-            try {
+  useEffect(() => {
+    (async () => {
+      try {
 
-                const response = await contentful.query({
-                    query: gql`
+        const response = await contentful.query({
+          query: gql`
                    {
                      webappPricingPageCollection(limit: 1) {
                        items {
@@ -54,24 +54,24 @@ export function usePricingPage() {
                      }
                    }
                    `
-                });
+        });
 
-                const pricingContent = response?.data?.webappPricingPageCollection?.items?.[0];
+        const pricingContent = response?.data?.webappPricingPageCollection?.items?.[0];
 
-                if (pricingContent) {
-                    setState({
-                        name: pricingContent.name,
-                        headline: pricingContent.headline,
-                        description: pricingContent.description,
-                        products: pricingContent.productsCollection.items,
-                    });
-                }
+        if (pricingContent) {
+          setState({
+            name: pricingContent.name,
+            headline: pricingContent.headline,
+            description: pricingContent.description,
+            products: pricingContent.productsCollection.items,
+          });
+        }
 
-            } catch (err) {
-                console.error(err);
-            }
-        })();
-    }, []);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
-    return state;
+  return state;
 }

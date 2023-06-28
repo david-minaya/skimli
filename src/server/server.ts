@@ -147,7 +147,7 @@ async function bootstrap() {
   });
 
   // start sqs listener
-  await sqsListener();
+  // await sqsListener();
 
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: port }, resolve)

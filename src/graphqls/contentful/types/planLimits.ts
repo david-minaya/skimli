@@ -4,7 +4,6 @@
  * o not distribute outside Skimli LLC.
  */
 
-
 export interface PlanLimits {
     __typename: string;
     name: string;

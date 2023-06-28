@@ -4,7 +4,6 @@
  * o not distribute outside Skimli LLC.
  */
 
-
 import {Product} from '~/graphqls/contentful/types/product';
 
 export interface PricingPage {

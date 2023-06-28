@@ -4,7 +4,6 @@
  * o not distribute outside Skimli LLC.
  */
 
-
 import {Plan} from '~/graphqls/contentful/types/plan';
 
 export interface Product {
