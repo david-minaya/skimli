@@ -9,7 +9,7 @@ export interface Account {
   productCode: string;
   settings: any;
   subscriptionId: string;
-  features: any;
+  features: string[];
   planInterval: string;
   isPaid: boolean;
   isOverageAllowed: boolean;

@@ -17,6 +17,7 @@ import { ProductCard } from '../components/pricing/product-card.component';
 import Image from 'next/image';
 import { useCreateStripeSession } from '../../../graphqls/useCreateStripeSession';
 import { Loading } from '../../../components/loading/loading.component';
+import { useAccount } from '../../../store/account.slice';
 
 interface Props {
   show: boolean;
@@ -33,6 +34,8 @@ export function PlanStep(props: Props) {
   const [openFailToast, setOpenFailToast] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
+  const accountStore = useAccount();
+  const account = accountStore.get();
 
   async function handleCheckoutSuccess({ sessionId }: { sessionId?: string }) {
     const args = JSON.parse(localStorage.getItem(_planDetailsKey) ?? '{}');
@@ -40,7 +43,8 @@ export function PlanStep(props: Props) {
       console.warn('plan details args not set');
       return;
     }
-    await subscribeToPlan({ ...args, sessionId: sessionId });
+    const _account = await subscribeToPlan({ ...args, sessionId: sessionId });
+    accountStore.set({...account, ..._account});
   }
 
   useEffect(() => {

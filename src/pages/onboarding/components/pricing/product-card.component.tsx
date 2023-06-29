@@ -48,7 +48,6 @@ export function ProductCard(props: Props) {
         productCode: product.code,
         isPaid: product.creditCardRequired,
         provider: 'STRIPE',
-        paymentMethodId: '',
       });
     }
   }

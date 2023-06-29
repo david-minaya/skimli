@@ -73,7 +73,7 @@ export interface LagoAssignPlanToCustomerRequest {
   external_id: string;
   name?: string;
   subscription_date?: string;
-  billing_time?: string;
+  billing_time?: "calendar" | "anniversary";
 }
 
 export type LagoAssignPlanToCustomerResponse = [

@@ -21,6 +21,7 @@ export function useCheckUserExists() {
             billingMethod
             subscriptionId
             settings
+            features
           }
         }
       `,

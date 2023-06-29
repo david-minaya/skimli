@@ -97,9 +97,10 @@ export class BillingService {
     if (!user) throw UserNotFoundException;
     if (user?.subscriptionId) throw SubscriptionAlreadyActiveException;
 
+    let paymentMethodId = "";
     if (args.sessionId && args.isPaid) {
       try {
-        await this.attachStripePaymentIdToCustomer({
+        paymentMethodId = await this.attachStripePaymentIdToCustomer({
           sessionId: args.sessionId,
           customerId: user?.paymentMethod?.providerId!,
         });
@@ -131,7 +132,7 @@ export class BillingService {
         external_customer_id: user.org.toString(),
         external_id: externalSubscriptionId,
         plan_code: plan.code,
-        billing_time: "calendar",
+        billing_time: "anniversary",
       });
     } catch (e) {
       console.error(e);
@@ -156,7 +157,7 @@ export class BillingService {
       hasPaymentMethod: args.isPaid,
       paymentMethod: {
         ...user.paymentMethod,
-        paymentMethodId: args.paymentMethodId ?? "",
+        paymentMethodId: paymentMethodId ?? "",
         isPaymentMethod: args.isPaid,
       },
     };
@@ -195,6 +196,7 @@ export class BillingService {
 
     const baseUrl = `${config.baseUrl}/onboarding`;
     const session = await this.stripe.checkout.sessions.create({
+      customer: user.paymentMethod.providerId,
       mode: "setup",
       success_url: `${baseUrl}?success={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}?cancelled=true`,
@@ -210,15 +212,16 @@ export class BillingService {
   }: {
     sessionId: string;
     customerId: string;
-  }) {
+  }): Promise<string> {
     const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
       expand: ["setup_intent"],
     });
     const paymentMethodId: string = (session.setup_intent as SetupIntent)[
       "payment_method"
     ] as string;
-    return this.stripe.paymentMethods.attach(paymentMethodId, {
+    await this.stripe.paymentMethods.attach(paymentMethodId, {
       customer: customerId,
     });
+    return paymentMethodId;
   }
 }
