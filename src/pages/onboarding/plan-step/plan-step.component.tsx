@@ -44,26 +44,31 @@ export function PlanStep(props: Props) {
       return;
     }
     const _account = await subscribeToPlan({ ...args, sessionId: sessionId });
-    accountStore.set({...account, ..._account});
+    accountStore.set({ ...account, ..._account });
   }
 
-  useEffect(() => {
+  async function handleStripeCallback() {
     const query = new URLSearchParams(window.location.search);
     try {
       const success = query.get('success');
       if (success) {
         setLoading(true);
-        handleCheckoutSuccess({ sessionId: success }).then(() => {
-          onNext();
-          setLoading(false);
-        });
+        await handleCheckoutSuccess({ sessionId: success });
+        localStorage.removeItem(_planDetailsKey);
+        onNext();
+        setLoading(false);
       } else if (query.get('canceled')) {
         localStorage.removeItem(_planDetailsKey);
       }
     } catch (e) {
+      setLoading(false);
       setOpenFailToast(true);
       setDisabled(false);
     }
+  }
+
+  useEffect(() => {
+    handleStripeCallback();
   }, []);
 
   async function handleClick(args: ISubscribeToPlanArgs) {

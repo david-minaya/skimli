@@ -123,6 +123,9 @@ export class User implements IUser {
   @Field(() => String, { nullable: true })
   productCode: string;
 
+  @Field(() => String)
+  planCode: string;
+
   @Field(() => GraphQLJSON, { nullable: true })
   features: object;
 

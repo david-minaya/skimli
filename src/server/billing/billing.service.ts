@@ -145,13 +145,17 @@ export class BillingService {
       throw new BadInputError((e as Error).message);
     }
 
+    const limits = plan.limits.map((l) => {
+      return { ...l, amount: Number(l.amount) };
+    });
     const updateUserParams: UpdateUserRequest = {
       billingMethod: product.billingMethod,
       subscriptionId: subscription.external_id,
       productCode: product.code,
+      planCode: plan.code,
       features: product.features,
       planInterval: plan.interval,
-      limits: plan.limits,
+      limits: limits,
       isPaid: args.isPaid,
       isOverageAllowed: product.isOverageAllowed,
       hasPaymentMethod: args.isPaid,

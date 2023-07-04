@@ -67,6 +67,7 @@ export interface IUser {
   subscriptionId: string;
   settings: object;
   productCode: string;
+  planCode: string;
   features: object;
   planInterval: PlanIntervalType;
   limits: IUserLimit[];
