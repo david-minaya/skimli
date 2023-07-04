@@ -146,8 +146,10 @@ async function bootstrap() {
     }
   });
 
-  // start sqs listener
-  // await sqsListener();
+  // start sqs listener if listener enabled
+  if (config.aws.startSqsListener) {
+    await sqsListener();
+  }
 
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: port }, resolve)

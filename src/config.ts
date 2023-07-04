@@ -46,6 +46,7 @@ const config = {
     awsCFPrivateKey: Buffer.from(process.env.AWS_CF_PRIVATE_KEY ?? "", "base64")
       .toString()
       .trimEnd(),
+    startSqsListener: process.env.AWS_START_SQS_LISTENER ?? true,
   },
   mux: {
     muxToken: process.env.MUX_TOKEN ?? "",
