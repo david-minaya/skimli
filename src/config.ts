@@ -26,6 +26,7 @@ const config = {
   api: {
     accountsAPIURL: process.env.ACCOUNTS_API_URL ?? "",
     videosAPIURL: process.env.VIDEOS_API_URL ?? "",
+    notificationsAPIURL: process.env.NOTIFICATIONS_API_URL ?? "",
   },
   lago: {
     lagoAPIKey: process.env.LAGO_API_KEY ?? "",

@@ -21,6 +21,7 @@ import {
   ImageMediaDetailsResolver,
   SubtitleMediaDetailsResolver,
 } from "./videos/resolvers/medias.resolver";
+import { NotificationsResolver } from "./notifications/notifications.resolvers";
 
 export const UnAuthorizedError = new GraphQLError(
   "Access denied! You need to be authorized to perform this action!"
@@ -39,6 +40,7 @@ export const schema = buildSchemaSync({
     ImageMediaDetailsResolver,
     AudioMediaDetailsResolver,
     SubtitleMediaDetailsResolver,
+    NotificationsResolver,
     // ClipDetailsRenderResolver,
   ],
   container: Container,
