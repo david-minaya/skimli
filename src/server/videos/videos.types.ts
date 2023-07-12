@@ -122,13 +122,13 @@ export class MuxData {
 
 @ObjectType()
 export class ClipDetailsRender implements IClipDetailsRender {
-  @Field(() => RenderClipQuality)
+  @Field(() => RenderClipQuality, { nullable: true })
   quality: RenderClipQuality;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   muteAudio: boolean;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   url: string;
 }
 

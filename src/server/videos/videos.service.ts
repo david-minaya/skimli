@@ -93,7 +93,7 @@ import {
   StartUploadArgs,
 } from "./args/videos.args";
 import { GetMultiPartUploadURLRequest, S3Service } from "./s3.service";
-import { deepCompare, parseS3URL } from "./utils";
+import { deepCompare, parseS3URL, recursiveRemoveKey } from "./utils";
 import {
   ASSET_UPLOAD_EVENT,
   CONVERT_TO_CLIPS_TOPIC,
@@ -130,6 +130,7 @@ import {
   RenderClipResponse,
   StartUploadResponse,
 } from "./videos.types";
+import * as _l from "lodash";
 
 @Service()
 export class VideosService {
@@ -834,7 +835,7 @@ export class VideosService {
   ): Promise<null | string> {
     const org = Number(authInfo.auth0.organization_id);
     const asset = await this.getAsset(authInfo, args.assetId);
-    const clip = asset.inferenceData?.human.clips?.find(
+    let clip = asset.inferenceData?.human.clips?.find(
       (c) => c.uuid == args.clipId
     );
     if (!clip) {
@@ -843,6 +844,35 @@ export class VideosService {
 
     if (!clip.details?.currentTimeline && !clip.details?.renderedTimeline) {
       throw new BadInputError(`No saved timeline`);
+    }
+
+    if (clip.details.currentTimeline?.output?.size) {
+      const { width: currentWidth, height: currentHeight } =
+        clip.details.currentTimeline?.output?.size;
+      if (
+        currentWidth != args.output.size.width ||
+        currentHeight != args.output.size.height
+      ) {
+        clip = await this.videosAPI.updateClip(
+          {
+            uuid: clip.uuid,
+            details: {
+              ...clip.details,
+              currentTimeline: {
+                ...clip.details.currentTimeline!,
+                output: {
+                  ...clip.details.currentTimeline?.output!,
+                  size: {
+                    width: args.output.size.width,
+                    height: args.output.size.height,
+                  },
+                },
+              },
+            },
+          },
+          authInfo.token
+        );
+      }
     }
 
     // check if render json is same or not, if same return download link else do a new render
@@ -869,8 +899,8 @@ export class VideosService {
     const subAssetID = v4();
     const prefix = `org/${org}/clips/${args.clipId}/renders`;
     const filename = v4();
-    const { width, height } = clip.details.currentTimeline?.output?.size || {};
 
+    const { width, height } = args.output.size;
     const renderOutput = this.generateRenderOutput({
       width: width!,
       prefix: prefix,
@@ -897,6 +927,8 @@ export class VideosService {
       callback: callbackUrl.toString(),
     };
 
+    // TODO: determine the sources, make it better later
+    recursiveRemoveKey(renderJSON, "sources");
     const renderClipResponse = await this.shotstackAPI.renderClip(renderJSON);
     console.log("render clip response: ", JSON.stringify(renderClipResponse));
 
@@ -1209,11 +1241,7 @@ export class VideosService {
           clip.details?.currentTimeline?.timeline?.background ??
           CLIP_BACKGROUND,
       },
-      output: {
-        ...args.render.output,
-        destinations: clip.details?.currentTimeline?.output?.destinations ?? [],
-        format: clip.details?.currentTimeline?.output?.format ?? "",
-      },
+      output: clip.details?.currentTimeline?.output,
       callback: clip.details?.currentTimeline?.callback ?? "",
     };
 
