@@ -1,0 +1,14 @@
+{
+  "pageTitle": "Integrations",
+  "pageSubtitle": "Your Integrations",
+  "pageDescription": "Allow Skimli to access and share information with the tools and services you already use.",
+  "currentSectionTitle": "Current",
+  "availableSectionTitle": "Available",
+  "upgradeRequiredSectionTitle": "Upgrade Required",
+  "comingSoonSectionTitle": "Coming Soon",
+  "connectedAccountText": "Connected Account",
+  "manageButton": "Manage",
+  "addButton": "Add",
+  "upgradeButton": "Upgrade",
+  "comingSoonChip": "Coming Soon"
+}
