@@ -6,18 +6,18 @@
 
 import {
   UserIntegrations,
-} from "./schema/integrations.type";
-import { gql } from "@apollo/client";
-import { useCallback } from "react";
-import { useQuery } from "~/hooks/useQuery";
+} from './schema/integrations.type';
+import { gql } from '@apollo/client';
+import { useCallback } from 'react';
+import { useQuery } from '~/hooks/useQuery';
 
 export function useGetUserIntegrations() {
   const query = useQuery();
 
   return useCallback(async () => {
     return query<UserIntegrations>({
-      name: "getUserIntegrations",
-      fetchPolicy: "network-only",
+      name: 'getUserIntegrations',
+      fetchPolicy: 'network-only',
       query: gql`
         query GetUserIntegrations {
           getUserIntegrations {

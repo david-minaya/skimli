@@ -4,7 +4,6 @@
  * o not distribute outside Skimli LLC.
  */
 
-
 export interface IntegrationCardContent {
     __typename: string;
     displayName: string;

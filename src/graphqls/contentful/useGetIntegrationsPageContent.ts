@@ -4,20 +4,19 @@
  * o not distribute outside Skimli LLC.
  */
 
-
 import {useEffect, useState} from 'react';
 import {gql} from '@apollo/client';
 import {contentful} from './contentful';
 import {IntegrationsPageContent} from './types/integrationsPageContent';
 
 export function useGetIntegrationsPageContent() {
-    const [state, setState] = useState<IntegrationsPageContent>();
+  const [state, setState] = useState<IntegrationsPageContent>();
 
-    useEffect(()=> {
-        (async () => {
-            try {
-                const response = await contentful.query({
-                    query: gql`
+  useEffect(()=> {
+    (async () => {
+      try {
+        const response = await contentful.query({
+          query: gql`
                              {
                                integrationsPageCollection(limit: 1) {
                                  items {
@@ -53,23 +52,23 @@ export function useGetIntegrationsPageContent() {
                                }
                              }`
 
-                });
+        });
 
-                const integrationsContent = response?.data?.integrationsPageCollection?.items?.[0];
+        const integrationsContent = response?.data?.integrationsPageCollection?.items?.[0];
 
-                if (integrationsContent) {
-                    setState({
-                        __typename: integrationsContent.__typename,
-                        name: integrationsContent.name,
-                        comingSoon: integrationsContent.comingSoonCollection.items,
-                        availableNow: integrationsContent.availableNowCollection.items,
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        })();
-    },[]);
+        if (integrationsContent) {
+          setState({
+            __typename: integrationsContent.__typename,
+            name: integrationsContent.name,
+            comingSoon: integrationsContent.comingSoonCollection.items,
+            availableNow: integrationsContent.availableNowCollection.items,
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  },[]);
 
-    return state;
+  return state;
 }

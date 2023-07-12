@@ -4,7 +4,6 @@
  * o not distribute outside Skimli LLC.
  */
 
-
 import {IntegrationCardContent} from './integrationCardContent';
 
 export interface IntegrationsPageContent {
