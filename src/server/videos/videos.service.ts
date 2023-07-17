@@ -927,11 +927,6 @@ export class VideosService {
       callback: callbackUrl.toString(),
     };
 
-    // TODO: determine the sources, make it better later
-    recursiveRemoveKey(renderJSON, "sources");
-    const renderClipResponse = await this.shotstackAPI.renderClip(renderJSON);
-    console.log("render clip response: ", JSON.stringify(renderClipResponse));
-
     await this.videosAPI.adminUpdateClip({
       uuid: clip.uuid,
       details: {
@@ -940,6 +935,11 @@ export class VideosService {
         renderedTimeline: renderJSON,
       },
     });
+
+    // TODO: determine the sources, make it better later
+    recursiveRemoveKey(renderJSON, "sources");
+    const renderClipResponse = await this.shotstackAPI.renderClip(renderJSON);
+    console.log("render clip response: ", JSON.stringify(renderClipResponse));
 
     const subAsset = await this.videosAPI.adminCreateSubAsset({
       uuid: subAssetID,
