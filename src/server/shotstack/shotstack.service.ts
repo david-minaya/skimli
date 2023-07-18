@@ -53,9 +53,13 @@ export class ShotstackService {
   ): Promise<IShotstackRenderClipResponse> {
     for (const track of render.timeline.tracks) {
       for (const clip of track.clips) {
-        const { bucket, key } = parseS3URL(clip.asset.src);
+        let { bucket, key } = parseS3URL(clip.asset.src);
+
+        // update when client has changes ready
         const signedURL = await this.s3Service.getObjectSignedURL({
-          Bucket: bucket,
+          Bucket: clip.asset.src.startsWith("https://")
+            ? config.aws.assetsS3Bucket
+            : bucket,
           Key: key,
         });
         clip.asset = { ...clip.asset, src: signedURL };
