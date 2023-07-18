@@ -34,7 +34,7 @@ export enum RenderTimelineClipAssetType {
 export interface IRenderTimelineClipAsset {
   type: RenderTimelineClipAssetType;
   volume: number;
-  trim: number;
+  trim?: number;
   src: string;
   crop?: IRenderTimelineClipCrop;
 }
