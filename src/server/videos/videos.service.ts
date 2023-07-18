@@ -53,8 +53,11 @@ import {
 } from "../types/base.types";
 import {
   IRenderTimeline,
+  IRenderTimelineClip,
   IRenderTimelineDetails,
+  IRenderTimelineTrack,
   ITimelineOutput,
+  RenderTimelineClipAssetType,
 } from "../types/render.types";
 import {
   AssetStatus,
@@ -830,6 +833,37 @@ export class VideosService {
     };
   }
 
+  async generateDefaultClipTimeline({
+    clip,
+    asset,
+  }: {
+    clip: IClip;
+    asset: IAsset;
+  }): Promise<IRenderTimelineDetails> {
+    const length = Timecode.TimetoMilliseconds(clip.duration) / 1000;
+    const start = Timecode.TimetoMilliseconds(clip.startTime) / 1000;
+    const clipTrack: IRenderTimelineClip = {
+      asset: {
+        src: asset.sourceUrl,
+        type: RenderTimelineClipAssetType.video,
+        volume: 1,
+      },
+      length: length,
+      start: start,
+      sources: { id: asset.uuid, title: asset.name },
+    };
+
+    const tracks: IRenderTimelineTrack[] = [{ clips: [clipTrack] }];
+    const timeline: IRenderTimelineDetails = {
+      timeline: {
+        background: CLIP_BACKGROUND,
+        tracks: tracks,
+      },
+      callback: "",
+    };
+    return timeline;
+  }
+
   async renderClip(
     authInfo: AuthInfo,
     args: RenderClipArgs
@@ -844,10 +878,17 @@ export class VideosService {
     }
 
     if (!clip.details?.currentTimeline && !clip.details?.renderedTimeline) {
-      throw new BadInputError(`No saved timeline`);
+      const timeline = await this.generateDefaultClipTimeline({ clip, asset });
+      clip = await this.videosAPI.updateClip(
+        {
+          uuid: clip.uuid,
+          details: { ...clip.details, currentTimeline: timeline },
+        },
+        authInfo.token
+      );
     }
 
-    if (clip.details.currentTimeline?.output?.size) {
+    if (clip.details && clip.details.currentTimeline?.output?.size) {
       const { width: currentWidth, height: currentHeight } =
         clip.details.currentTimeline?.output?.size;
       if (
