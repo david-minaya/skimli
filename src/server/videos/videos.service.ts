@@ -330,7 +330,8 @@ export class VideosService {
       const muxAudioAsset = await this.muxService.uploadAssetToMux({
         passthrough: `${MuxPassthroughType.AUDIO_MEDIA}#${org}#${media.uuid}`,
         playback_policy: "signed",
-        input: [{ url: signedObjectURL, type: "audio", name: filename }],
+        // TODO: pass {"type": "audio"}, temporarily removed due to bug in mux
+        input: [{ url: signedObjectURL, name: filename }],
       });
       console.log(
         `audio mux asset ${muxAudioAsset.id} added for asset ${metadata.assetId}`
