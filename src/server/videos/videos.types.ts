@@ -358,7 +358,7 @@ export class Asset implements IAsset {
   status: AssetStatus;
 
   // not exposing this field
-  // @Field(() => String)
+  @Field(() => String)
   sourceUrl: string;
 
   @Field(() => String, { nullable: true })

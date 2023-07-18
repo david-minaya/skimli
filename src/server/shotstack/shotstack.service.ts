@@ -16,6 +16,8 @@ import {
   IShotstackRenderClipResponse,
 } from "./shotstack.types";
 import { IRenderTimelineDetails } from "../types/render.types";
+import { S3Service } from "../videos/s3.service";
+import { parseS3URL } from "../videos/utils";
 
 export const OUTPUT_FORMAT = "mp4";
 export const CLIP_BACKGROUND = "#000000";
@@ -27,7 +29,7 @@ export const S3_ACL = "private";
 export class ShotstackService {
   private api: AxiosInstance;
 
-  constructor() {
+  constructor(private readonly s3Service: S3Service) {
     this.api = axios.create({
       baseURL: `${config.shotstack.apiBaseURL}`,
       headers: {
@@ -49,6 +51,17 @@ export class ShotstackService {
   async renderClip(
     render: IRenderTimelineDetails
   ): Promise<IShotstackRenderClipResponse> {
+    for (const track of render.timeline.tracks) {
+      for (const clip of track.clips) {
+        const { bucket, key } = parseS3URL(clip.asset.src);
+        const signedURL = await this.s3Service.getObjectSignedURL({
+          Bucket: bucket,
+          Key: key,
+        });
+        clip.asset = { ...clip.asset, src: signedURL };
+      }
+    }
+
     try {
       const response = await this.api.post(
         `/edit/${config.shotstack.apiEnv}/render`,
