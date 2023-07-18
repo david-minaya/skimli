@@ -1,6 +1,7 @@
+import * as Shotstack from '~/types/shotstack';
 import { useMemo } from 'react';
 import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, useAppDispatch, useAppSelector } from './store';
+import { RootState, store, useAppDispatch, useAppSelector } from './store';
 import { useGetAssets } from '~/graphqls/useGetAssets';
 import { Asset } from '~/types/assets.type';
 import { useDeleteAssets } from '~/graphqls/useDeleteAssets';
@@ -8,6 +9,7 @@ import { useGetAsset } from '~/graphqls/useGetAsset';
 import { toSeconds } from '~/utils/toSeconds';
 import { Clip } from '~/types/clip.type';
 import { useGetClips } from '~/graphqls/useGetClips';
+import { useUpdateTimeline } from '~/graphqls/useUpdateTimeline';
 
 const adapter = createEntityAdapter<Asset>({ selectId: (asset) => asset.uuid });
 const selectors = adapter.getSelectors<RootState>(state => state.assets);
@@ -133,6 +135,59 @@ export const assetsSlice = createSlice({
         };
       }
     },
+
+    addTimelineClip(state, action: PayloadAction<{ clipId: string, assetId: string, clip: Shotstack.Clip }>) {
+
+      const asset = state.entities[action.payload.assetId];
+      const clips = asset?.inferenceData?.human.clips;
+      const clip = clips?.find(clip => clip.uuid === action.payload.clipId);
+      const tracks = clip?.details?.currentTimeline?.timeline?.tracks; 
+      const track = tracks?.find(track => track.clips[0].asset.type === action.payload.clip.asset.type);
+
+      track
+        ? track.clips[0] = action.payload.clip
+        : tracks?.push({ clips: [action.payload.clip] });
+    },
+
+    updateTimelineClip<T>(
+      state, 
+      action: PayloadAction<{ assetId: string, clipId?: string, sourceId?: string, clip?: Partial<Shotstack.Clip<T>> }>
+    ) {
+
+      const asset = state.entities[action.payload.assetId];
+      const clips = asset?.inferenceData?.human.clips;
+      const clip = clips.find(clip => clip.uuid === action.payload.clipId);
+      const tracks = clip.details?.currentTimeline?.timeline?.tracks;
+      const track = tracks?.find(track => track.clips[0].sources?.id === action.payload.sourceId);
+
+      if (track) {
+        track.clips[0] = {
+          ...track.clips[0],
+          ...action.payload.clip,
+          asset: {
+            ...track.clips[0].asset,
+            ...action.payload.clip?.asset,
+          },
+          sources: {
+            ...track.clips[0].sources,
+            ...action.payload.clip?.sources,
+          }
+        };
+      }
+    },
+
+    removeTimelineClip(state, action: PayloadAction<{ assetId: string, clipId?: string, sourceId?: string }>) {
+
+      const asset = state.entities[action.payload.assetId];
+      const clips = asset?.inferenceData?.human.clips;
+      const clip = clips?.find(clip => clip.uuid === action.payload.clipId);
+      const tracks = clip?.details?.currentTimeline?.timeline?.tracks; 
+      const index = tracks?.findIndex(track => track.clips[0].sources?.id === action.payload.sourceId);
+
+      if (index !== undefined && index !== -1) {
+        tracks?.splice(index, 1);
+      }
+    },
     
     selectClip(state, action: PayloadAction<{ assetId: string, clipId: string }>) {
       const asset = state.entities[action.payload.assetId];
@@ -163,6 +218,7 @@ export function useAssets() {
   const getAsset = useGetAsset();
   const getClips = useGetClips();
   const deleteAssets = useDeleteAssets();
+  const updateTimeline = useUpdateTimeline();
   
   return useMemo(() => ({
 
@@ -189,6 +245,28 @@ export function useAssets() {
         const asset = state.assets.entities[assetId];
         const clips = asset?.inferenceData?.human.clips;
         return clips?.find(clip => clip.selected);
+      });
+    },
+
+    getTimelineVideo(assetId: string) {
+      return useAppSelector(state => {
+        const asset = state.assets.entities[assetId];
+        const clips = asset?.inferenceData?.human.clips;
+        const clip = clips?.find(clip => clip.selected);
+        const tracks = clip?.details?.currentTimeline?.timeline?.tracks;
+        const track = tracks?.find(track => track.clips[0].asset.type === 'video');
+        return track?.clips[0];
+      });
+    },
+
+    getTimelineAudio(assetId: string) {
+      return useAppSelector(state => {
+        const asset = state.assets.entities[assetId];
+        const clips = asset?.inferenceData?.human.clips;
+        const clip = clips?.find(clip => clip.selected);
+        const tracks = clip?.details?.currentTimeline?.timeline?.tracks;
+        const track = tracks?.find(track => track.clips[0].asset.type === 'audio');
+        return track?.clips[0] as Shotstack.Clip<Shotstack.AudioAsset> | undefined;
       });
     },
     
@@ -228,6 +306,24 @@ export function useAssets() {
 
     updateClip(id: string, assetId: string, clip: Clip) {
       dispatch(assetsSlice.actions.updateClip({ id, assetId, clip }));
+    },
+
+    addTimelineClip(clipId: string, assetId: string, clip: Shotstack.Clip) {
+      dispatch(assetsSlice.actions.addTimelineClip({ clipId, assetId, clip }));
+      dispatch(syncTimeline(assetId, clipId, updateTimeline));
+    },
+
+    updateTimelineClip<T>(assetId: string, clipId?: string, sourceId?: string, clip?: Partial<Shotstack.Clip<T>>) {
+      dispatch(assetsSlice.actions.updateTimelineClip({ assetId, clipId, sourceId, clip }));
+    },
+
+    removeTimelineClip(assetId: string, clipId: string, sourceId: string) {
+      dispatch(assetsSlice.actions.removeTimelineClip({ assetId, clipId, sourceId }));
+      dispatch(syncTimeline(assetId, clipId, updateTimeline));
+    },
+
+    syncTimeline(assetId: string, clipId: string) {
+      dispatch(syncTimeline(assetId, clipId, updateTimeline));
     },
     
     async fetchAll(name?: string) {
@@ -275,11 +371,36 @@ function processInferenceData(inferenceData: Asset['inferenceData']) {
 }
 
 function convertTimeToSeconds(clip: Clip) {
-  return {
+  
+  const _clip = {
     ...clip,
     startTime: toSeconds(clip.startTime as any),
     endTime: toSeconds(clip.endTime as any),
     duration: toSeconds(clip.duration as any),
     selected: false
+  };
+
+  if (!_clip.details) {
+    _clip.details = {
+      currentTimeline: {
+        timeline: {
+          tracks: []
+        }
+      }
+    };
+  }
+
+  return _clip;
+}
+
+function syncTimeline(assetId: string, clipId: string, updateTimeline: ReturnType<typeof useUpdateTimeline>) {
+  return (_, getState: typeof store.getState) => {
+    const state = getState();
+    const asset = state.assets.entities[assetId];
+    const clip = asset?.inferenceData?.human.clips.find(clip => clip.uuid === clipId);
+    const timeline = clip?.details?.currentTimeline?.timeline;
+    if (timeline) {
+      updateTimeline(assetId, clipId, timeline);
+    }
   };
 }

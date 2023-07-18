@@ -4,6 +4,15 @@ interface Props {
   children: ReactNode;
 }
 
+interface Mutable {
+  video?: HTMLVideoElement; 
+  onLoad?: () => void;
+  onPlay?: () => void;
+  onPause?: () => void;
+  onProgress?: (progress: number) => void;
+  onUpdateProgress?: (progress: number) => void;
+}
+
 interface VideoPlayer {
   video?: HTMLVideoElement;
   isPlaying: boolean;
@@ -14,7 +23,7 @@ interface VideoPlayer {
   loop: boolean;
   isReloading: boolean;
   setVideo: (video: HTMLVideoElement, tag?: string) => void;
-  setCurrentTime: Dispatch<SetStateAction<number>>;
+  setCurrentTime: (time: number) => void;
   setDuration: Dispatch<SetStateAction<number>>;
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
   setLoop: Dispatch<SetStateAction<boolean>>;
@@ -25,6 +34,10 @@ interface VideoPlayer {
   updateProgress: (progress: number) => void;
   updateVolume: (volume: number) => void;
   onLoad: (cb: () => void) => void;
+  onPlay: (cb: () => void) => void;
+  onPause: (cb: () => void) => void;
+  onProgress: (cb: (progress: number) => void) => void;
+  onUpdateProgress: (cb: (progress: number) => void) => void;
 }
 
 const Context = createContext({} as VideoPlayer);
@@ -32,31 +45,29 @@ const Context = createContext({} as VideoPlayer);
 export function VideoPlayerProvider(props: Props) {
 
   const { children } = props;
-
-  const [ctx] = useState<{ video?: HTMLVideoElement, onLoad?: () => void }>({});
+  
+  const [ctx] = useState<Mutable>({});
   const [isPlaying, setIsPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, _setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(100);
   const [loop, setLoop] = useState(false);
   const [duration, setDuration] = useState(0);
   const [isReloading, setIsReloading] = useState(false);
-
+  
   function setVideo(video?: HTMLVideoElement) {
     ctx.video = video;
     if (video) ctx.onLoad?.();
   }
 
-  function onLoad(cb: () => void) {
-    ctx.onLoad = cb;
-  }
-
   function play() {
+    ctx.onPlay?.();
     ctx.video?.play();
     setIsPlaying(true);
   }
 
   function pause() {
+    ctx.onPause?.();
     ctx.video?.pause();
     setIsPlaying(false);
   }
@@ -64,6 +75,12 @@ export function VideoPlayerProvider(props: Props) {
   function updateProgress(progress: number) {
     ctx.video!.currentTime = progress;
     setCurrentTime(progress);
+    ctx.onUpdateProgress?.(progress);
+  }
+
+  function setCurrentTime(time: number) {
+    _setCurrentTime(time);
+    ctx.onProgress?.(time);
   }
 
   function updateVolume(volume: number) {
@@ -83,6 +100,26 @@ export function VideoPlayerProvider(props: Props) {
     setTimeout(() => {
       setIsReloading(false);
     }, 16);
+  }
+
+  function onLoad(cb: () => void) {
+    ctx.onLoad = cb;
+  }
+
+  function onPlay(cb: () => void) {
+    ctx.onPlay = cb;
+  }
+
+  function onPause(cb: () => void) {
+    ctx.onPause = cb;
+  }
+
+  function onProgress(cb: (progress: number) => void) {
+    ctx.onProgress = cb;
+  }
+
+  function onUpdateProgress(cb: (progress: number) => void) {
+    ctx.onUpdateProgress = cb;
   }
 
   const value: VideoPlayer = {
@@ -105,7 +142,11 @@ export function VideoPlayerProvider(props: Props) {
     reload,
     updateProgress,
     updateVolume,
-    onLoad
+    onLoad,
+    onPlay,
+    onPause,
+    onProgress,
+    onUpdateProgress
   };
 
   return (

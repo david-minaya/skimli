@@ -24,5 +24,11 @@ export const style = Style({
   },
   focus: {
     borderColor: 'primary.main'
-  }
+  },
+  errorMessage: {
+    fontSize: '12px',
+    color: 'red',
+    fontWeight: 500,
+    margin: '4px 2px 0px'
+  },
 });

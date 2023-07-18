@@ -19,8 +19,6 @@ export function useCheckUserExists() {
             idp
             idpUser
             email
-            product
-            entitlements
             billingMethod
             subscriptionId
             settings

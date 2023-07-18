@@ -1,3 +1,5 @@
+import { Timeline } from './shotstack';
+
 export interface Clip {
   uuid: string;
   assetId: string;
@@ -10,4 +12,13 @@ export interface Clip {
   source: 'MODEL' | 'HUMAN' | 'AUTOMATIC';
   selected: boolean;
   createdAt: string;
+  details?: {
+    currentTimeline?: { timeline: Timeline };
+    renderedTimeline?: { timeline: Timeline };
+    renders?: {
+      muteAudio: boolean;
+      quality: 'LOW' | 'MEDIUM' | 'HIGH';
+      url: string;
+    }
+  }
 }

@@ -32,6 +32,7 @@ import { Toast } from '~/components/toast/toast.component';
 import { UploadMediaFilesProvider } from '~/providers/UploadMediaFilesProvider';
 import { ImageIcon } from '~/icons/imageIcon';
 import { SidebarImage } from './sidebar-image/sidebar-image.component';
+import { AudioContextProvider } from '~/providers/AudioContextProvider';
 import { style } from './index.style';
 
 function EditClips() {
@@ -58,6 +59,8 @@ function EditClips() {
   });
 
   useRenderClipSubscription((renderStatus) => {
+
+    console.log(renderStatus);
 
     if (renderStatus.status === 'SUCCESS' && renderStatus?.downloadUrl) {
       download(clip!.caption, renderStatus.downloadUrl);
@@ -92,7 +95,7 @@ function EditClips() {
               </SidebarTabs>
               <SidebarShare asset={asset}/>
               <SidebarTranscript asset={asset}/>
-              <SidebarAudio/>
+              <SidebarAudio assetId={asset.uuid}/>
               <SidebarImage/>
               <SidebarContent id='text' title='Text'/>
               <SidebarContent id='stitch' title='Stitch'/>
@@ -115,7 +118,9 @@ export default function Page() {
   return (
     <ProtectedRoute>
       <UploadMediaFilesProvider>
-        <EditClips/>
+        <AudioContextProvider>
+          <EditClips/>
+        </AudioContextProvider>
       </UploadMediaFilesProvider>
     </ProtectedRoute>
   );

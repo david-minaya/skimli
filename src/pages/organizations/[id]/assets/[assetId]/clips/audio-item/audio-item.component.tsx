@@ -3,20 +3,31 @@ import { Box, IconButton } from '@mui/material';
 import { PlayIcon } from '~/icons/playIcon';
 import { AudioAssetMedia } from '~/types/audioAssetMedia.type';
 import { formatSeconds } from '~/utils/formatSeconds';
-import { style } from './audio-item.style';
 import { useRef, useState } from 'react';
 import { PauseIcon } from '~/icons/pauseIcon';
 import { mergeSx } from '~/utils/style';
+import { Add, Remove } from '@mui/icons-material';
+import { style } from './audio-item.style';
 
 interface Props {
   audioAsset: AudioAssetMedia;
+  selected: boolean;
+  onAttach: (audioAsset: AudioAssetMedia, duration: number) => void;
+  onDetach: (audioAsset: AudioAssetMedia) => void;
 }
 
 export function AudioItem(props: Props) {
 
-  const { audioAsset } = props;
+  const { 
+    audioAsset,
+    selected, 
+    onAttach,
+    onDetach
+  } = props;
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const [paused, setAudioPaused] = useState(true);
+  const [hover, setHover] = useState(false);
   const [duration, setAudioDuration] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -32,7 +43,14 @@ export function AudioItem(props: Props) {
 
   return (
     <Box 
-      sx={mergeSx(style.container, duration === 0 && style.hidden)}>
+      sx={mergeSx(
+        style.container, 
+        duration === 0 && style.hidden,
+        hover && !selected && style.hover, 
+        selected && style.selected
+      )}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}>
       <IconButton onClick={handlePlay}>
         {paused 
           ? <PlayIcon sx={style.icon}/>
@@ -46,6 +64,22 @@ export function AudioItem(props: Props) {
           {formatSeconds(duration)}
         </Box>
       </Box>
+      {hover && !selected &&
+        <IconButton
+          sx={style.iconButton} 
+          size='small'
+          onClick={() => onAttach(audioAsset, duration)}>
+          <Add/>
+        </IconButton>
+      }
+      {selected &&
+        <IconButton
+          sx={style.iconButton} 
+          size='small'
+          onClick={() => onDetach(audioAsset)}>
+          <Remove/>
+        </IconButton>
+      }
       {/* @ts-ignore */}
       <Audio
         ref={audioRef}

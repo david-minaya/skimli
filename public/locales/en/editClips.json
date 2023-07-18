@@ -54,13 +54,16 @@
     "media": {
       "title": "Media",
       "searchResult": "Search Results",
-      "notFoundResults": "No search results found for \"{{name}}\""
+      "notFoundResults": "No search results found for \"{{name}}\"",
+      "uploadFile": {
+        "title": "Upload a file",
+        "description": "Click to <link/>, or drag & drop a file here",
+        "link": "browse",
+        "footer": "MP3 files only"
+      }
     },
-    "uploadFile": {
-      "title": "Upload a file",
-      "description": "Click to <link/>, or drag & drop a file here",
-      "link": "browse",
-      "footer": "MP3 files only"
+    "edit": {
+      "title": "Edit"
     }
   },
   "sidebarImage": {

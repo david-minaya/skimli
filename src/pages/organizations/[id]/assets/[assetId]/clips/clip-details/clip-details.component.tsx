@@ -1,4 +1,4 @@
-import {Box, LinearProgress, Typography} from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { OutlinedButton } from '~/components/outlined-button/outlined-button.component';
 import { useAssets } from '~/store/assets.slice';
@@ -21,7 +21,11 @@ import { LoopButton } from '~/components/loop-button/loop-button.component';
 import { Volume } from '~/components/volume/volume.component';
 import { longDate } from '~/utils/longDate';
 import { CaptionButton } from '~/components/caption-button/caption-button.component';
+import { useAudioContext } from '~/providers/AudioContextProvider';
 import { style } from './clip-details.style';
+import { useGetAssetSourceUrl } from '~/graphqls/useGetAssetSourceUrl';
+import { useAsyncEffect } from '~/hooks/useAsyncEffect';
+import { usePlayAudio } from '../play-audio/play-audio.component';
 
 interface Props {
   asset: Asset;
@@ -31,17 +35,37 @@ export function ClipDetails(props: Props) {
 
   const { asset } = props;
   const { t } = useTranslation('editClips');
-  const Assets = useAssets();
-  const clip = Assets.getClip(asset.uuid);
-  const videoPlayer = useVideoPlayer();
-  const adjustClip = useAdjustClip();
-  const addClip = useAddClip();
+  
   const [openAddClipModal, setOpenAddClipModal] = useState(false);
   const [openEditClipModal, setOpenEditClipModal] = useState(false);
   const [openDuplicatedToast, setOpenDuplicatedToast] = useState(false);
   const [openAddErrorToast, setOpenAddErrorToast] = useState(false);
   const [openEditErrorToast, setOpenEditErrorToast] = useState(false);
   const [duplicatedClip, setDuplicatedClip] = useState<Clip>();
+  
+  const audioContext = useAudioContext();
+  const Assets = useAssets();
+  const clip = Assets.getClip(asset.uuid);
+  const timelineVideo = Assets.getTimelineVideo(asset.uuid);
+  const videoPlayer = useVideoPlayer();
+  const adjustClip = useAdjustClip();
+  const addClip = useAddClip();
+  const getAssetSourceUrl = useGetAssetSourceUrl();
+
+  usePlayAudio(asset.uuid);
+
+  useEffect(() => {
+
+    videoPlayer.onLoad(() => {
+      audioContext.addVideoNode(videoPlayer.video!);
+    });
+
+    videoPlayer.onPlay(() => {
+      if (audioContext.context.state === 'suspended') {
+        audioContext.context.resume();
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (clip) {
@@ -51,7 +75,26 @@ export function ClipDetails(props: Props) {
         videoPlayer.onLoad(() => videoPlayer.updateProgress(clip.startTime));
       }
     }
-  }, [clip]);
+  }, [clip?.uuid]);
+
+  useAsyncEffect(async () => {
+    if (clip && !timelineVideo) {
+      Assets.addTimelineClip(clip.uuid, asset.uuid, {
+        start: 0,
+        length: clip.duration,
+        asset: {
+          type: 'video',
+          src: await getAssetSourceUrl(asset.uuid),
+          trim: clip.startTime,
+          volume: 1
+        },
+        sources: {
+          id: asset.uuid,
+          title: asset.name
+        }
+      });
+    }
+  }, [clip, timelineVideo, asset]);
 
   function handleTimeUpdate() {
 
