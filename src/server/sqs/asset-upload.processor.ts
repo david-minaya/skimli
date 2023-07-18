@@ -58,14 +58,10 @@ export const assetUploadProcessor = Consumer.create({
         record?.s3?.object?.key.replace(/\+/g, " ")
       );
       console.log(`s3 asset uploaded: ${bucket}/${key}`);
-      try {
-        if (key.includes(VIDEO_ASSETS_PREFIX)) {
-          await videosService.onS3VideoUpload(bucket, key);
-        } else if (key.includes(MEDIA_ASSETS_PREFIX)) {
-          await videosService.onS3MediaUpload(bucket, key);
-        }
-      } catch (e) {
-        console.error("failed to handle upload events: ", e);
+      if (key.includes(VIDEO_ASSETS_PREFIX)) {
+        await videosService.onS3VideoUpload(bucket, key);
+      } else if (key.includes(MEDIA_ASSETS_PREFIX)) {
+        await videosService.onS3MediaUpload(bucket, key);
       }
     }
   },
