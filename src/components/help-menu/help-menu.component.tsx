@@ -8,7 +8,6 @@ import {useTranslation} from 'next-i18next';
 import {style} from './help-menu.style';
 import {OpenInNewRounded} from '@mui/icons-material';
 
-
 interface Props {
     anchor: Element | null;
     onClose: () => void;

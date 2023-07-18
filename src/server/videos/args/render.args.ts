@@ -14,6 +14,7 @@ import {
   IRenderTimelineClipCrop,
   RenderTimelineClipAssetType,
 } from "../../types/render.types";
+import GraphQLJSON from "graphql-type-json";
 
 registerEnumType(RenderTimelineClipAssetType, {
   name: "RenderTimelineClipAssetType",
@@ -115,6 +116,10 @@ export class RenderTimelineClip implements IRenderTimelineClip {
   @Field(() => Float, { nullable: true })
   @IsNumber({ allowInfinity: false, allowNaN: false })
   scale?: number;
+
+  // TODO: determine the types later
+  @Field(() => GraphQLJSON, { nullable: true })
+  sources?: any;
 }
 
 @InputType()
@@ -151,8 +156,8 @@ export class RenderTimelineDetailsArgs {
   @Field()
   timeline: RenderTimelineArgs;
 
-  @Field(() => RenderTimelineOutputArgs)
-  output: RenderTimelineOutputArgs;
+  @Field(() => RenderTimelineOutputArgs, { nullable: true })
+  output?: RenderTimelineOutputArgs;
 }
 
 @ArgsType()
@@ -177,4 +182,7 @@ export class RenderClipArgs {
   @Field(() => String, { description: "video asset uuid" })
   @IsUUID()
   assetId: string;
+
+  @Field(() => RenderTimelineOutputArgs)
+  output: RenderTimelineOutputArgs;
 }

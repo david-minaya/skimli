@@ -46,6 +46,8 @@ export interface IRenderTimelineClip {
   fit?: ClipFit;
   scale?: number;
   position?: ClipPosition;
+  // TODO: determine the types later
+  sources?: any;
 }
 
 export interface IRenderTimelineTrack {
@@ -74,6 +76,6 @@ export interface ITimelineOutput {
 
 export interface IRenderTimelineDetails {
   timeline: IRenderTimeline;
-  output: ITimelineOutput;
+  output?: ITimelineOutput;
   callback: string;
 }

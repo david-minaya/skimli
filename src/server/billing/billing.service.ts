@@ -1,37 +1,51 @@
 import { Service } from "typedi";
 import { v4 } from "uuid";
+import AppErrorCodes from "../../common/app-error-codes";
+import config from "../../config";
+import { UserNotFoundException } from "../accounts/accounts.exceptions";
 import { AccountsService } from "../accounts/accounts.service";
-import { User } from "../accounts/accounts.types";
 import { AccountsAPI } from "../api/accounts.api";
 import { LagoAPI } from "../api/lago.api";
-import { Entitlements, Product } from "../types/accounts.types";
-import { APIError, AuthInfo, InternalGraphQLError } from "../types/base.types";
+import { Auth0Service } from "../auth0/auth0.service";
+import { ProductType, UpdateUserRequest } from "../types/accounts.types";
 import {
+  APIError,
+  AuthInfo,
+  BadInputError,
+  InternalGraphQLError,
+} from "../types/base.types";
+import {
+  ILagoGetInvoicesParams,
   LagoAssignPlanToCustomerRequest,
-  LagoCreateCustomerRequest,
-  LagoCreateWalletRequest,
-  LagoCustomer,
+  LagoInvoice,
+  LagoInvoicePaymentStatus,
   LagoSubscription,
 } from "../types/lago.types";
-import { ProductCode, SubscribeToPlanArgs } from "./billing.args";
+import { SubscribeToPlanArgs } from "./billing.args";
+import {
+  PaymentFailedException,
+  PlanNotFoundException,
+  PlanSubscriptionFailedException,
+  ProductNotFoundException,
+  SubscriptionAlreadyActiveException,
+  UserNotEligilbeForProductException,
+} from "./billing.exceptions";
 import { Conversions } from "./billing.types";
-import { GraphQLError } from "graphql";
+import Stripe from "stripe";
+import { SetupIntent } from "@stripe/stripe-js";
 @Service()
 export class BillingService {
+  private stripe: Stripe;
+
   constructor(
     private readonly lagoAPI: LagoAPI,
     private readonly accountsService: AccountsService,
-    private readonly accountsAPI: AccountsAPI
-  ) {}
-
-  async createCustomer(args: LagoCreateCustomerRequest): Promise<LagoCustomer> {
-    const [customer, customerError] = await this.lagoAPI.createOrUpdateCustomer(
-      args
-    );
-    if (customerError) {
-      throw new InternalGraphQLError(customerError);
-    }
-    return customer!;
+    private readonly accountsAPI: AccountsAPI,
+    private readonly auth0Service: Auth0Service
+  ) {
+    this.stripe = new Stripe(config.stripe.apiKey, {
+      apiVersion: "2022-11-15",
+    });
   }
 
   async assignPlanToCustomer(
@@ -45,141 +59,173 @@ export class BillingService {
     return subscription!;
   }
 
-  async getPlanDetails(productCode: ProductCode, token: string) {
-    const products = await this.accountsAPI.getProducts(token);
-    const selectedProduct = products.find(
-      (product) => product.code == productCode
-    );
-    if (!selectedProduct) {
-      const error = new Error(`Product ${productCode} not found`);
-      throw new InternalGraphQLError(error);
-    }
-
-    const entitlements = await this.accountsAPI.getEntitlements(token);
-    const selectedProductEntitlements: Entitlements = entitlements.filter((e) =>
-      selectedProduct.entitlements.includes(e.code)
-    );
-
-    return {
-      product: selectedProduct,
-      entitlements: selectedProductEntitlements,
-    };
+  async getLagoInvoice(args: ILagoGetInvoicesParams): Promise<LagoInvoice[]> {
+    return this.lagoAPI.getInvoices(args);
   }
 
-  generateWalletForFreePlan(
-    org: string,
-    product: Product,
-    entitlements: Entitlements
-  ) {
-    const walletName = "con-app-beta-sub-per-fre-conversion";
-    const entitlementName = "FREE-VIDEO-CONVERSIONS-GRANTED-10";
-    const entitlement = entitlements.find((e) => e.code == entitlementName);
-    if (!entitlement) {
-      throw new InternalGraphQLError(
-        `Entitlement ${entitlementName} not found`
+  async pollLagoInvoice({
+    externalCustomerId,
+  }: {
+    externalCustomerId: string;
+  }): Promise<LagoInvoice> {
+    let attempt = 1;
+
+    let invoice: LagoInvoice;
+    while (true) {
+      console.log(
+        `polling invoice with customer id ${externalCustomerId} - #${attempt} time(s)`
       );
+      [invoice] = await this.getLagoInvoice({
+        external_customer_id: externalCustomerId,
+        payment_status: LagoInvoicePaymentStatus.succeeded,
+        per_page: 1,
+      });
+      if (invoice) {
+        break;
+      } else if (attempt > config.lago.lagoPollMaxAttempts && !invoice) {
+        throw new Error(AppErrorCodes.PAYMENT_FAILED);
+      }
+      const delay = Math.pow(2, attempt) * config.lago.lagoPollInvoiceMinDelay;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      attempt++;
     }
-    return {
-      name: walletName as string,
-      rate_amount: product.billableMetrics[product.subscriptionPlanCode]
-        ?.charge_amount as string,
-      granted_credits: entitlement.details.value,
-      currency: product.subscriptionPlanDetails.subscriptionPlanCurrency,
-      external_customer_id: org,
-    };
+    return invoice;
   }
 
-  async subscribeToPlan(
-    authInfo: AuthInfo,
-    args: SubscribeToPlanArgs
-  ): Promise<User> {
+  async subscribeToPlan(authInfo: AuthInfo, args: SubscribeToPlanArgs) {
     const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
-    if (user?.subscriptionId) {
-      throw new GraphQLError(`Already subscribed to a plan`);
+    if (!user) throw UserNotFoundException;
+    if (user?.subscriptionId) throw SubscriptionAlreadyActiveException;
+
+    let paymentMethodId = "";
+    if (args.sessionId && args.isPaid) {
+      try {
+        paymentMethodId = await this.attachStripePaymentIdToCustomer({
+          sessionId: args.sessionId,
+          customerId: user?.paymentMethod?.providerId!,
+        });
+      } catch (e) {
+        throw PaymentFailedException;
+      }
     }
 
-    if (args.productCode != ProductCode.FreePlan) {
-      throw new GraphQLError("not implemented");
+    const products = await this.accountsAPI.getProducts(authInfo.token);
+    const product = products.find((p) => p.code == args.productCode);
+    if (
+      !product ||
+      product.archived ||
+      product.type != ProductType.CONSUMER_APP
+    ) {
+      throw ProductNotFoundException;
     }
 
-    const organizationId = user?.org.toString() as string;
-    const createCustomerParams: LagoCreateCustomerRequest = {
-      external_id: organizationId,
-      name: user!.email,
-      email: user!.email,
-      billing_configuration: {
-        payment_provider: "stripe",
-        sync_with_provider: true,
-        sync: false,
-      },
-    };
-    try {
-      await this.createCustomer(createCustomerParams);
-    } catch (e) {
-      console.error(e);
-      throw new InternalGraphQLError("Unable to create customer");
-    }
+    const plan = product.plans.find((plan) => plan.code == args.planCode);
+    if (!plan) throw PlanNotFoundException;
 
-    const planDetails = await this.getPlanDetails(
-      args.productCode,
-      authInfo.token
-    );
+    if (product.eligibleAccount != user.account)
+      throw UserNotEligilbeForProductException;
 
     const externalSubscriptionId = v4();
     let subscription: LagoSubscription;
     try {
       subscription = await this.assignPlanToCustomer({
-        external_customer_id: organizationId,
+        external_customer_id: user.org.toString(),
         external_id: externalSubscriptionId,
-        plan_code: planDetails.product.subscriptionPlanCode,
-        billing_time: "calendar",
+        plan_code: plan.code,
+        billing_time: "anniversary",
       });
     } catch (e) {
       console.error(e);
-      throw new InternalGraphQLError("Error subscribing to plan");
+      throw PlanSubscriptionFailedException;
     }
 
-    let createWalletData: LagoCreateWalletRequest;
-    let grantedConversions = -1;
-
-    if (args.productCode == ProductCode.FreePlan) {
-      createWalletData = this.generateWalletForFreePlan(
-        user?.org?.toString() as string,
-        planDetails.product,
-        planDetails.entitlements
-      );
-
-      const [_, createWalletError] = await this.lagoAPI.createWallet(
-        createWalletData
-      );
-      if (createWalletError) {
-        console.error(createWalletError);
-        throw new InternalGraphQLError(createWalletError);
-      }
-      grantedConversions = Number(createWalletData.granted_credits);
+    try {
+      await this.pollLagoInvoice({ externalCustomerId: user.org.toString() });
+    } catch (e) {
+      throw new BadInputError((e as Error).message);
     }
 
-    const [updatedUser, updateUserError] = await this.accountsAPI.updateUser(
-      {
-        billingMethod: "SUBSCRIPTION",
-        product: planDetails.product,
-        entitlements: planDetails.entitlements,
-        subscriptionId: subscription.external_id,
-        grantedConversions: grantedConversions,
+    const limits = plan.limits.map((l) => {
+      return { ...l, amount: Number(l.amount) };
+    });
+    const updateUserParams: UpdateUserRequest = {
+      billingMethod: product.billingMethod,
+      subscriptionId: subscription.external_id,
+      productCode: product.code,
+      planCode: plan.code,
+      features: product.features,
+      planInterval: plan.interval,
+      limits: limits,
+      isPaid: args.isPaid,
+      isOverageAllowed: product.isOverageAllowed,
+      hasPaymentMethod: args.isPaid,
+      paymentMethod: {
+        ...user.paymentMethod,
+        paymentMethodId: paymentMethodId ?? "",
+        isPaymentMethod: args.isPaid,
       },
+    };
+    const [updatedUser, updateUserError] = await this.accountsAPI.updateUser(
+      updateUserParams,
       authInfo.token
     );
     if (updateUserError) {
       throw new APIError(updateUserError);
     }
-    return updatedUser as User;
+
+    // update auth0 entitlements
+    await this.auth0Service.setUserAppMetadata(authInfo.auth0.sub, {
+      productCode: updatedUser!.productCode,
+      planCode: plan.code,
+      isPaid: updatedUser!.isPaid,
+      isOverageAllowed: updatedUser!.isOverageAllowed,
+      subscriptionId: updatedUser!.subscriptionId,
+      features: product.features,
+    });
+    return updatedUser;
   }
 
-  async getConversions(authInfo: AuthInfo): Promise<Conversions> {
-    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
+  async getConversions(): Promise<Conversions> {
     return {
-      conversions: user!.conversions,
-      grantedConversions: user!.grantedConversions,
+      conversions: 0,
+      grantedConversions: 100,
     };
+  }
+
+  async createStripeSession(authInfo: AuthInfo): Promise<string | null> {
+    const user = await this.accountsService.getAppUserById(authInfo.auth0.sub);
+    if (!user || !user.paymentMethod?.providerId) {
+      return null;
+    }
+
+    const baseUrl = `${config.baseUrl}/onboarding`;
+    const session = await this.stripe.checkout.sessions.create({
+      customer: user.paymentMethod.providerId,
+      mode: "setup",
+      success_url: `${baseUrl}?success={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}?cancelled=true`,
+      // TODO: update later ...
+      payment_method_types: ["card"],
+    });
+    return session.url;
+  }
+
+  async attachStripePaymentIdToCustomer({
+    sessionId,
+    customerId,
+  }: {
+    sessionId: string;
+    customerId: string;
+  }): Promise<string> {
+    const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["setup_intent"],
+    });
+    const paymentMethodId: string = (session.setup_intent as SetupIntent)[
+      "payment_method"
+    ] as string;
+    await this.stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerId,
+    });
+    return paymentMethodId;
   }
 }

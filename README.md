@@ -8,6 +8,8 @@ First, run the development server:
 npm run dev
 # or
 yarn dev
+# or run frontend only and connect to graphql api in aws
+next dev -p 3001 # or yarn dev:client
 ```
 
 Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.

@@ -52,3 +52,13 @@ export function deepCompare({
     customizer
   );
 }
+
+export function recursiveRemoveKey(object: object, deleteKey: string) {
+  delete object[deleteKey];
+
+  Object.values(object).forEach((val) => {
+    if (typeof val !== "object") return;
+
+    recursiveRemoveKey(val, deleteKey);
+  });
+}

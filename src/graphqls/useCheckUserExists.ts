@@ -3,7 +3,6 @@ import { useQuery } from '~/hooks/useQuery';
 import { Account } from './schema/account.type';
 
 export function useCheckUserExists() {
-
   const query = useQuery();
 
   return () => {
@@ -22,9 +21,10 @@ export function useCheckUserExists() {
             billingMethod
             subscriptionId
             settings
+            features
           }
         }
-      `
+      `,
     });
   };
 }

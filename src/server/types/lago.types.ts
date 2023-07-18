@@ -1,5 +1,3 @@
-import { AxiosError } from "axios";
-
 export interface LagoCustomer {
   lago_id: string;
   sequential_id: string;
@@ -75,7 +73,7 @@ export interface LagoAssignPlanToCustomerRequest {
   external_id: string;
   name?: string;
   subscription_date?: string;
-  billing_time?: string;
+  billing_time?: "calendar" | "anniversary";
 }
 
 export type LagoAssignPlanToCustomerResponse = [
@@ -100,14 +98,43 @@ export interface LagoWallet {
   terminated_at?: string;
 }
 
-export interface LagoCreateWalletRequest {
-  name: string;
-  rate_amount: string;
-  paid_credits?: string;
-  granted_credits: string;
-  currency: string;
-  expiration_at?: string;
+export interface ILagoGetInvoicesParams {
   external_customer_id: string;
+  per_page?: number;
+  page?: number;
+  status?: LagoInvoiceStatus;
+  payment_status?: LagoInvoicePaymentStatus;
 }
 
-export type CreateWalletResponse = [LagoWallet | null, LagoAPIError | null];
+export enum LagoInvoicePaymentStatus {
+  pending = "pending",
+  succeeded = "succeeded",
+  failed = "failed",
+}
+
+export enum LagoInvoiceStatus {
+  draft = "draft",
+  finalized = "finalized",
+}
+
+export interface LagoInvoice {
+  lago_id: string;
+  sequential_id: number;
+  number: string;
+  issuing_date: Date;
+  invoice_type: string;
+  status: LagoInvoiceStatus;
+  payment_status: LagoInvoicePaymentStatus;
+  currency: string;
+  fees_amount_cents: number;
+  vat_amount_cents: number;
+  coupons_amount_cents: number;
+  credit_notes_amount_cents: number;
+  sub_total_vat_excluded_amount_cents: number;
+  sub_total_vat_included_amount_cents: number;
+  total_amount_cents: number;
+  file_url: string;
+  legacy: boolean;
+  customer: LagoCustomer;
+  subscriptions: LagoSubscription[];
+}

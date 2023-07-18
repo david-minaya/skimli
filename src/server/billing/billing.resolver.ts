@@ -1,4 +1,12 @@
-import { Args, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Args,
+  Authorized,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
 import { Service } from "typedi";
 import { User } from "../accounts/accounts.types";
 import type { GraphQLContext } from "../schema";
@@ -8,6 +16,7 @@ import { BillingService } from "./billing.service";
 import { GraphQLError } from "graphql";
 import * as Sentry from "@sentry/nextjs";
 import { Conversions } from "./billing.types";
+import { IsAppUserGuard } from "../middlewares/app-user.guard";
 
 @Service()
 @Resolver()
@@ -23,7 +32,8 @@ export class BillingResolver {
     try {
       const authInfo: AuthInfo = { auth0: ctx.auth0, token: ctx.token };
       const user = await this.billingService.subscribeToPlan(authInfo, args);
-      return user;
+      // TODO
+      return user!;
     } catch (e) {
       if (!(e instanceof GraphQLError)) {
         Sentry.captureException(e);
@@ -35,8 +45,20 @@ export class BillingResolver {
 
   @Authorized()
   @Query(() => Conversions)
-  async getConversions(@Ctx() ctx: GraphQLContext): Promise<Conversions> {
-    const authInfo: AuthInfo = { auth0: ctx.auth0, token: ctx.token };
-    return this.billingService.getConversions(authInfo);
+  async getConversions(): Promise<Conversions> {
+    return this.billingService.getConversions();
+  }
+
+  @UseMiddleware(IsAppUserGuard)
+  @Authorized()
+  @Mutation(() => String, { nullable: true })
+  async createStripeSession(
+    @Ctx() ctx: GraphQLContext
+  ): Promise<string | null> {
+    const authInfo: AuthInfo = {
+      auth0: ctx?.auth0,
+      token: ctx?.token,
+    };
+    return this.billingService.createStripeSession(authInfo);
   }
 }

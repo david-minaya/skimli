@@ -12,6 +12,7 @@ import type details from '../public/locales/en/details.json';
 import type page401 from '../public/locales/en/page401.json';
 import type page404 from '../public/locales/en/page404.json';
 import type page500 from '../public/locales/en/page500.json';
+import type integrations from '../public/locales/en/integrations.json';
 
 declare module 'i18next' {
 
@@ -30,6 +31,7 @@ declare module 'i18next' {
       page401: typeof page401
       page404: typeof page404
       page500: typeof page500
+      integrations: typeof integrations
     }
   }
 }

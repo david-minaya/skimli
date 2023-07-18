@@ -12,6 +12,7 @@
     "options": {
       "home": "Home",
       "media": "Media",
+      "integrations": "Integrations",
       "profile": "My Profile",
       "help": "Help"
     }

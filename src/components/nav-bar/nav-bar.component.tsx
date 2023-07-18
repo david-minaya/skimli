@@ -1,23 +1,24 @@
 import Link from 'next/link';
-import { useState } from 'react';
-import { useTranslation } from 'next-i18next';
-import { Box } from '@mui/material';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { HomeIcon } from '~/icons/homeIcon';
-import { Profile } from '../profile/profile.component';
-import { style } from './nav-bar.style';
-import { useAccount } from '~/store/account.slice';
-import { HelpMenuIcon } from '~/icons/helpMenuIcon';
-import { HelpMenu } from '../help-menu/help-menu.component';
-import { NavBarItem } from '../nav-bar-item/nav-bar-item.component';
-import { MediaIcon } from '~/icons/mediaIcon';
+import {useState} from 'react';
+import {useTranslation} from 'next-i18next';
+import {Box} from '@mui/material';
+import {useUser} from '@auth0/nextjs-auth0/client';
+import {HomeIcon} from '~/icons/homeIcon';
+import {Profile} from '../profile/profile.component';
+import {style} from './nav-bar.style';
+import {useAccount} from '~/store/account.slice';
+import {HelpMenuIcon} from '~/icons/helpMenuIcon';
+import {HelpMenu} from '../help-menu/help-menu.component';
+import {NavBarItem} from '../nav-bar-item/nav-bar-item.component';
+import {MediaIcon} from '~/icons/mediaIcon';
+import {IntegrationsIcon} from '~/icons/integrationsIcon';
 
 export function NavBar() {
 
   const accountStore = useAccount();
   const account = accountStore.get();
-  const { t } = useTranslation('components');
-  const { user } = useUser();
+  const {t} = useTranslation('components');
+  const {user} = useUser();
   const [profileAnchor, setProfileAnchor] = useState<HTMLDivElement | null>(null);
   const [helpMenuAnchor, setHelpMenuAnchor] = useState<HTMLDivElement | null>(null);
 
@@ -38,6 +39,10 @@ export function NavBar() {
           tooltip={t('navBar.options.media')}
           icon={<MediaIcon/>}
           href={`/organizations/${account?.org}/media`}/>
+        <NavBarItem
+          tooltip={t('navBar.options.integrations')}
+          icon={<IntegrationsIcon/>}
+          href={`/organizations/${account?.org}/integrations`}/>
       </Box>
       <Box sx={style.bottom}>
         <NavBarItem

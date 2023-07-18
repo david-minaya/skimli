@@ -1,37 +1,51 @@
 import { useCallback } from 'react';
-import { gql, useApolloClient } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { Account } from './schema/account.type';
+import { useSendMutation } from '../hooks/useSendMutation';
+
+export interface ISubscribeToPlanArgs {
+  productCode: string;
+  planCode: string;
+  isPaid: boolean;
+  provider: 'STRIPE';
+  sessionId?: string;
+}
 
 export function useSubscribeToPlan() {
+  const mutation = useSendMutation();
 
-  const client = useApolloClient();
-
-  return useCallback(async (productCode: string) => {
-
-    const response = await client.mutate({
+  return useCallback(async (args: ISubscribeToPlanArgs) => {
+    return mutation<Account>({
+      name: 'subscribeToPlan',
       mutation: gql`
-        mutation SubscribeToPlan($productCode: ProductCode!) {
-          subscribeToPlan(productCode: $productCode) {
+        mutation SubscribeToPlan(
+          $productCode: String!
+          $planCode: String!
+          $isPaid: Boolean!
+          $provider: PaymentProviderType!
+          $sessionId: String
+        ) {
+          subscribeToPlan(
+            productCode: $productCode
+            planCode: $planCode
+            isPaid: $isPaid
+            provider: $provider
+            sessionId: $sessionId
+          ) {
             org
             account
             accountOwner
             idp
             idpUser
             email
-            product
-            entitlements
             billingMethod
             subscriptionId
             settings
+            features
           }
         }
       `,
-      variables: {
-        productCode
-      }
+      variables: args,
     });
-
-    if (response.errors || !response.data) {
-      throw response.errors;
-    }
-  }, [client]);
+  }, []);
 }

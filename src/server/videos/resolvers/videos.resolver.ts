@@ -47,6 +47,7 @@ import {
   CONVERT_TO_CLIPS_TOPIC,
   MEDIA_UPLOADED_EVENT,
   RENDER_CLIP_EVENT,
+  TWLEVE_HOURS_IN_SECONDS,
 } from "../videos.constants";
 import { GetSubtitleMediaException } from "../videos.exceptions";
 import { VideosService } from "../videos.service";
@@ -527,5 +528,15 @@ export class VideosResolver {
       token: ctx?.token,
     };
     return this.videosService.updateClipTimeline(args, authInfo);
+  }
+
+  @FieldResolver(() => String)
+  async publicUrl(@Root() asset: Asset): Promise<string> {
+    if (!asset.sourceUrl) return "";
+    return this.videosService.generateSignedURL({
+      isAttachment: false,
+      s3URL: asset.sourceUrl,
+      expiresIn: TWLEVE_HOURS_IN_SECONDS,
+    });
   }
 }

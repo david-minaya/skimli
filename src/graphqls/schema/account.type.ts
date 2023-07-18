@@ -3,11 +3,23 @@ export interface Account {
   accountOwner: boolean;
   billingMethod: string;
   email: string;
-  entitlements: any;
   idp: string;
   idpUser: string;
   org: number;
-  product: any;
+  productCode: string;
   settings: any;
-  subscriptionId: string
+  subscriptionId: string;
+  features: string[];
+  planInterval: string;
+  isPaid: boolean;
+  isOverageAllowed: boolean;
+  hasPaymentMethod: boolean;
+  paymentMethod: PaymentMethod;
+}
+
+export interface PaymentMethod {
+  providerId: string;
+  provider: string;
+  paymentMethodId: string;
+  isPaymentMethod: boolean;
 }
