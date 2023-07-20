@@ -60,9 +60,7 @@ export function DownloadClipModal(props: Props) {
 
       const size = calcDimensions();
       const url = await renderClip(clip!.uuid, asset.uuid, size);
-
-      console.log(url);
-
+      
       if (url) {
         download(clip!.caption, url);
       } else {

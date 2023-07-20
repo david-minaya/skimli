@@ -9,6 +9,7 @@ export function usePlayAudio(assetId: string) {
   const audioContext = useAudioContext();
   const videoPlayer = useVideoPlayer();
   const assets = useAssets();
+  const clip = assets.getClip(assetId);
   const timelineAudio = assets.getTimelineAudio(assetId);
 
   const audio = useMemo(() => {
@@ -20,22 +21,26 @@ export function usePlayAudio(assetId: string) {
     }
   }, [timelineAudio?.asset.src]);
 
+  console.log(audio);
+
   useEffect(() => {
 
-    if (!timelineAudio || !audio) return;
+    if (!timelineAudio || !audio || !clip) return;
 
-    const endTime = timelineAudio.start + timelineAudio.length;
+    const startTime = clip.startTime + timelineAudio.start;
+    const endTime = startTime + timelineAudio.length;
 
     videoPlayer.onProgress(progress => {
 
-      if (progress >= timelineAudio.start && progress < endTime && audio.paused && !videoPlayer.video?.paused) {
+      if (progress >= startTime && progress < endTime && audio.paused && !videoPlayer.video?.paused) {
         audioContext.audioNode?.gain.gain.setValueAtTime(timelineAudio.asset.volume, 0);
         audioContext.videoNode?.gain.gain.setValueAtTime(1 - timelineAudio.asset.volume, 0);
-        audio.currentTime = round((progress - timelineAudio.start) + timelineAudio.asset.trim, 3);
+        audio.currentTime = round((progress - startTime) + timelineAudio.asset.trim, 3);
         audio.play();
+        console.log('play audio', audio.currentTime);
       } 
       
-      if (progress < timelineAudio.start || progress > endTime && !audio.paused) {
+      if (progress < startTime || progress > endTime && !audio.paused) {
         audioContext.audioNode?.gain.gain.setValueAtTime(0, 0);
         audioContext.videoNode?.gain.gain.setValueAtTime(1, 0);
         audio.pause();
@@ -43,14 +48,15 @@ export function usePlayAudio(assetId: string) {
     });
 
     videoPlayer.onPause(() => {
+      audioContext.videoNode?.gain.gain.setValueAtTime(1, 0);
       audio.pause();
     });
 
     videoPlayer.onUpdateProgress(progress => {
-      audio.currentTime = round((progress - timelineAudio.start) + timelineAudio.asset.trim, 3);
+      audio.currentTime = round((progress - startTime) + timelineAudio.asset.trim, 3);
     });
 
-  }, [audio, timelineAudio]);
+  }, [audio, timelineAudio, clip]);
 }
 
 // Calculate the current time of the audio

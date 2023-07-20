@@ -12,9 +12,10 @@ import { SidebarMiniFileUploader } from '~/components/sidebar-mini-file-uploader
 import { useAssets } from '~/store/assets.slice';
 import { useGetMediaSourceUrl } from '~/graphqls/useGetMediaSourceUrl';
 import { ExpandPanelContext } from '~/components/expand-panels/expand-panels.component';
-import { style } from './sidebar-audio-list.style';
 import { useLinkMedia } from '~/graphqls/useLinkMedia';
 import { useUnlinkMedia } from '~/graphqls/useUnlinkMedia';
+import { useAudioContext } from '~/providers/AudioContextProvider';
+import { style } from './sidebar-audio-list.style';
 
 interface Props {
   assetId: string;
@@ -31,6 +32,7 @@ export function SidebarAudioList(props: Props) {
   const clip = Assets.getClip(assetId);
   const expandPanel = useContext(ExpandPanelContext);
   const timelineAudio = Assets.getTimelineAudio(assetId);
+  const audioContext = useAudioContext();
   const audioAssets = AssetMedias.get<AudioAssetMedia>({ name, type: 'AUDIO' });
   const isNotEmpty = (name === '' && audioAssets.length !== 0) || name !== '';
   const getMediaSourceUrl = useGetMediaSourceUrl();
@@ -57,7 +59,7 @@ export function SidebarAudioList(props: Props) {
     await linkMedia(assetId, audioAsset.uuid);
 
     Assets.addTimelineClip(clip!.uuid, assetId, {
-      start: clip!.startTime,
+      start: 0,
       length: duration,
       asset: {
         type: 'audio',
@@ -79,6 +81,7 @@ export function SidebarAudioList(props: Props) {
     if (clip && timelineAudio) {
       await unlinkMedia(audioAsset.uuid, assetId);
       Assets.removeTimelineClip(assetId, clip.uuid, timelineAudio.sources!.id);
+      audioContext.removeAudioNode();
     }
   }
 

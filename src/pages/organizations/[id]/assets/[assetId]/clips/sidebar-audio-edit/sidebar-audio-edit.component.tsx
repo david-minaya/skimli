@@ -45,7 +45,7 @@ export function SidebarAudioEdit(props: Props) {
 
   function handleStartChange(event: ChangeEvent<HTMLInputElement>) {    
     assets.updateTimelineClip(assetId, clip?.uuid, timelineAudio!.sources?.id, { 
-      start: clip!.startTime + parseInt(event.target.value)
+      start: parseInt(event.target.value)
     });
   }
 
@@ -76,7 +76,7 @@ export function SidebarAudioEdit(props: Props) {
 
     if (event.currentTarget.value === '') {
       assets.updateTimelineClip(assetId, clip?.uuid, timelineAudio!.sources?.id, { 
-        start: clip!.startTime
+        start: 0
       });
     }
 
@@ -145,7 +145,7 @@ export function SidebarAudioEdit(props: Props) {
           <TextField
             sx={style.textField} 
             type='number'
-            value={Math.floor(timelineAudio.start - (clip?.startTime || 0))?.toString()}
+            value={Math.floor(timelineAudio.start).toString()}
             errorMessage={startValidator(timelineAudio.start)}
             onChange={handleStartChange}
             onBlur={handleStartBlur}/>

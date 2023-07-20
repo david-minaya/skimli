@@ -20,6 +20,7 @@ interface ContextValue {
   audioNode?: Node;
   addVideoNode: (video: HTMLVideoElement) => void;
   addAudioNode: (video: HTMLAudioElement) => void;
+  removeAudioNode: () => void;
 }
 
 const Context = createContext({} as ContextValue);
@@ -69,12 +70,18 @@ export function AudioContextProvider(props: Props) {
     };
   }, []);
 
+  const removeAudioNode = useCallback(() => {
+    state.audioNode?.node.disconnect();
+    state.audioNode?.gain.disconnect();
+  }, []);
+
   const value = {
     context: audioContext,
     get videoNode() { return state.videoNode; },
     get audioNode() { return state.audioNode; },
     addVideoNode: addVideoNode,
-    addAudioNode: addAudioNode
+    addAudioNode: addAudioNode,
+    removeAudioNode: removeAudioNode
   };
 
   return (
