@@ -6,9 +6,20 @@
   "availableSectionTitle": "Available",
   "upgradeRequiredSectionTitle": "Upgrade Required",
   "comingSoonSectionTitle": "Coming Soon",
-  "connectedAccountText": "Connected Account",
   "manageButton": "Manage",
-  "addButton": "Add",
+  "addButton": {
+    "default": "Add",
+    "cloudDrive": "Add Cloud Drive Account",
+    "cloudStorage": "Add Cloud Storage Account",
+    "cms": "Add CMS Account",
+    "dam": "Add DAM Account",
+    "socialMedia": "Add Social Account",
+    "videoService": "Add Video Account"
+  },
   "upgradeButton": "Upgrade",
-  "comingSoonChip": "Coming Soon"
+  "comingSoonChip": "Coming Soon",
+  "toastAlerts": {
+    "success": "{{account}} account added.",
+    "fail": "Error adding {{account}} account"
+  }
 }
