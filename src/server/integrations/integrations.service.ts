@@ -136,7 +136,7 @@ export class IntegrationsService {
     }
 
     // Validate the user does not already have the integration added
-    let checkUserIntegrationParams: CheckUserIntegrationParams = {
+    /*let checkUserIntegrationParams: CheckUserIntegrationParams = {
       idpUser: authInfo.auth0.sub,
       integrationCode: code,
     };
@@ -151,7 +151,7 @@ export class IntegrationsService {
     }
     if (userIntegration) {
       throw UserIntegrationAlreadyExistsException;
-    }
+    }*/
 
     // Check if the user has an ayrshare profile in the database
     let checkAyrshareProfileParams: CheckAyrshareProfileParams = {
@@ -260,8 +260,8 @@ export class IntegrationsService {
     ).length;
     // Return available integration if Ayrshare and user have no social integrations
     if (
-      !ayrShareProfile.activeSocialAccounts ||
-      ayrShareProfile.activeSocialAccounts?.length == 0 ||
+      (!ayrShareProfile.activeSocialAccounts ||
+        ayrShareProfile.activeSocialAccounts?.length == 0) &&
       currentSocialIntegrationsCount == 0
     ) {
       return availableIntegrations;

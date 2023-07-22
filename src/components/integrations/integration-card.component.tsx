@@ -8,7 +8,7 @@ import {
   IntegrationCategoryType,
   UserIntegration,
   AyrshareJwt,
-} from '~/graphqls/schema/integrations.type';
+} from "~/graphqls/schema/integrations.type";
 import {
   Avatar,
   Box,
@@ -17,15 +17,15 @@ import {
   Grid,
   Paper,
   Typography,
-} from '@mui/material';
-import { AccountCircle } from '@mui/icons-material';
-import { style } from './integration-card.style';
-import { IntegrationCardContent } from '~/graphqls/contentful/types/integrationCardContent';
-import { useTranslation } from 'next-i18next';
-import { Toast } from '~/components/toast/toast.component';
-import { useState } from 'react';
-import { LoadingButton } from '@mui/lab';
-import { useAddSocialAccount } from '~/graphqls/useAddSocialAccount';
+} from "@mui/material";
+import { AccountCircle } from "@mui/icons-material";
+import { style } from "./integration-card.style";
+import { IntegrationCardContent } from "~/graphqls/contentful/types/integrationCardContent";
+import { useTranslation } from "next-i18next";
+import { Toast } from "~/components/toast/toast.component";
+import { useState } from "react";
+import { LoadingButton } from "@mui/lab";
+import { useAddSocialAccount } from "~/graphqls/useAddSocialAccount";
 
 interface Props {
   integration?: UserIntegration;
@@ -46,7 +46,7 @@ export function IntegrationCard(props: Props) {
     isComingSoon,
   } = props;
 
-  const { t } = useTranslation('integrations');
+  const { t } = useTranslation("integrations");
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openSuccessToast, setOpenSuccessToast] = useState(false);
@@ -84,19 +84,19 @@ export function IntegrationCard(props: Props) {
   function getAddButtonLabelByCategory(category?: IntegrationCategoryType) {
     switch (category) {
       case IntegrationCategoryType.CLOUD_DRIVE:
-        return t('addButton.cloudDrive');
+        return t("addButton.cloudDrive");
       case IntegrationCategoryType.CLOUD_STORAGE:
-        return t('addButton.cloudStorage');
+        return t("addButton.cloudStorage");
       case IntegrationCategoryType.CMS:
-        return t('addButton.cms');
+        return t("addButton.cms");
       case IntegrationCategoryType.DAM:
-        return t('addButton.dam');
+        return t("addButton.dam");
       case IntegrationCategoryType.SOCIAL_MEDIA:
-        return t('addButton.socialMedia');
+        return t("addButton.socialMedia");
       case IntegrationCategoryType.VIDEO_SERVICE:
-        return t('addButton.videoService');
+        return t("addButton.videoService");
       default:
-        return t('addButton.default');
+        return t("addButton.default");
     }
   }
 
@@ -106,16 +106,16 @@ export function IntegrationCard(props: Props) {
   }
 
   return (
-    <Paper variant='outlined' sx={style.card}>
+    <Paper variant="outlined" sx={style.card}>
       <Grid container sx={style.cardLayout}>
         <Grid item sx={style.cardHeader}>
-          <Avatar alt={cardContent?.logo.title} src={cardContent?.logo.url}/>
+          <Avatar alt={cardContent?.logo.title} src={cardContent?.logo.url} />
           <Typography sx={style.displayName}>
             {cardContent?.displayName}
           </Typography>
           <Chip
             sx={style.category}
-            size='small'
+            size="small"
             label={cardContent?.category}
           />
         </Grid>
@@ -132,7 +132,7 @@ export function IntegrationCard(props: Props) {
                   alt={integration?.displayName}
                   src={integration?.userImage}
                   sx={style.accountAvatar}
-                  variant='square'
+                  variant="square"
                 />
                 <Typography sx={style.accountName}>
                   {integration?.displayName}
@@ -143,7 +143,7 @@ export function IntegrationCard(props: Props) {
                   disabled={isButtonDisabled}
                   loading={loading}
                 >
-                  <span>{t('manageButton')}</span>
+                  <span>{t("manageButton")}</span>
                 </LoadingButton>
               </Box>
             </Box>
@@ -159,31 +159,29 @@ export function IntegrationCard(props: Props) {
             </LoadingButton>
           )}
           {isUpgradeRequired && (
-            <Button sx={style.button}>{t('upgradeButton')}</Button>
+            <Button sx={style.button}>{t("upgradeButton")}</Button>
           )}
           {isComingSoon && (
             <Chip
               sx={style.comingSoon}
-              variant='outlined'
-              size='small'
-              label={t('comingSoonChip')}
+              variant="outlined"
+              size="small"
+              label={t("comingSoonChip")}
             />
           )}
         </Grid>
       </Grid>
       <Toast
         open={openSuccessToast}
-        severity='success'
+        severity="success"
         onClose={() => setOpenSuccessToast(false)}
-        description={t('toastAlerts.success', {
-          account: cardContent?.displayName,
-        })}
+        description={t("toastAlerts.success")}
       />
       <Toast
         open={openFailToast}
-        severity='error'
+        severity="error"
         onClose={() => setOpenFailToast(false)}
-        description={t('toastAlerts.fail', {
+        description={t("toastAlerts.fail", {
           account: cardContent?.displayName,
         })}
       />

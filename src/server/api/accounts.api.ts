@@ -248,10 +248,14 @@ export class AccountsAPI {
       if (!response.data) {
         return null;
       }
-      const userIntegration: IUserIntegration = response.data.map((item) => ({
+      /*const userIntegration: IUserIntegration = response.data.map((item) => ({
         code: item.code as IntegrationCodeType,
         category: item.category as IntegrationCategoryType,
-      }));
+      }));*/
+      const userIntegration: IUserIntegration = {
+        code: response.data.code as IntegrationCodeType,
+        category: response.data.category as IntegrationCategoryType,
+      };
       return userIntegration;
     } catch (e) {
       throw e;

@@ -19,7 +19,7 @@
   "upgradeButton": "Upgrade",
   "comingSoonChip": "Coming Soon",
   "toastAlerts": {
-    "success": "{{account}} account added.",
+    "success": "Redirecting to account linking page",
     "fail": "Error adding {{account}} account"
   }
 }
