@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2023. Skimli LLC. All rights reserved.
+ * Proprietary and can not be copied without the express permission of Skimli LLC.
+ * o not distribute outside Skimli LLC.
+ */
+
 import { Style, nestedStyle } from "~/utils/style";
 
 export const style = Style({
@@ -88,5 +94,14 @@ export const style = Style({
   icon: {
     width: "20px",
     height: "20px",
+  },
+  warningContainer: {
+    marginTop: "4px",
+    padding: "8px",
+    backgroundColor: "#ffe082",
+    color: "black",
+    fontSize: "12px",
+    fontWeight: 500,
+    borderRadius: "4px",
   },
 });
