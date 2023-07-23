@@ -138,10 +138,10 @@ export function SidebarAudioEdit(props: Props) {
             </Box>
           </Box>
           <Box sx={style.fieldTitle}>
-            Volume
+            {t("sidebarAudio.edit.volume")}
             <Tooltip
               sx={style.tooltip}
-              title="Set the volume for the audio clip between 0% and 100%"
+              title={t("sidebarAudio.edit.volumeTooltip")}
             >
               <IconButton sx={style.iconButton}>
                 <InfoIcon sx={style.icon} />
@@ -162,10 +162,10 @@ export function SidebarAudioEdit(props: Props) {
             />
           </Box>
           <Box sx={style.fieldTitle}>
-            Trim Start
+            {t("sidebarAudio.edit.trimStart")}
             <Tooltip
               sx={style.tooltip}
-              title="The start trim point of the audio clip in seconds"
+              title={t("sidebarAudio.edit.trimStartTooltip")}
             >
               <IconButton sx={style.iconButton}>
                 <InfoIcon sx={style.icon} />
@@ -182,12 +182,12 @@ export function SidebarAudioEdit(props: Props) {
             onChange={handleTrimChange}
             onBlur={handleTrimBlur}
           />
-          <Box sx={style.subTitle}>Timing</Box>
+          <Box sx={style.subTitle}>{t("sidebarAudio.edit.timing")}</Box>
           <Box sx={style.fieldTitle}>
-            Start
+            {t("sidebarAudio.edit.timingStart")}
             <Tooltip
               sx={style.tooltip}
-              title="The start position of the audio clip on the timeline in seconds"
+              title={t("sidebarAudio.edit.timingStartTooltip")}
             >
               <IconButton sx={style.iconButton}>
                 <InfoIcon sx={style.icon} />
@@ -203,10 +203,10 @@ export function SidebarAudioEdit(props: Props) {
             onBlur={handleStartBlur}
           />
           <Box sx={style.fieldTitle}>
-            Length
+            {t("sidebarAudio.edit.timingLength")}
             <Tooltip
               sx={style.tooltip}
-              title="The length in seconds the audio clip should play for"
+              title={t("sidebarAudio.edit.timingLengthTooltip")}
             >
               <IconButton sx={style.iconButton}>
                 <InfoIcon sx={style.icon} />

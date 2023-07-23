@@ -63,7 +63,18 @@
       }
     },
     "edit": {
-      "title": "Edit"
+      "title": "Edit",
+      "volume": "Volume",
+      "volumeTooltip": "Set the volume for the audio clip between 0% and 100%",
+      "trimStart": "Trim Start",
+      "trimStartTooltip": "The start trim point of the audio clip in seconds",
+      "timing": "Timing",
+      "timingStart": "Start",
+      "timingStartTooltip": "The start position of the audio clip on the timeline in seconds",
+      "timingLength": "Length",
+      "timingLengthTooltip": "The length in seconds the audio clip should play for"
+
+
     }
   },
   "sidebarImage": {
