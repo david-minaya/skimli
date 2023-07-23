@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2023. Skimli LLC. All rights reserved.
+ * Proprietary and can not be copied without the express permission of Skimli LLC.
+ * o not distribute outside Skimli LLC.
+ */
+
 import { Fragment, ChangeEvent, FocusEvent } from "react";
 import { Box, IconButton, Slider, Tooltip } from "@mui/material";
 import { useTranslation } from "next-i18next";
@@ -156,6 +162,8 @@ export function SidebarAudioEdit(props: Props) {
               max={1}
               step={0.01}
               value={timelineAudio.asset?.volume}
+              valueLabelDisplay="auto"
+              valueLabelFormat={(value) => `${Math.round(value * 100)}%`}
               orientation="horizontal"
               onChange={handleVolumeChange}
               onBlur={handleVolumeBlur}
