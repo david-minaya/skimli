@@ -161,7 +161,17 @@ export function SidebarAudioEdit(props: Props) {
               onBlur={handleVolumeBlur}
             />
           </Box>
-          <Box sx={style.fieldTitle}>Trim Start</Box>
+          <Box sx={style.fieldTitle}>
+            Trim Start
+            <Tooltip
+              sx={style.tooltip}
+              title="The start trim point of the audio clip in seconds"
+            >
+              <IconButton sx={style.iconButton}>
+                <InfoIcon sx={style.icon} />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <TextField
             sx={style.textField}
             type="number"
@@ -173,7 +183,17 @@ export function SidebarAudioEdit(props: Props) {
             onBlur={handleTrimBlur}
           />
           <Box sx={style.subTitle}>Timing</Box>
-          <Box sx={style.fieldTitle}>Start</Box>
+          <Box sx={style.fieldTitle}>
+            Start
+            <Tooltip
+              sx={style.tooltip}
+              title="The start position of the audio clip on the timeline in seconds"
+            >
+              <IconButton sx={style.iconButton}>
+                <InfoIcon sx={style.icon} />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <TextField
             sx={style.textField}
             type="number"
@@ -182,7 +202,17 @@ export function SidebarAudioEdit(props: Props) {
             onChange={handleStartChange}
             onBlur={handleStartBlur}
           />
-          <Box sx={style.fieldTitle}>Length</Box>
+          <Box sx={style.fieldTitle}>
+            Length
+            <Tooltip
+              sx={style.tooltip}
+              title="The length in seconds the audio clip should play for"
+            >
+              <IconButton sx={style.iconButton}>
+                <InfoIcon sx={style.icon} />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <TextField
             sx={style.textField}
             type="number"
