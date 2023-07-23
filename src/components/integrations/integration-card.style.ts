@@ -4,7 +4,7 @@
  * o not distribute outside Skimli LLC.
  */
 
-import {Style} from '~/utils/style';
+import { Style } from '~/utils/style';
 
 export const style = Style({
   card: {
@@ -46,13 +46,6 @@ export const style = Style({
     mt: '16px',
     pl: '8px',
   },
-  connectedText: {
-    fontStyle: 'normal',
-    fontWeight: 400,
-    fontSize: '16px',
-    color: '#333333',
-    align: 'left',
-  },
   accountSection: {
     display: 'flex',
     flexDirection: 'row',
@@ -69,8 +62,8 @@ export const style = Style({
     pl: '8px',
   },
   accountAvatar: {
-    width: 24,
-    height: 24,
+    width: 36,
+    height: 36,
   },
   manageButton: {
     ml: '61px',
@@ -87,5 +80,5 @@ export const style = Style({
   comingSoon: {
     mb: '8px',
     color: 'primary.main',
-  }
+  },
 });

@@ -76,4 +76,28 @@ export default class AppErrorCodes {
 
   // payment status pending
   public static PAYMENT_PENDING = "PAYMENT_PENDING";
+
+  // feature not authorized: social media publishing
+  public static SOCIAL_MEDIA_PUBLISHING_NOT_AUTHORIZED =
+    "SOCIAL_MEDIA_PUBLISHING_NOT_AUTHORIZED";
+
+  // user integration already added
+  public static USER_INTEGRATION_ALREADY_EXISTS =
+    "USER_INTEGRATION_ALREADY_EXISTS";
+
+  public static FAILED_TO_GET_USER_UPGRADES = "FAILED_TO_GET_USER_UPGRADES";
+
+  public static FAILED_TO_GET_AVAILABLE_INTEGRATIONS =
+    "FAILED_TO_GET_AVAILABLE_INTEGRATIONS";
+
+  public static FAILED_TO_GENERATE_AYRSHARE_JWT =
+    "FAILED_TO_GENERATE_AYRSHARE_JWT";
+
+  public static FAILED_TO_CREATE_AYRSHARE_PROFILE =
+    "FAILED_TO_CREATE_AYRSHARE_PROFILE";
+
+  public static FAILED_TO_GET_AYRSHARE_PROFILE =
+    "FAILED_TO_GET_AYRSHARE_PROFILE";
+
+  public static FAILED_TO_GET_INTEGRATIONS = "FAILED_TO_GET_INTEGRATIONS";
 }

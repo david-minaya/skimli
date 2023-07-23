@@ -4,9 +4,7 @@
  * o not distribute outside Skimli LLC.
  */
 
-import {
-  UserIntegrations,
-} from './schema/integrations.type';
+import { UserIntegrations } from './schema/integrations.type';
 import { gql } from '@apollo/client';
 import { useCallback } from 'react';
 import { useQuery } from '~/hooks/useQuery';
@@ -23,15 +21,17 @@ export function useGetUserIntegrations() {
           getUserIntegrations {
             currentIntegrations {
               code
-              category             
+              category
+              displayName
+              userImage
             }
             availableIntegrations {
               code
-              category          
+              category
             }
             upgradeRequiredIntegrations {
               code
-              category            
+              category
             }
           }
         }

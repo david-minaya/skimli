@@ -73,6 +73,12 @@ const config = {
   },
   proxyEnabled: process.env.PROXY_ENABLED ?? true,
   baseUrl: process.env.BASE_URL ?? "",
+  ayrshare: {
+    apiUrl: process.env.AYRSHARE_API_URL ?? "https://app.ayrshare.com/api",
+    apiKey: process.env.AYRSHARE_API_KEY ?? "",
+    jwtDomain: process.env.AYRSHARE_JWT_DOMAIN ?? "skimli",
+    rsaKey: process.env.AYRSHARE_RSA_KEY ?? "",
+  },
 };
 
 export default config;
