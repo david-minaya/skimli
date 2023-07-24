@@ -17,8 +17,13 @@ interface Props {
 
 export function AudioTrackTimeline(props: Props) {
   const { audio, clipDuration } = props;
-  const left = (1 - (audio.length - audio.start) / audio.length) * 100;
-  const width = 100;
+  /*const left = (1 - (audio.length - audio.start) / audio.length) * 100;
+  const width = 100;*/
+  const left = ((audio.start / clipDuration) * 100).toFixed(2);
+  const width = (
+    (audio.length / clipDuration) * 100 -
+    parseFloat(left)
+  ).toFixed(2);
   return (
     <Box sx={style.container}>
       <Box sx={style.audio}>
