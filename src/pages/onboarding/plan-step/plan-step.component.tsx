@@ -5,7 +5,7 @@
  */
 
 import { usePricingPage } from '~/graphqls/contentful/usePricingPage';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ISubscribeToPlanArgs,
   useSubscribeToPlan,
@@ -27,6 +27,7 @@ interface Props {
 const _planDetailsKey = '_planDetails';
 
 export function PlanStep(props: Props) {
+  const initialized = useRef(false);
   const { show, onNext } = props;
   const pricingPage = usePricingPage();
   const subscribeToPlan = useSubscribeToPlan();
@@ -68,7 +69,11 @@ export function PlanStep(props: Props) {
   }
 
   useEffect(() => {
-    handleStripeCallback();
+    // prevent useEffect running twice due to strict mode
+    if (!initialized.current) {
+      initialized.current = true;
+      handleStripeCallback();
+    }
   }, []);
 
   async function handleClick(args: ISubscribeToPlanArgs) {
