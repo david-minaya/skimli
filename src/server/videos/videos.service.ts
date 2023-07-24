@@ -855,7 +855,7 @@ export class VideosService {
 
     const tracks: IRenderTimelineTrack[] = [{ clips: [clipTrack] }];
     const timeline: IRenderTimelineDetails = {
-      container: {
+      timeline: {
         background: CLIP_BACKGROUND,
         tracks: tracks,
       },
@@ -964,7 +964,7 @@ export class VideosService {
       tracks: [...(previousTimeline?.tracks ?? [])],
     };
     const renderJSON: IRenderTimelineDetails = {
-      container: timeline,
+      timeline: timeline,
       output: renderOutput,
       callback: callbackUrl.toString(),
     };
@@ -990,7 +990,7 @@ export class VideosService {
       type: SubAssetType.CLIP,
       details: {
         clipId: args.clipId,
-        container: renderJSON,
+        timeline: renderJSON,
         response: renderClipResponse,
       },
       org: org,
@@ -1277,8 +1277,8 @@ export class VideosService {
     // generate a full render based on stored render
     const timeline: IRenderTimelineDetails = {
       ...args.render,
-      container: {
-        ...args.render.container,
+      timeline: {
+        ...args.render.timeline,
         background:
           clip.details?.currentTimeline?.timeline?.background ??
           CLIP_BACKGROUND,
