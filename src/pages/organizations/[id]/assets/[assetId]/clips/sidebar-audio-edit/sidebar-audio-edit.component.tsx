@@ -220,6 +220,7 @@ export function SidebarAudioEdit(props: Props) {
             sx={style.textField}
             type="number"
             value={Math.floor(timelineAudio.start).toString()}
+            min={0}
             errorMessage={startValidator(timelineAudio.start)}
             onChange={handleStartChange}
             onBlur={handleStartBlur}
