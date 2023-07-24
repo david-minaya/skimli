@@ -13,7 +13,6 @@ const INTERNAL_ERROR = "Internal Server Error";
 
 export class APIError extends GraphQLError {
   constructor(error: AxiosError | any) {
-    console.log(JSON.stringify(error));
     const code = error.response?.status || 500;
     const options: GraphQLErrorOptions = {
       extensions: {
@@ -43,7 +42,6 @@ export class APIError extends GraphQLError {
 
 export class InternalGraphQLError extends GraphQLError {
   constructor(error: any) {
-    console.error(JSON.stringify(error));
     super(AppErrorCodes.INTERNAL_SERVER_ERROR, {
       extensions: {
         message: error?.message || error?.cause || error,
