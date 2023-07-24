@@ -453,7 +453,7 @@ function convertTimeToSeconds(clip: Clip) {
   if (!_clip.details) {
     _clip.details = {
       currentTimeline: {
-        container: {
+        timeline: {
           tracks: [],
         },
       },

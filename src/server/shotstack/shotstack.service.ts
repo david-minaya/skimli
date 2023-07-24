@@ -51,7 +51,7 @@ export class ShotstackService {
   async renderClip(
     render: IRenderTimelineDetails
   ): Promise<IShotstackRenderClipResponse> {
-    for (const track of render.container.tracks) {
+    for (const track of render.timeline.tracks) {
       for (const clip of track.clips) {
         let { bucket, key } = parseS3URL(clip.asset.src);
 
