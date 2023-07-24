@@ -54,13 +54,27 @@
     "media": {
       "title": "Media",
       "searchResult": "Search Results",
-      "notFoundResults": "No search results found for \"{{name}}\""
+      "notFoundResults": "No search results found for \"{{name}}\"",
+      "uploadFile": {
+        "title": "Upload a file",
+        "description": "Click to <link/>, or drag & drop a file here",
+        "link": "browse",
+        "footer": "MP3 files only"
+      }
     },
-    "uploadFile": {
-      "title": "Upload a file",
-      "description": "Click to <link/>, or drag & drop a file here",
-      "link": "browse",
-      "footer": "MP3 files only"
+    "edit": {
+      "title": "Edit",
+      "volume": "Volume",
+      "volumeTooltip": "Set the volume for the audio clip between 0% and 100%",
+      "trimStart": "Trim Start",
+      "trimStartTooltip": "The start trim point of the audio clip in seconds",
+      "timing": "Timing",
+      "timingStart": "Start",
+      "timingStartTooltip": "The start position of the audio clip on the timeline in seconds",
+      "timingLength": "Length",
+      "timingLengthTooltip": "The length in seconds the audio clip should play for"
+
+
     }
   },
   "sidebarImage": {

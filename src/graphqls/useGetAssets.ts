@@ -88,6 +88,15 @@ export function useGetAssets() {
                     endFrame
                     source
                     createdAt
+                    details {
+                      currentTimeline
+                      renderedTimeline
+                      renders {
+                        muteAudio
+                        quality
+                        url
+                      }
+                    }
                   }
                 }
               }

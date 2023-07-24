@@ -58,19 +58,9 @@ export function DownloadClipModal(props: Props) {
       setShowError(false);
       setDisableButton(true);
 
-      const { width, height } = calcDimensions();
-
-      const url = await renderClip({
-        assetId: asset.uuid,
-        quality: quality as any,
-        muteAudio: audio === 'yes',
-        clipId: clip!.uuid,
-        startTime: clip!.startTime,
-        endTime: clip!.endTime,
-        width: width,
-        height: height
-      });
-
+      const size = calcDimensions();
+      const url = await renderClip(clip!.uuid, asset.uuid, size);
+      
       if (url) {
         download(clip!.caption, url);
       } else {

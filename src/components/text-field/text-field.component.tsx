@@ -1,32 +1,40 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, FocusEvent, useState } from 'react';
 import { Box, InputBase } from '@mui/material';
 import { style } from './text-field.style';
 
 interface Props {
-  sx?: typeof style;
+  sx?: Partial<typeof style>;
+  type?: string;
   title?: string;
   value: string;
+  min?: number;
+  max?: number;
   disabled?: boolean;
+  errorMessage?: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: () => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
 }
 
 export function TextField(props: Props) {
 
   const {
     sx,
+    type,
     title,
     value,
+    min,
+    max,
     disabled = false,
+    errorMessage,
     onChange,
     onBlur
   } = props;
 
   const [focus, setFocus] = useState(false);
 
-  function handleBlur() {
+  function handleBlur(event: FocusEvent<HTMLInputElement>) {
     setFocus(false);
-    onBlur?.();
+    onBlur?.(event);
   }
 
   return (
@@ -40,11 +48,16 @@ export function TextField(props: Props) {
       }
       <InputBase
         sx={[style.input, sx?.input, focus && style.focus as any]} 
+        type={type}
         value={value}
+        inputProps={{ min, max }}
         disabled={disabled}
         onChange={onChange}
         onFocus={() => setFocus(true)}
         onBlur={handleBlur}/>
+      {errorMessage &&
+        <Box sx={style.errorMessage}>{errorMessage}</Box>
+      }
     </Box>
   );
 }
