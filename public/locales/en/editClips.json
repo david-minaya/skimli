@@ -72,9 +72,12 @@
       "timingStart": "Start",
       "timingStartTooltip": "The start position of the audio clip on the timeline in seconds",
       "timingLength": "Length",
-      "timingLengthTooltip": "The length in seconds the audio clip should play for"
-
-
+      "timingLengthTooltip": "The length in seconds the audio clip should play for",
+      "clippedAudioWarning": "The end of the audio file will be clipped when previewed or rendered"
+    },
+    "timeline": {
+      "trimmed": "Trimmed",
+      "clipped": "Clipped"
     }
   },
   "sidebarImage": {

@@ -5,13 +5,7 @@
  */
 
 import { Fragment, ChangeEvent, FocusEvent } from "react";
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  Slider,
-  Tooltip,
-} from "@mui/material";
+import { Box, IconButton, Slider, Tooltip } from "@mui/material";
 import { useTranslation } from "next-i18next";
 import { ExpandPanel } from "~/components/expand-panel/expand-panel.component";
 import { useAssets } from "~/store/assets.slice";
@@ -117,25 +111,20 @@ export function SidebarAudioEdit(props: Props) {
     assets.syncTimeline(assetId, clip!.uuid);
   }
 
-  function trimAndLengthValidator(trim?: number, length?: number) {
+  function trimAndLengthValidator(trim?: number) {
     if (
       trim === undefined ||
       isNaN(trim) ||
-      trim < 0 ||
       trim > timelineAudio!.sources!.duration!
     ) {
-      return `Trim value must be between 0 and ${Math.round(
+      return `Value must be between 0 and ${Math.round(
         timelineAudio!.sources!.duration!
       )}`;
-    }
-
-    if (length === undefined || isNaN(length) || length < 0) {
-      return "Length value must be a positive number";
     }
   }
 
   function startValidator(start: number) {
-    if (isNaN(start) || Math.floor(start) > clip!.endTime) {
+    if (isNaN(start) || Math.floor(start) > clip!.duration) {
       return `Value must be between 0 and ${Math.round(clip!.duration)}`;
     }
   }
@@ -191,16 +180,14 @@ export function SidebarAudioEdit(props: Props) {
               </IconButton>
             </Tooltip>
           </Box>
+          {/*TRIM START*/}
           <TextField
             sx={style.textField}
             type="number"
             value={timelineAudio.asset.trim?.toString() || ""}
             min={0}
             max={Math.round(timelineAudio.sources?.duration || 0)}
-            errorMessage={trimAndLengthValidator(
-              Math.round(timelineAudio.asset.trim),
-              Math.round(timelineAudio.length)
-            )}
+            errorMessage={trimAndLengthValidator(timelineAudio.asset.trim)}
             onChange={handleTrimChange}
             onBlur={handleTrimBlur}
           />
@@ -216,11 +203,13 @@ export function SidebarAudioEdit(props: Props) {
               </IconButton>
             </Tooltip>
           </Box>
+          {/*TIMING START*/}
           <TextField
             sx={style.textField}
             type="number"
             value={Math.floor(timelineAudio.start).toString()}
             min={0}
+            max={Math.floor(clip?.duration || 0) - 1}
             errorMessage={startValidator(timelineAudio.start)}
             onChange={handleStartChange}
             onBlur={handleStartBlur}
@@ -236,6 +225,7 @@ export function SidebarAudioEdit(props: Props) {
               </IconButton>
             </Tooltip>
           </Box>
+          {/*TIMING LENGTH*/}
           <TextField
             sx={style.textField}
             type="number"
@@ -243,7 +233,6 @@ export function SidebarAudioEdit(props: Props) {
             min={0}
             max={Math.round(timelineAudio.sources?.duration || 0)}
             errorMessage={trimAndLengthValidator(
-              Math.round(timelineAudio.asset.trim),
               Math.round(timelineAudio.length)
             )}
             onChange={handleLengthChange}
@@ -251,10 +240,11 @@ export function SidebarAudioEdit(props: Props) {
           />
           {timelineAudio.sources && timelineAudio.sources.duration && (
             <Box>
-              {timelineAudio.start + timelineAudio.length >
-              clip!.duration - timelineAudio.asset.trim ? (
-                <Box sx={style.warningContainer}>
-                  The audio clip will be truncated when previewed or rendered
+              {Math.floor(timelineAudio.start) +
+                Math.floor(timelineAudio.length) >
+              Math.floor(clip!.duration) ? (
+                <Box sx={style.clippedAudioWarning}>
+                  {t("sidebarAudio.edit.clippedAudioWarning")}
                 </Box>
               ) : null}
             </Box>

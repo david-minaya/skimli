@@ -95,7 +95,7 @@ export const style = Style({
     width: "20px",
     height: "20px",
   },
-  warningContainer: {
+  clippedAudioWarning: {
     marginTop: "4px",
     padding: "8px",
     backgroundColor: "#ffe082",

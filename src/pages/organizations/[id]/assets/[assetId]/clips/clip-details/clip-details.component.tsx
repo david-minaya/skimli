@@ -225,10 +225,7 @@ export function ClipDetails(props: Props) {
               playbackId={asset.mux!.asset.playback_ids[0].id}
             />
             {timelineAudio && (
-              <AudioTrackTimeline
-                audio={timelineAudio}
-                clipDuration={clip.duration}
-              />
+              <AudioTrackTimeline audio={timelineAudio} clip={clip} />
             )}
           </Box>
         )}

@@ -1,11 +1,11 @@
-import { ChangeEvent, useRef } from 'react';
-import { Box, InputBase, Typography } from '@mui/material';
-import { useUploadMediaFiles } from '~/providers/UploadMediaFilesProvider';
-import { style } from './sidebar-upload-file.style';
-import { mergeSx } from '~/utils/style';
+import { ChangeEvent, useRef } from "react";
+import { Box, InputBase, Typography } from "@mui/material";
+import { useUploadMediaFiles } from "~/providers/UploadMediaFilesProvider";
+import { style } from "./sidebar-upload-file.style";
+import { mergeSx } from "~/utils/style";
 
 interface Props {
-  sx?: typeof style['container'];
+  sx?: typeof style["container"];
   show: boolean;
   assetId?: string;
   accept?: string;
@@ -17,7 +17,6 @@ interface Props {
 }
 
 export function SidebarUploadFile(props: Props) {
-
   const {
     sx,
     show,
@@ -27,7 +26,7 @@ export function SidebarUploadFile(props: Props) {
     title,
     description,
     link: linkText,
-    footer
+    footer,
   } = props;
 
   const hiddenFileInputRef = useRef<HTMLInputElement>(null);
@@ -40,30 +39,39 @@ export function SidebarUploadFile(props: Props) {
   }
 
   const link = (
-    <Box 
-      component='span' 
-      sx={style.link} 
-      onClick={() => hiddenFileInputRef.current?.click()}>
+    <Box
+      component="span"
+      sx={style.link}
+      onClick={() => hiddenFileInputRef.current?.click()}
+    >
       {linkText}
     </Box>
   );
 
-  const [part1, part2] = description.split('<link/>');
+  const [part1, part2] = description.split("<link/>");
 
   if (!show) return null;
 
   return (
     <Box sx={mergeSx(style.container, sx)}>
-      <Box sx={style.image} component='img' src='/images/upload-file.svg'/>
-      <Typography sx={style.text} paragraph variant='body2'>{title}</Typography>
-      <Typography sx={style.text} paragraph variant='body2'>{part1} {link}{part2}</Typography>
-      <Typography sx={style.text} paragraph variant='body2'>{footer}</Typography>
+      <Box sx={style.image} component="img" src="/images/upload-file.svg" />
+      <Typography sx={style.text} paragraph variant="body2">
+        {title}
+      </Typography>
+      <Typography sx={style.text} paragraph variant="body2">
+        {part1} {link}
+        {part2}
+      </Typography>
+      <Typography sx={style.text} paragraph variant="body2">
+        {footer}
+      </Typography>
       <InputBase
         sx={style.hiddenFileInput}
-        type='file'
+        type="file"
         inputRef={hiddenFileInputRef}
         inputProps={{ accept, multiple }}
-        onChange={handleInputFileChange}/>
+        onChange={handleInputFileChange}
+      />
     </Box>
   );
 }

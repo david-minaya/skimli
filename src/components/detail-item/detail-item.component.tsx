@@ -1,6 +1,6 @@
-import { Box } from '@mui/material';
-import { style } from './detail-item.style';
-import { mergeSx } from '~/utils/style';
+import { Box } from "@mui/material";
+import { style } from "./detail-item.style";
+import { mergeSx } from "~/utils/style";
 
 interface Props {
   sx?: Partial<typeof style>;
@@ -9,12 +9,7 @@ interface Props {
 }
 
 export function DetailItem(props: Props) {
-
-  const {
-    sx,
-    title,
-    text
-  } = props;
+  const { sx, title, text } = props;
 
   return (
     <Box sx={mergeSx(style.container, sx?.container)}>

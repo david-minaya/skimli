@@ -29,7 +29,7 @@ export function useUpdateTimeline() {
           assetId,
           clipId,
           render: {
-            container: {
+            timeline: {
               ...timeline,
               background: undefined,
             },
